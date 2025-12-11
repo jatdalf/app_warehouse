@@ -1,0 +1,190 @@
+/* Layout container centered */
+.mainContainer{
+  width: 100%;
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-left: 6%;
+}
+
+.sliderContainer{
+  flex: 1 1 auto;
+  position: relative;
+}
+
+.imagesContainer{
+  width: 100%;
+  height: 400px;
+  border-radius: 20px;
+  border: 2px solid rgb(54, 48, 48);
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);  
+}
+
+.imagesContainer ul{
+  display: flex;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+  height: 100%;
+}
+
+.imagesContainer li{
+  min-width: 100%;
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageCss{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.dotsContainer{
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  cursor: pointer;
+  color: gray;
+}
+
+.dotCss{
+  margin: 0 4px;
+  font-size: 18px;
+  text-align: center;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.active{
+  color: black;
+  opacity: 1;
+}
+
+/* OCASA + logo */
+.logoTextRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Texto principal OCASA */
+.ocasaTitle {
+  font-family: "Bahnschrift SemiCondensed", "Bahnschrift", sans-serif;
+  font-weight: 600;
+  color: rgb(0, 0, 0);
+  font-size: 3rem;
+  letter-spacing: -0.5px;
+  margin: 0;
+
+  margin-left: 20%;
+}
+
+/* Logo animado */
+.ocasaLogo {
+  margin-top: -5px;
+  width: 40px;
+  height: 40px;
+  animation: logoPause 7.5s infinite;
+  transform-style: preserve-3d;  
+}
+
+@keyframes logoPause {
+  0%, 66.6% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+.loginForm {
+  width: 320px;
+  max-width: 90vw;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: rgba(248,248,248,0.95);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  align-self: center;
+  position: absolute; /* overlay centered above image */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  height: 54%;
+}
+
+.loginForm input {
+  width: 90%;
+  margin-left: 5%;
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: block;
+  box-sizing: border-box;
+  margin-top: 14px;
+}
+
+.loginForm button {
+  width: 80%;
+  margin-left: 10%;
+  background-color: #1ea39d;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.loginForm button:hover { 
+  background-color: #10dbee; 
+  scale: 1.1;
+}
+
+@media (max-width: 767px) {
+  .mainContainer{
+    flex-direction: column;
+    padding: 4px;
+    gap: 1rem;
+    margin-left: 0%;
+  }
+  .imagesContainer{
+    width: 100%;
+    height: 220px;
+    border-radius: 12px;
+    border: 1px solid rgb(54,48,48);
+  }
+  .ocasaTitle { font-size: 3rem; }
+  .loginForm{
+    width: 100%;
+    max-width: 480px;
+    padding: 12px;
+    position: static; /* don't overlay on mobile */
+    transform: none;
+    left: auto;
+    top: auto;
+  }
+  .loginForm input { padding: 8px; }
+  .loginForm button { padding: 10px; }
+  .dotsContainer{ width: 100%; }
+}
+
+/* Make imagesContainer occupy 80% width centered with 10% margins */
+.imagesContainer{
+  width: 80%;
+  margin: 0 10%;
+}
+
+/* Ensure main container is relative so absolute overlay positions correctly */
+.mainContainer{ position: relative; }
