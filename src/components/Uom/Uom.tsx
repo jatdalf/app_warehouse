@@ -29,13 +29,20 @@ const Uom: React.FC = () => {
     setMessage(null);
     setFailures([]);
     try {
+      // validate extension first
+      if (!/\.(xls|xlsx)$/i.test(f.name)) {
+        setMessage('Se espera un archivo Excel para realizar la validacion');
+        return;
+      }
+
       const buf = await f.arrayBuffer();
       const res = await analyzeWorkbook(buf);
       setFailures(res);
       setMessage(`Procesado ${res.length} filas con fallo.`);
       if (res.length === 0) triggerCelebration();
     } catch (err: any) {
-      setMessage('Error procesando el archivo: ' + String(err?.message ?? err));
+      // If analyzeWorkbook threw a user-friendly message it will be in err.message
+      setMessage(String(err?.message ?? 'Error procesando el archivo'));
     } finally {
       setProcessing(false);
     }
@@ -62,6 +69,14 @@ const Uom: React.FC = () => {
       const sheetName = wb.SheetNames[0];
       const sheet = wb.Sheets[sheetName];
       const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+      // validate column count: expect exactly 14 columns in the file
+      const header = rows[0] || [];
+      const colCount = Array.isArray(header) ? header.length : 0;
+      if (colCount !== 14) {
+        // throw an error with a user-facing message so callers can display it
+        throw new Error('Por favor verifique la disposicion del excel, se espera un excel con 14 columnas');
+      }
 
       const results: FailureRow[] = [];
 
