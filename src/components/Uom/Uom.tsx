@@ -1,5 +1,7 @@
 import React, { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Uom.module.css';
+import excelPng from '../../assets/Excel.png';
 
 type FailureRow = {
   rowIndex: number;
@@ -16,6 +18,28 @@ const Uom: React.FC = () => {
   const [failures, setFailures] = useState<FailureRow[]>([]);
   const [processing, setProcessing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const lottieContainerRef = useRef<HTMLDivElement | null>(null);
+  const lottieInstanceRef = useRef<any>(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  const processFile = async (f: File) => {
+    if (!f) return;
+    setProcessing(true);
+    setMessage(null);
+    setFailures([]);
+    try {
+      const buf = await f.arrayBuffer();
+      const res = await analyzeWorkbook(buf);
+      setFailures(res);
+      setMessage(`Procesado ${res.length} filas con fallo.`);
+      if (res.length === 0) triggerCelebration();
+    } catch (err: any) {
+      setMessage('Error procesando el archivo: ' + String(err?.message ?? err));
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   const parseNumber = (val: any): number | null => {
     if (val === null || val === undefined || val === '') return null;
@@ -86,61 +110,173 @@ const Uom: React.FC = () => {
     });
   };
 
-  const handleFetchOrPick = async () => {
-    setProcessing(true);
-    setMessage(null);
-    setFailures([]);
-    try {
-      // try to fetch from public/data/ywm005.xlsx (you can place the file in public/data)
-      const url = '/data/ywm005.xlsx';
-      const resp = await fetch(url);
-      if (resp.ok) {
-        const buf = await resp.arrayBuffer();
-        const res = await analyzeWorkbook(buf);
-        setFailures(res);
-        setMessage(`Procesado ${res.length} filas con fallo.`);
-      } else {
-        // fall back to file picker
-        setMessage('Archivo no disponible en /data/ywm005.xlsx — por favor selecciona el archivo manualmente.');
-        fileInputRef.current?.click();
-      }
-    } catch (err: any) {
-      setMessage('Error leyendo el archivo: ' + String(err?.message ?? err));
-    } finally {
-      setProcessing(false);
-    }
-  };
+//   const handleFetchOrPick = async () => {
+//     setProcessing(true);
+//     setMessage(null);
+//     setFailures([]);
+//     try {
+//       // try to fetch from public/data/ywm005.xlsx (you can place the file in public/data)
+//       const url = '/data/ywm005.xlsx';
+//       const resp = await fetch(url);
+//       if (resp.ok) {
+//         const buf = await resp.arrayBuffer();
+//         const res = await analyzeWorkbook(buf);
+//         setFailures(res);
+//         setMessage(`Procesado ${res.length} filas con fallo.`);
+//         if (res.length === 0) triggerCelebration();
+//       } else {
+//         // fall back to file picker
+//         setMessage('Archivo no disponible en /data/ywm005.xlsx — por favor selecciona el archivo manualmente.');
+//         fileInputRef.current?.click();
+//       }
+//     } catch (err: any) {
+//       setMessage('Error leyendo el archivo: ' + String(err?.message ?? err));
+//     } finally {
+//       setProcessing(false);
+//     }
+//   };
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    setProcessing(true);
-    setMessage(null);
-    setFailures([]);
+    await processFile(f);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    setDragActive(true);
+  };
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f) await processFile(f);
+  };
+
+  // celebration: confetti + spark overlay
+  const triggerCelebration = async () => {
     try {
-      const buf = await f.arrayBuffer();
-      const res = await analyzeWorkbook(buf);
-      setFailures(res);
-      setMessage(`Procesado ${res.length} filas con fallo.`);
-    } catch (err: any) {
-      setMessage('Error procesando el archivo: ' + String(err?.message ?? err));
-    } finally {
-      setProcessing(false);
+  setShowCelebration(true);
+  // dynamic import to avoid adding dependency to initial bundle
+  // @ts-ignore - canvas-confetti may not have types in this project
+  const confettiModule = await import('canvas-confetti');
+  const confetti = (confettiModule && (confettiModule.default || confettiModule)) as any;
+      // center burst (bengala-like)
+      confetti({
+        particleCount: 200,
+        startVelocity: 40,
+        spread: 160,
+        origin: { x: 0.5, y: 0.5 },
+        ticks: 400,
+      });
+      // multiple small bursts
+      confetti({ particleCount: 100, spread: 120, origin: { x: 0.3, y: 0.2 } });
+      confetti({ particleCount: 100, spread: 120, origin: { x: 0.7, y: 0.2 } });
+
+      // longer tail fireworks: fire several bursts over time
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          confetti({ particleCount: 60, spread: 100, origin: { x: Math.random(), y: Math.random() * 0.5 } });
+        }, 600 + i * 300);
+      }
+
+      // also load a Lottie animation in the overlay container (if present)
+      try {
+        // dynamic import lottie-web
+        // @ts-ignore
+        const lottie = (await import('lottie-web')).default;
+        if (lottieContainerRef.current) {
+          // prefer a local animation placed in public/animations/celebration.json
+          const localPath = '/animations/celebration.json';
+          let animPath = 'https://assets10.lottiefiles.com/packages/lf20_jbrw3hcz.json';
+          try {
+            // try fetch local file (no-cache) — if present, use it
+            const head = await fetch(localPath, { cache: 'no-cache' });
+            if (head && head.ok) animPath = localPath;
+          } catch (e) {
+            // ignore fetch errors and fallback to remote animPath
+          }
+
+          lottieInstanceRef.current = lottie.loadAnimation({
+            container: lottieContainerRef.current,
+            renderer: 'svg',
+            loop: false,
+            autoplay: true,
+            path: animPath,
+          });
+        }
+      } catch (err) {
+        // ignore if lottie not available or loading fails
+      }
+
+      // hide celebration after 5 seconds
+      setTimeout(() => setShowCelebration(false), 5000);
+    } catch (err) {
+      console.warn('Celebration failed:', err);
     }
   };
+
+  // cleanup lottie instance when overlay hides or component unmounts
+  React.useEffect(() => {
+    if (!showCelebration) {
+      if (lottieInstanceRef.current) {
+        try { lottieInstanceRef.current.destroy(); } catch (e) {}
+        lottieInstanceRef.current = null;
+      }
+    }
+    return () => {
+      if (lottieInstanceRef.current) {
+        try { lottieInstanceRef.current.destroy(); } catch (e) {}
+        lottieInstanceRef.current = null;
+      }
+    };
+  }, [showCelebration]);
 
   return (
     <div>
       <h3>Analisis de UOM</h3>
-      <p>Al hacer click se intentará leer <strong>ywm005.xlsx</strong> desde <code>/data/ywm005.xlsx</code> (coloca el archivo en <code>public/data/</code>), o selecciona manualmente si no está disponible.</p>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <button onClick={handleFetchOrPick} disabled={processing}>
-          {processing ? 'Procesando...' : 'Procesar UOM (ywm005.xlsx)'}
+  <p>Al hacer click se procesara el archivo <strong>ywm005.xlsx</strong> con la disposicion sap <code>/Z-TOSO-Z</code>. Si necesitas una guia para obtener el reporte de sap haz click <Link to="/GuiaYwm005">Aqui</Link></p>
+      <div
+        className={`${styles.dropZone} ${dragActive ? styles.dropZoneActive : ''}`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div className={styles.dropContent}>
+          <div className={styles.dropIcon} aria-hidden>
+            <img src={excelPng} alt="Excel" className={styles.dropIconImg} />
+          </div>
+          <div className={styles.dropText}>
+            <p>{dragActive ? 'Suelta el archivo aquí' : 'Arrastra y suelta el archivo Excel aquí'}</p>
+            <span className={styles.dropHint}>(.xls, .xlsx)</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <button className={styles.browseBtn} type="button" onClick={() => fileInputRef.current?.click()} disabled={processing}>
+          {processing ? 'Procesando...' : 'Explorar archivo...'}
         </button>
         <input ref={fileInputRef} type="file" accept=".xls,.xlsx" style={{ display: 'none' }} onChange={handleFile} />
       </div>
 
       {message && <p>{message}</p>}
+
+      {showCelebration && (
+        <div className={styles.celebrationOverlay}>
+          <div ref={lottieContainerRef} style={{ width: 360, height: 360 }} aria-hidden />
+        </div>
+      )}
 
       {failures.length > 0 && (
         <div style={{ marginTop: 16 }}>
@@ -152,7 +288,6 @@ const Uom: React.FC = () => {
                   <th>Fila</th>
                   <th>MAT. CLIENTE</th>
                   <th>DESCRIPCIÓN</th>
-                  {/* <th>STOCK original (F)</th> */}
                   <th>STOCK</th>
                   <th>UOM</th>
                   <th>STOCK / UOM</th>
@@ -164,7 +299,6 @@ const Uom: React.FC = () => {
                     <td data-label="Fila"><span>{r.rowIndex}</span></td>
                     <td data-label="MAT. CLIENTE"><span>{String(r.matCliente ?? '')}</span></td>
                     <td data-label="DESCRIPCIÓN" className={styles.desc}><span>{String(r.descripcion ?? '')}</span></td>
-                    {/* <td data-label="STOCK original (F)"><span>{String(r.stockOriginal ?? '')}</span></td> */}
                     <td data-label="STOCK" className={styles.numeric}><span>{r.stockParsed}</span></td>
                     <td data-label="UOM" className={styles.numeric}><span>{r.uom}</span></td>
                     <td data-label="STOCK / UOM" className={styles.numeric}><span>{r.division}</span></td>
