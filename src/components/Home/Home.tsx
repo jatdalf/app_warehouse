@@ -76,7 +76,7 @@ const Home: React.FC = () => {
       </section>
 
       <div className={styles.footer}>
-        <p className={styles.footerText}>© 2025 OCASA. Todos los derechos reservados. (Version: 1.15)</p>  
+        <p className={styles.footerText}>© 2025 OCASA. Todos los derechos reservados. (Version: 1.002)</p>  
         <p className={styles.footerText}>Desarrollado por Jorge Toso</p>
       </div>  
 
