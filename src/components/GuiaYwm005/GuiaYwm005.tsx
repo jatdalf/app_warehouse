@@ -1,11 +1,11 @@
 import styles from './GuiaYwm005.module.css';
 import { useState } from 'react';
 import Volver from '../Volver/Volver';
-import paso1 from '../../Assets/Ywm005_step1.png';
-import paso2 from '../../Assets/Ywm005_step2.png';
-import paso3 from '../../Assets/Ywm005_step3.png';
-import paso4 from '../../Assets/Ywm005_step4.png'; 
-import paso5 from '../../Assets/Ywm005_step5.png'; 
+import paso1 from '../../assets/Ywm005_step1.png';
+import paso2 from '../../assets/Ywm005_step2.png';
+import paso3 from '../../assets/Ywm005_step3.png';
+import paso4 from '../../assets/Ywm005_step4.png';
+import paso5 from '../../assets/Ywm005_step5.png';
 
 const GuiaYwm005 = () => {
  interface Transaction {
