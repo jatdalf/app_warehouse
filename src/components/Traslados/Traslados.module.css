@@ -1,0 +1,235 @@
+/* =========================
+   CONTENEDOR GENERAL
+========================= */
+.container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+/* =========================
+   HEADER
+========================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin: 2rem 10% 0 10%;
+}
+
+/* =========================
+   CONTENEDOR DE ARCHIVOS
+========================= */
+.filesContainer {
+  max-width: 1200px;   /* ancho fijo lógico */
+  margin: 3rem auto 0; /* centrado real */
+  padding: 0 24px;     /* aire lateral */
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 70px;
+
+  align-items: start;
+}
+/* =========================
+   FILE BOX
+========================= */
+.fileBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fileBox h4 {
+  margin-bottom: 12px;
+}
+
+/* =========================
+   DROP ZONE (TAMAÑO FIJO)
+========================= */
+.dropZone {
+  width: 100%;
+  width: 260px;
+  height: 190px;
+
+  background-color: #e9f6ee;
+  border: 2px dashed #5fa37a;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  cursor: pointer;
+}
+
+.dropZone:hover {
+  background-color: #dff2e7;
+  border-color: #4d8f66;
+}
+
+/* Contenido interno fijo para evitar cambios */
+.dropContent {
+  height: 140px; /* NO min-height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropZone p {
+  margin: 10px 0 4px 0;
+}
+
+.dropZone span {
+  font-size: 0.85rem;
+  color: #4f6f5c;
+}
+
+
+.arrow {
+  width: 80px;
+  min-width: 80px;
+
+  display: flex;
+  align-items: center;     /* vertical */
+  justify-content: center; /* horizontal */
+}
+
+
+/* =========================
+   ICONOS
+========================= */
+.excelIcon {
+  width: 48px;
+  margin-bottom: 6px;
+}
+
+.lottieOk {
+  width: 60px;
+  height: 60px;
+  margin-top: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lottieOk svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* =========================
+   CONTENEDOR TRASLADO
+========================= */
+.trxContainer {
+  width: 100%;
+  margin-top: 40px;
+
+  display: flex;
+  align-items: stretch;   /* MISMA ALTURA */
+  justify-content: center;
+}
+
+/* =========================
+   ERRORES
+========================= */
+.errorInside {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #c0392b;
+  text-align: center;
+}
+
+/* =========================
+   BOTONES
+========================= */
+.buttons {
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  background-color: #228f79;
+  margin-top: 15px;
+}
+
+
+.buttons:hover {
+  background-color: #2fbe9f;
+}
+
+/* Deshabilitado */
+.disabled {
+  background-color: #b5b5b5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Habilitado */
+.enabled {
+  background-color: #228f79;
+  cursor: pointer;
+}
+
+.enabled:hover {
+  background-color: #2fbe9f;
+}
+
+/* =========================
+   CONTENEDOR BOTÓN TRASLADO
+========================= */
+.generateWrapper {
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 768px) {
+  .header {
+    margin-top: 5%;    
+  }
+
+  .filesContainer {
+    grid-template-columns: 1fr;
+    margin: 2rem 1%;
+  }
+    .container {
+    flex-direction: column;
+  }
+ .trxContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* =========================
+   FILA DE CARDS (DESKTOP)
+========================= */
+.cardsRow {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  margin-bottom: 40px; /* espacio para la grilla */
+}
+
+  .arrow {
+    margin: 16px 0;
+    transform: rotate(90deg);
+  }
+}

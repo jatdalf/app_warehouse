@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styles from "./Home.module.css";
 import logo from "../../assets/OcasaLogoSmall.png";
 import UOM from "../../assets/UOM.png";
-// import calendarIcon from "../../assets/calendar.gif";
+import forklift from "../../assets/forklift.png";
 // import reportIcon from "../../assets/report.gif";
 // import accidentIcon from "../../assets/accident.gif";
 // import riskIcon from "../../assets/risk.gif";
@@ -40,10 +40,12 @@ const Home: React.FC = () => {
           <p className={styles.cardText}>Comprobar UOM</p>
         </Link>
 
-        {/* <Link to="/informe" className={styles.card}>
-          <img src={reportIcon} alt="Informe" className={styles.icon} />
-          <p className={styles.cardText}>Stand By</p>
+        <Link to="/Traslados" className={styles.card}>
+          <img src={forklift} alt="Informe" className={styles.icon} />
+          <p className={styles.cardText}>Traslados</p>
         </Link>
+
+        {/* 
 
         <Link to="/accidentes" className={styles.card}>
           <img src={accidentIcon} alt="Accidentes" className={styles.icon} />
