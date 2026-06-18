@@ -1,6 +1,7 @@
 import styles from "./ResumenTraslado.module.css";
+import { useIsMobile } from "../hooks/useIsMobile";
 
-interface ResumenTrasladoProps {
+interface Props {
   origen: string;
   articulo: string;
   loteProveedor: string;
@@ -8,51 +9,54 @@ interface ResumenTrasladoProps {
   codigoSap: string;
   loteSap: string;
   destino: string;
-  onConfirmar: () => void;
+  onConfirmar?: () => void; 
+  onAgregar: () => void;  
 }
 
-const ResumenTraslado: React.FC<ResumenTrasladoProps> = ({
-  origen,
-  articulo,
-  loteProveedor,
-  cantidad,
-  codigoSap,
-  loteSap,
-  destino,
-  onConfirmar,
-}) => {
+const ResumenTraslado: React.FC<Props> = (props) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className={styles.wrapper}>
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Origen</th>
             <th>Artículo</th>
-            <th>Lote</th>
             <th>Cantidad</th>
-            <th>Código SAP</th>
-            <th>Lote SAP</th>
-            <th>Destino</th>
+            <th>Desde</th>
+            <th>Hacia</th>
+
+            {!isMobile && (
+              <>
+                <th>Lote Prov.</th>
+                <th>Cód. SAP</th>
+                <th>Lote SAP</th>
+              </>
+            )}
           </tr>
         </thead>
+
         <tbody>
           <tr>
-            <td>{origen}</td>
-            <td>{articulo}</td>
-            <td>{loteProveedor}</td>
-            <td>{cantidad}</td>
-            <td>{codigoSap}</td>
-            <td>{loteSap}</td>
-            <td>{destino}</td>
+            <td>{props.articulo}</td>
+            <td>{props.cantidad}</td>
+            <td>{props.origen}</td>
+            <td>{props.destino}</td>
+
+            {!isMobile && (
+              <>
+                <td>{props.loteProveedor}</td>
+                <td>{props.codigoSap}</td>
+                <td>{props.loteSap}</td>
+              </>
+            )}
           </tr>
         </tbody>
       </table>
 
-      <div className={styles.confirmWrapper}>
-        <button className={styles.confirmBtn} onClick={onConfirmar}>
-          Confirmar traslados
-        </button>
-      </div>
+      <button className={styles.confirmBtn} onClick={props.onConfirmar}>
+        Confirmar traslados
+      </button>
     </div>
   );
 };

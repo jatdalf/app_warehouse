@@ -22,77 +22,6 @@ html {
   margin: 2rem 10% 0 10%;
 }
 
-/* =========================
-   CONTENEDOR DE ARCHIVOS
-========================= */
-.filesContainer {
-  max-width: 1200px;   /* ancho fijo lógico */
-  margin: 3rem auto 0; /* centrado real */
-  padding: 0 24px;     /* aire lateral */
-
-  display: grid;
-  grid-template-columns: repeat(3, minmax(260px, 1fr));
-  gap: 70px;
-
-  align-items: start;
-}
-/* =========================
-   FILE BOX
-========================= */
-.fileBox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.fileBox h4 {
-  margin-bottom: 12px;
-}
-
-/* =========================
-   DROP ZONE (TAMAÑO FIJO)
-========================= */
-.dropZone {
-  width: 100%;
-  width: 260px;
-  height: 190px;
-
-  background-color: #e9f6ee;
-  border: 2px dashed #5fa37a;
-  border-radius: 12px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 20px;
-  box-sizing: border-box;
-
-  cursor: pointer;
-}
-
-.dropZone:hover {
-  background-color: #dff2e7;
-  border-color: #4d8f66;
-}
-
-/* Contenido interno fijo para evitar cambios */
-.dropContent {
-  height: 140px; /* NO min-height */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.dropZone p {
-  margin: 10px 0 4px 0;
-}
-
-.dropZone span {
-  font-size: 0.85rem;
-  color: #4f6f5c;
-}
 
 
 .arrow {
@@ -105,28 +34,6 @@ html {
 }
 
 
-/* =========================
-   ICONOS
-========================= */
-.excelIcon {
-  width: 48px;
-  margin-bottom: 6px;
-}
-
-.lottieOk {
-  width: 60px;
-  height: 60px;
-  margin-top: 10px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lottieOk svg {
-  width: 100%;
-  height: 100%;
-}
 
 /* =========================
    CONTENEDOR TRASLADO
@@ -204,29 +111,24 @@ html {
     margin-top: 5%;    
   }
 
-  .filesContainer {
-    grid-template-columns: 1fr;
-    margin: 2rem 1%;
-  }
     .container {
     flex-direction: column;
   }
- .trxContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-/* =========================
-   FILA DE CARDS (DESKTOP)
-========================= */
-.cardsRow {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  margin-bottom: 40px; /* espacio para la grilla */
-}
+  .trxContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cardsRow {
+    width: 100%;
+    display: flex;
+    flex-direction: column; /* 👈 CLAVE */
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
 
   .arrow {
     margin: 16px 0;
