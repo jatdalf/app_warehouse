@@ -5,8 +5,9 @@ import styles from "./Inventarios.module.css";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
+import { useNavigate } from "react-router-dom";
 
-// Primer Excel: ubicaciones.xlsx
+// Interfaces
 interface RegistroUbicacion {
   tipoAlmacen: string;
   ubicacion: string;
@@ -14,7 +15,6 @@ interface RegistroUbicacion {
   material: string;
 }
 
-// Segundo Excel: Ylx22.xlsx
 interface RegistroInventario {
   fecha: string | number;
   almacen: string;
@@ -26,6 +26,7 @@ interface RegistroInventario {
   resultado: number;
 }
 
+// Hook de animación
 const useCountUp = (end: number, duration: number = 2500) => {
   const [count, setCount] = useState(0);
 
@@ -48,6 +49,10 @@ const useCountUp = (end: number, duration: number = 2500) => {
 };
 
 const Inventario: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [registrosFiltrados, setRegistrosFiltrados] = useState<RegistroInventario[]>([]);
+
   // Estado para ubicaciones.xlsx
   const [resumenUbicaciones, setResumenUbicaciones] = useState({
     cantidadUbicaciones: 0,
@@ -110,7 +115,6 @@ const Inventario: React.FC = () => {
 
     fetchExcelUbicaciones();
   }, []);
-
   // Cargar Ylx22.xlsx
   useEffect(() => {
     const fetchExcelInventarios = async () => {
@@ -131,7 +135,6 @@ const Inventario: React.FC = () => {
         resultado: parseFloat(row[14]) || 0,
       }));
 
-      // Normalizar resultado
       registros.forEach((r) => {
         if (r.resultado === 0 || r.resultado === 0.0) {
           r.resultado = 0;
@@ -151,26 +154,24 @@ const Inventario: React.FC = () => {
         } else {
           fechaObj = new Date(fecha);
         }
-        return fechaObj.getMonth(); // 0 = enero
+        return fechaObj.getMonth();
       };
 
-      // Filtrar registros según mes seleccionado
-      const registrosFiltrados = mesSeleccionado === "Año 2026"
+      const filtrados = mesSeleccionado === "Año 2026"
         ? registros
         : registros.filter((r) => obtenerMes(r.fecha) === meses.indexOf(mesSeleccionado) - 1);
 
-      const cantidadPosiciones = registrosFiltrados.filter((r) => r.almacen).length;
-      const inventariosDiferencia = registrosFiltrados.filter((r) => r.resultado !== 0).length;
+      setRegistrosFiltrados(filtrados);
 
-      let inventariosOkRaw = registrosFiltrados.filter((r) => r.resultado === 0).length;
+      const cantidadPosiciones = filtrados.filter((r) => r.almacen).length;
+      const inventariosDiferencia = filtrados.filter((r) => r.resultado !== 0).length;
 
-      // 👇 Restar 1 solo si el filtro es "Año 2026"
+      let inventariosOkRaw = filtrados.filter((r) => r.resultado === 0).length;
       const inventariosOk =
         mesSeleccionado === "Año 2026" && inventariosOkRaw > 0
           ? inventariosOkRaw - 1
           : inventariosOkRaw;
 
-      // Última fecha
       if (registros.length > 0) {
         const ultimaRaw = registros[registros.length - 2].fecha;
         let fechaObj: Date;
@@ -202,33 +203,10 @@ const Inventario: React.FC = () => {
   const countDiferencia = useCountUp(resumenInventarios.inventariosDiferencia);
   const countOk = useCountUp(resumenInventarios.inventariosOk);
 
-  // Gráfico ubicaciones
-  const pieUbicaciones = {
-    labels: ["Pallet (P)", "Estantería (E)"],
-    datasets: [
-      {
-        data: [resumenUbicaciones.ubicacionesPallet, resumenUbicaciones.ubicacionesEstanteria],
-        backgroundColor: ["#2b8179ff", "#87e2e7ff"],
-        borderColor: ["#fff", "#fff"],
-        borderWidth: 2,
-      },
-    ],
-  };
+  const pieUbicaciones = { labels: ["Pallet (P)", "Estantería (E)"], datasets: [{ data: [resumenUbicaciones.ubicacionesPallet, resumenUbicaciones.ubicacionesEstanteria], backgroundColor: ["#2b8179ff", "#87e2e7ff"], borderColor: ["#fff", "#fff"], borderWidth: 2 }] };
+  const pieInventarios = { labels: ["Ok", "Con diferencia"], datasets: [{ data: [resumenInventarios.inventariosOk, resumenInventarios.inventariosDiferencia], backgroundColor: ["#28a745", "#dc3545"], borderColor: ["#fff", "#fff"], borderWidth: 2 }] };
 
-  // Gráfico inventarios
-  const pieInventarios = {
-    labels: ["Ok", "Con diferencia"],
-    datasets: [
-      {
-        data: [resumenInventarios.inventariosOk , resumenInventarios.inventariosDiferencia],
-        backgroundColor: ["#28a745", "#dc3545"],
-        borderColor: ["#fff", "#fff"],
-        borderWidth: 2,
-      },
-    ],
-  };
-
-    return (
+  return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Reporte de Inventarios</h2>
@@ -268,7 +246,8 @@ const Inventario: React.FC = () => {
           </div>
           <div style={{ marginLeft: "20px" }}>
             <label className={styles.InventoryLabel}>Visualizar: </label>
-            <select className={styles.InventorySelect}
+            <select
+              className={styles.InventorySelect}
               value={mesSeleccionado}
               onChange={(e) => setMesSeleccionado(e.target.value)}
             >
@@ -276,8 +255,22 @@ const Inventario: React.FC = () => {
                 <option key={mes} value={mes}>{mes}</option>
               ))}
             </select>
+          
+          <div style={{ marginLeft: "20px", marginTop: "10px" }}>
+            <button
+              className={styles.InventoryDetailButton}
+              onClick={() =>
+                navigate("/InventoryDetail", { state: { registros: registrosFiltrados } })
+              }
+            >
+              Ver detalles
+            </button>
           </div>
+            
+          </div>
+
         </div>
+         
       </div>
 
       <div className={styles.InventoryLabel}>
