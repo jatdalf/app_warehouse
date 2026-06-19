@@ -4,6 +4,7 @@ import Home from "./components/Home/Home";
 import Uom from "./components/Uom/Uom";
 import GuiaYwm005 from "./components/GuiaYwm005/GuiaYwm005";
 import Traslados from "./components/Traslados/Traslados";
+import Inventarios from "./components/Inventarios/inventarios";
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/Uom" element={<Uom />} />
         <Route path="/GuiaYwm005" element={<GuiaYwm005 />} />
         <Route path="/Traslados" element={<Traslados />} />
+        <Route path="/Inventarios" element={<Inventarios />} />
       </Routes>
     </Router>
   );
