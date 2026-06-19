@@ -16,7 +16,7 @@ interface RegistroUbicacion {
 
 // Segundo Excel: Ylx22.xlsx
 interface RegistroInventario {
-  fecha: string;
+  fecha: string | number;
   almacen: string;
   ubicacion: string;
   material: string;
@@ -26,7 +26,7 @@ interface RegistroInventario {
   resultado: number;
 }
 
-const useCountUp = (end: number, duration: number = 3000) => {
+const useCountUp = (end: number, duration: number = 2500) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -63,6 +63,15 @@ const Inventario: React.FC = () => {
   });
 
   const [ultimaFecha, setUltimaFecha] = useState<string>("");
+
+  // Filtro de meses
+  const meses = [
+    "Año 2026",
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+  const [mesSeleccionado, setMesSeleccionado] = useState("Año 2026");
+
   // Cargar ubicaciones.xlsx
   useEffect(() => {
     const fetchExcelUbicaciones = async () => {
@@ -122,53 +131,67 @@ const Inventario: React.FC = () => {
         resultado: parseFloat(row[14]) || 0,
       }));
 
-      // Normalizar resultado: todo lo que sea 0 o 0,000 → 0
+      // Normalizar resultado
       registros.forEach((r) => {
         if (r.resultado === 0 || r.resultado === 0.0) {
           r.resultado = 0;
         }
       });
 
-      const cantidadPosiciones = registros.filter((r) => r.almacen).length;
-      const inventariosDiferencia = registros.filter((r) => r.resultado !== 0).length;
-      const inventariosOk = registros.filter((r) => r.resultado === 0).length;
-
       const excelDateToJSDate = (serial: number): Date => {
-            // Excel cuenta desde 1/1/1900, pero incluye el bug del año bisiesto 1900
-        const utc_days = Math.floor(serial - 25569); 
-        const utc_value = (utc_days + 1) * 86400; // 👈 sumamos +1 día
-        return new Date(utc_value * 1000); // milisegundos
-        };
+        const utc_days = Math.floor(serial - 25569);
+        const utc_value = (utc_days + 1) * 86400;
+        return new Date(utc_value * 1000);
+      };
 
-
-      // Tomar la última fecha directamente del último registro
-        if (registros.length > 0) {
-        const ultimaRaw = registros[registros.length -2].fecha;
-
+      const obtenerMes = (fecha: string | number): number => {
         let fechaObj: Date;
-
-        if (typeof ultimaRaw === "number") {
-            // Si viene como serial de Excel
-            fechaObj = excelDateToJSDate(ultimaRaw);
+        if (typeof fecha === "number") {
+          fechaObj = excelDateToJSDate(fecha);
         } else {
-            // Si viene como string reconocible por Date
-            fechaObj = new Date(ultimaRaw);
+          fechaObj = new Date(fecha);
         }
+        return fechaObj.getMonth(); // 0 = enero
+      };
 
+      // Filtrar registros según mes seleccionado
+      const registrosFiltrados = mesSeleccionado === "Año 2026"
+        ? registros
+        : registros.filter((r) => obtenerMes(r.fecha) === meses.indexOf(mesSeleccionado) - 1);
+
+      const cantidadPosiciones = registrosFiltrados.filter((r) => r.almacen).length;
+      const inventariosDiferencia = registrosFiltrados.filter((r) => r.resultado !== 0).length;
+
+      let inventariosOkRaw = registrosFiltrados.filter((r) => r.resultado === 0).length;
+
+      // 👇 Restar 1 solo si el filtro es "Año 2026"
+      const inventariosOk =
+        mesSeleccionado === "Año 2026" && inventariosOkRaw > 0
+          ? inventariosOkRaw - 1
+          : inventariosOkRaw;
+
+      // Última fecha
+      if (registros.length > 0) {
+        const ultimaRaw = registros[registros.length - 2].fecha;
+        let fechaObj: Date;
+        if (typeof ultimaRaw === "number") {
+          fechaObj = excelDateToJSDate(ultimaRaw);
+        } else {
+          fechaObj = new Date(ultimaRaw);
+        }
         const ultimaFormateada = new Intl.DateTimeFormat("es-AR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
         }).format(fechaObj);
-
         setUltimaFecha(ultimaFormateada);
-        }
+      }
 
       setResumenInventarios({ cantidadPosiciones, inventariosDiferencia, inventariosOk });
     };
 
     fetchExcelInventarios();
-  }, []);
+  }, [mesSeleccionado]);
 
   // Animaciones
   const countUbicaciones = useCountUp(resumenUbicaciones.cantidadUbicaciones);
@@ -177,8 +200,7 @@ const Inventario: React.FC = () => {
 
   const countPosiciones = useCountUp(resumenInventarios.cantidadPosiciones);
   const countDiferencia = useCountUp(resumenInventarios.inventariosDiferencia);
-  const countOk = useCountUp(resumenInventarios.inventariosOk) -1; // Resto 1 para no contar la última fila vacía
-  
+  const countOk = useCountUp(resumenInventarios.inventariosOk);
 
   // Gráfico ubicaciones
   const pieUbicaciones = {
@@ -198,15 +220,15 @@ const Inventario: React.FC = () => {
     labels: ["Ok", "Con diferencia"],
     datasets: [
       {
-        data: [resumenInventarios.inventariosOk, resumenInventarios.inventariosDiferencia],
-        backgroundColor: ["#28a745","#dc3545"],
+        data: [resumenInventarios.inventariosOk , resumenInventarios.inventariosDiferencia],
+        backgroundColor: ["#28a745", "#dc3545"],
         borderColor: ["#fff", "#fff"],
         borderWidth: 2,
       },
     ],
   };
 
-  return (
+    return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Reporte de Inventarios</h2>
@@ -229,26 +251,38 @@ const Inventario: React.FC = () => {
       <div className={styles.layout}>
         <div className={styles.grid}>
           <p>Posiciones inventariadas: <span className={styles.numero}>{countPosiciones}</span></p>
-          <p>Inventarios Ok: 
+          <p>Inventarios Ok:  
             <span className={styles.numero}>
-                {countOk}  ({(((resumenInventarios.inventariosOk -1) / resumenInventarios.cantidadPosiciones) * 100).toFixed(2)}%)
+              {countOk} ({(((resumenInventarios.inventariosOk) / resumenInventarios.cantidadPosiciones) * 100).toFixed(2)}%)
             </span>
           </p>
           <p>Inventarios con diferencia: 
             <span className={styles.numero}>
-                {countDiferencia}  ({((resumenInventarios.inventariosDiferencia / resumenInventarios.cantidadPosiciones) * 100).toFixed(2)}%)
+              {countDiferencia} ({((resumenInventarios.inventariosDiferencia / resumenInventarios.cantidadPosiciones) * 100).toFixed(2)}%)
             </span>
           </p>
         </div>
-        <div style={{ width: "250px", height: "250px" }}>
-          <Pie data={pieInventarios} />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ width: "250px", height: "250px" }}>
+            <Pie data={pieInventarios} />
+          </div>
+          <div style={{ marginLeft: "20px" }}>
+            <label className={styles.InventoryLabel}>Visualizar: </label>
+            <select className={styles.InventorySelect}
+              value={mesSeleccionado}
+              onChange={(e) => setMesSeleccionado(e.target.value)}
+            >
+              {meses.map((mes) => (
+                <option key={mes} value={mes}>{mes}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
-        <div style={{ marginTop: "30px", textAlign: "center", fontStyle: "italic", color: "#6c757d" }}>
+      <div className={styles.InventoryLabel}>
         Última actualización: {ultimaFecha}
-        </div>
-
+      </div>
     </div>
   );
 };

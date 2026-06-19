@@ -40,6 +40,37 @@
   animation: countUp 1s ease-out forwards;
 }
 
+.InventorySelect {
+  padding: 8px 12px;
+  border: 1px solid #2b8179;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.InventorySelect:hover {
+  border-color: #1f5f59;
+  background-color: #e9f7f6;
+}
+
+.InventorySelect:focus {
+  outline: none;
+  border-color: #2b8179;
+  box-shadow: 0 0 6px rgba(43, 129, 121, 0.4);
+}
+
+.InventoryLabel {
+  font-weight: 600;
+  margin-right: 8px;
+  color: #2b8179;
+}
+
+
+
 @keyframes countUp {
   from {
     opacity: 0;
