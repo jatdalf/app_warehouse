@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styles from "./Home.module.css";
 import logo from "../../assets/OcasaLogoSmall.png";
 import UOM from "../../assets/UOM.png";
-import forklift from "../../assets/forklift.png";
+import forklift from "../../assets/Forklift.png";
 import Inventario from "../../assets/inventario.png";
 // import accidentIcon from "../../assets/accident.gif";
 // import riskIcon from "../../assets/risk.gif";
