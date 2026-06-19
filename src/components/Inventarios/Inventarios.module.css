@@ -9,17 +9,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-direction: row; /* asegura que el orden sea el mismo que en el JSX */
+  flex-direction: row;
 }
 
 .header h2 {
   margin: 0;
   font-weight: bold;
-  color: #155724; /* verde oscuro para destacar */
+  color: #155724;
+  font-size: 24px; /* tamaño base */
 }
 
 .grid {
-  background-color: #d4edda; /* verde suave */
+  background-color: #d4edda;
   padding: 10px;
   border-radius: 10px;
   margin-top: 20px;
@@ -69,7 +70,32 @@
   color: #2b8179;
 }
 
+.InventoryDetailButton {
+  padding: 8px 16px;
+  background-color: #2b8179;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
 
+.InventoryDetailButton:hover {
+  background-color: #1f5f59;
+  transform: translateY(-2px);
+}
+
+.InventoryDetailButton:active {
+  background-color: #14504b;
+  transform: translateY(0);
+}
+
+.InventoryDetailButton:focus {
+  outline: none;
+  box-shadow: 0 0 6px rgba(43, 129, 121, 0.4);
+}
 
 @keyframes countUp {
   from {
@@ -86,4 +112,53 @@
   display: flex;
   gap: 40px;
   align-items: flex-start;
+}
+
+/* 📱 Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .header h2 {
+    font-size: 18px; /* título más chico */
+  }
+
+  .header img {
+    max-width: 60px; /* logo reducido */
+    height: auto;
+  }
+
+  .layout {
+    flex-direction: column; /* apilar elementos */
+    gap: 20px;
+    align-items: center;
+  }
+
+  /* Primer grid: solo mostrar cantidad de ubicaciones */
+  .layout:first-of-type .grid p:not(:first-child) {
+    display: none;
+  }
+
+  .layout:first-of-type .Pie {
+    display: none; /* ocultar pie chart en primer grid */
+  }
+
+  /* Segundo grid: pie debajo del grid */
+  .layout:nth-of-type(2) {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .layout:nth-of-type(2) > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .grid {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .numero {
+    font-size: 20px;
+  }
 }

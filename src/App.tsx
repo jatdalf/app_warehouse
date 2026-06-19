@@ -5,6 +5,7 @@ import Uom from "./components/Uom/Uom";
 import GuiaYwm005 from "./components/GuiaYwm005/GuiaYwm005";
 import Traslados from "./components/Traslados/Traslados";
 import Inventarios from "./components/Inventarios/Inventarios";
+import InventoryDetail from "./components/InventoryDetail/InventoryDetail";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/GuiaYwm005" element={<GuiaYwm005 />} />
         <Route path="/Traslados" element={<Traslados />} />
         <Route path="/Inventarios" element={<Inventarios />} />
+        <Route path="/InventoryDetail" element={<InventoryDetail />} />
       </Routes>
     </Router>
   );
