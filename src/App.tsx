@@ -4,7 +4,7 @@ import Home from "./components/Home/Home";
 import Uom from "./components/Uom/Uom";
 import GuiaYwm005 from "./components/GuiaYwm005/GuiaYwm005";
 import Traslados from "./components/Traslados/Traslados";
-import Inventarios from "./components/Inventarios/inventarios";
+import Inventarios from "./components/Inventarios/Inventarios";
 
 
 function App() {
