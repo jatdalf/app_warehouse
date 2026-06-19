@@ -3,7 +3,7 @@ import styles from "./Home.module.css";
 import logo from "../../assets/OcasaLogoSmall.png";
 import UOM from "../../assets/UOM.png";
 import forklift from "../../assets/forklift.png";
-// import reportIcon from "../../assets/report.gif";
+import Inventario from "../../assets/inventario.png";
 // import accidentIcon from "../../assets/accident.gif";
 // import riskIcon from "../../assets/risk.gif";
 // import environmentIcon from "../../assets/environment.gif";
@@ -43,6 +43,11 @@ const Home: React.FC = () => {
         <Link to="/Traslados" className={styles.card}>
           <img src={forklift} alt="Informe" className={styles.icon} />
           <p className={styles.cardText}>Traslados</p>
+        </Link>
+
+         <Link to="/Inventarios" className={styles.card}>
+          <img src={Inventario} alt="Inventarios" className={styles.icon} />
+          <p className={styles.cardText}>Inventarios</p>
         </Link>
 
         {/* 

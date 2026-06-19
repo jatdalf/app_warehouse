@@ -1,0 +1,58 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row; /* asegura que el orden sea el mismo que en el JSX */
+}
+
+.header h2 {
+  margin: 0;
+  font-weight: bold;
+  color: #155724; /* verde oscuro para destacar */
+}
+
+.grid {
+  background-color: #d4edda; /* verde suave */
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 350px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+  color: rgb(0, 0, 0);
+}
+
+.numero {
+  font-weight: bold;
+  color: rgb(16, 2, 144);
+  font-size: 22px;
+  animation: countUp 1s ease-out forwards;
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
