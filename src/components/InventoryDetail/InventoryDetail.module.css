@@ -1,0 +1,143 @@
+.container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #155724;
+  margin: 20px 0 10px 0;
+}
+
+.tableDiferencia, .tableOk {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 1000px;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.tableDiferencia th, .tableOk th {
+  background-color: #2b8179;
+  color: #fff;
+  padding: 8px;
+  text-align: left;
+}
+
+.tableDiferencia td, .tableOk td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Diferencias: naranja suave alternado */
+.tableDiferencia tbody tr:nth-child(odd) {
+  background-color: #ffe5cc;
+}
+.tableDiferencia tbody tr:nth-child(even) {
+  background-color: #fff3e6;
+}
+
+/* Ok: celeste suave alternado */
+.tableOk tbody tr:nth-child(odd) {
+  background-color: #e6f7ff;
+}
+.tableOk tbody tr:nth-child(even) {
+  background-color: #f2fbff;
+}
+
+.empty {
+  text-align: center;
+  font-style: italic;
+  color: #6c757d;
+  padding: 12px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.backButton {
+  padding: 10px 20px;
+  background-color: #2b8179;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.backButton:hover {
+  background-color: #1f5f59;
+}
+
+/* 📱 Responsive para móviles */
+@media (max-width: 768px) {
+  .tableDiferencia,
+  .tableOk,
+  .tableDiferencia thead,
+  .tableOk thead,
+  .tableDiferencia tbody,
+  .tableOk tbody,
+  .tableDiferencia th,
+  .tableOk th,
+  .tableDiferencia td,
+  .tableOk td,
+  .tableDiferencia tr,
+  .tableOk tr {
+    display: block;
+    width: 100%;
+    text-align: center; /* ✅ ahora todo centrado en móvil */
+  }
+
+  .tableDiferencia thead tr,
+  .tableOk thead tr {
+    display: none; /* ocultar encabezados en móvil */
+  }
+
+  .tableDiferencia tr,
+  .tableOk tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  .tableDiferencia td,
+  .tableOk td {
+    border: none;
+    display: flex;
+    justify-content: center; /* ✅ contenido centrado */
+    padding: 6px 10px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .tableDiferencia td::before,
+  .tableOk td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #333;
+    margin-right: 6px;
+  }
+
+  /* Colores alternados en móvil */
+  .tableDiferencia tr:nth-child(odd) {
+    background-color: #ffe5cc;
+  }
+  .tableDiferencia tr:nth-child(even) {
+    background-color: #fff3e6;
+  }
+
+  .tableOk tr:nth-child(odd) {
+    background-color: #e6f7ff;
+  }
+  .tableOk tr:nth-child(even) {
+    background-color: #f2fbff;
+  }
+}
