@@ -48,6 +48,38 @@ const useCountUp = (end: number, duration: number = 2500) => {
   return count;
 };
 
+// Funciones auxiliares para fechas
+const excelDateToJSDate = (serial: number): Date => {
+  const utc_days = Math.floor(serial - 25569);
+  const utc_value = (utc_days + 1) * 86400;
+  return new Date(utc_value * 1000);
+};
+
+const safeFormatFecha = (fecha: string | number): string => {
+  let fechaObj: Date;
+  if (typeof fecha === "number" && !isNaN(fecha)) {
+    fechaObj = excelDateToJSDate(fecha);
+  } else {
+    const parsed = new Date(fecha);
+    fechaObj = isNaN(parsed.getTime()) ? new Date() : parsed;
+  }
+  return new Intl.DateTimeFormat("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(fechaObj);
+};
+
+const obtenerMes = (fecha: string | number): number => {
+  let fechaObj: Date;
+  if (typeof fecha === "number" && !isNaN(fecha)) {
+    fechaObj = excelDateToJSDate(fecha);
+  } else {
+    fechaObj = new Date(fecha);
+  }
+  return fechaObj.getMonth(); // 0 = enero
+};
+
 const Inventario: React.FC = () => {
   const navigate = useNavigate();
 
@@ -115,6 +147,7 @@ const Inventario: React.FC = () => {
 
     fetchExcelUbicaciones();
   }, []);
+
   // Cargar Ylx22.xlsx
   useEffect(() => {
     const fetchExcelInventarios = async () => {
@@ -136,26 +169,8 @@ const Inventario: React.FC = () => {
       }));
 
       registros.forEach((r) => {
-        if (r.resultado === 0 || r.resultado === 0.0) {
-          r.resultado = 0;
-        }
+        if (!r.resultado) r.resultado = 0;
       });
-
-      const excelDateToJSDate = (serial: number): Date => {
-        const utc_days = Math.floor(serial - 25569);
-        const utc_value = (utc_days + 1) * 86400;
-        return new Date(utc_value * 1000);
-      };
-
-      const obtenerMes = (fecha: string | number): number => {
-        let fechaObj: Date;
-        if (typeof fecha === "number") {
-          fechaObj = excelDateToJSDate(fecha);
-        } else {
-          fechaObj = new Date(fecha);
-        }
-        return fechaObj.getMonth();
-      };
 
       const filtrados = mesSeleccionado === "Año 2026"
         ? registros
@@ -165,30 +180,19 @@ const Inventario: React.FC = () => {
 
       const cantidadPosiciones = filtrados.filter((r) => r.almacen).length;
       const inventariosDiferencia = filtrados.filter((r) => r.resultado !== 0).length;
+      const inventariosOkRaw = filtrados.filter((r) => r.resultado === 0).length;
 
-      let inventariosOkRaw = filtrados.filter((r) => r.resultado === 0).length;
       const inventariosOk =
         mesSeleccionado === "Año 2026" && inventariosOkRaw > 0
           ? inventariosOkRaw - 1
           : inventariosOkRaw;
 
+      setResumenInventarios({ cantidadPosiciones, inventariosDiferencia, inventariosOk });
+
       if (registros.length > 0) {
         const ultimaRaw = registros[registros.length - 2].fecha;
-        let fechaObj: Date;
-        if (typeof ultimaRaw === "number") {
-          fechaObj = excelDateToJSDate(ultimaRaw);
-        } else {
-          fechaObj = new Date(ultimaRaw);
-        }
-        const ultimaFormateada = new Intl.DateTimeFormat("es-AR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }).format(fechaObj);
-        setUltimaFecha(ultimaFormateada);
+        setUltimaFecha(safeFormatFecha(ultimaRaw));
       }
-
-      setResumenInventarios({ cantidadPosiciones, inventariosDiferencia, inventariosOk });
     };
 
     fetchExcelInventarios();
@@ -203,8 +207,35 @@ const Inventario: React.FC = () => {
   const countDiferencia = useCountUp(resumenInventarios.inventariosDiferencia);
   const countOk = useCountUp(resumenInventarios.inventariosOk);
 
-  const pieUbicaciones = { labels: ["Pallet (P)", "Estantería (E)"], datasets: [{ data: [resumenUbicaciones.ubicacionesPallet, resumenUbicaciones.ubicacionesEstanteria], backgroundColor: ["#2b8179ff", "#87e2e7ff"], borderColor: ["#fff", "#fff"], borderWidth: 2 }] };
-  const pieInventarios = { labels: ["Ok", "Con diferencia"], datasets: [{ data: [resumenInventarios.inventariosOk, resumenInventarios.inventariosDiferencia], backgroundColor: ["#28a745", "#dc3545"], borderColor: ["#fff", "#fff"], borderWidth: 2 }] };
+  const pieUbicaciones = {
+    labels: ["Pallet (P)", "Estantería (E)"],
+    datasets: [
+      {
+        data: [
+          resumenUbicaciones.ubicacionesPallet,
+          resumenUbicaciones.ubicacionesEstanteria,
+        ],
+        backgroundColor: ["#2b8179ff", "#87e2e7ff"],
+        borderColor: ["#fff", "#fff"],
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const pieInventarios = {
+    labels: ["Ok", "Con diferencia"],
+    datasets: [
+      {
+        data: [
+          resumenInventarios.inventariosOk,
+          resumenInventarios.inventariosDiferencia,
+        ],
+        backgroundColor: ["#28a745", "#dc3545"],
+        borderColor: ["#fff", "#fff"],
+        borderWidth: 2,
+      },
+    ],
+  };
 
   return (
     <div className={styles.container}>
@@ -216,9 +247,18 @@ const Inventario: React.FC = () => {
       {/* Grilla Ubicaciones */}
       <div className={styles.layout}>
         <div className={styles.grid}>
-          <p>Cantidad de ubicaciones: <span className={styles.numero}>{countUbicaciones}</span></p>
-          <p>Ubicaciones de Pallet: <span className={styles.numero}>{countPallet}</span></p>
-          <p>Ubicaciones Estanteria: <span className={styles.numero}>{countEstanteria}</span></p>
+          <p>
+            Cantidad de ubicaciones:{" "}
+            <span className={styles.numero}>{countUbicaciones}</span>
+          </p>
+          <p>
+            Ubicaciones de Pallet:{" "}
+            <span className={styles.numero}>{countPallet}</span>
+          </p>
+          <p>
+            Ubicaciones Estanteria:{" "}
+            <span className={styles.numero}>{countEstanteria}</span>
+          </p>
         </div>
         <div style={{ width: "250px", height: "250px" }}>
           <Pie data={pieUbicaciones} />
@@ -228,15 +268,32 @@ const Inventario: React.FC = () => {
       {/* Grilla Inventarios */}
       <div className={styles.layout}>
         <div className={styles.grid}>
-          <p>Posiciones inventariadas: <span className={styles.numero}>{countPosiciones}</span></p>
-          <p>Inventarios Ok:  
+          <p>
+            Posiciones inventariadas:{" "}
+            <span className={styles.numero}>{countPosiciones}</span>
+          </p>
+          <p>
+            Inventarios Ok:{" "}
             <span className={styles.numero}>
-              {countOk} ({(((resumenInventarios.inventariosOk) / resumenInventarios.cantidadPosiciones) * 100).toFixed(2)}%)
+              {countOk} (
+              {(
+                (resumenInventarios.inventariosOk /
+                  resumenInventarios.cantidadPosiciones) *
+                100
+              ).toFixed(2)}
+              %)
             </span>
           </p>
-          <p>Inventarios con diferencia: 
+          <p>
+            Inventarios con diferencia:{" "}
             <span className={styles.numero}>
-              {countDiferencia} ({((resumenInventarios.inventariosDiferencia / resumenInventarios.cantidadPosiciones) * 100).toFixed(2)}%)
+              {countDiferencia} (
+              {(
+                (resumenInventarios.inventariosDiferencia /
+                  resumenInventarios.cantidadPosiciones) *
+                100
+              ).toFixed(2)}
+              %)
             </span>
           </p>
         </div>
@@ -252,25 +309,24 @@ const Inventario: React.FC = () => {
               onChange={(e) => setMesSeleccionado(e.target.value)}
             >
               {meses.map((mes) => (
-                <option key={mes} value={mes}>{mes}</option>
+                <option key={mes} value={mes}>
+                  {mes}
+                </option>
               ))}
             </select>
-          
-          <div style={{ marginLeft: "20px", marginTop: "10px" }}>
-            <button
-              className={styles.InventoryDetailButton}
-              onClick={() =>
-                navigate("/InventoryDetail", { state: { registros: registrosFiltrados } })
-              }
-            >
-              Ver detalles
-            </button>
-          </div>
-            
-          </div>
 
+            <div style={{ marginLeft: "20px", marginTop: "10px" }}>
+              <button
+                className={styles.InventoryDetailButton}
+                onClick={() =>
+                  navigate("/InventoryDetail", { state: { registros: registrosFiltrados } })
+                }
+              >
+                Ver detalles
+              </button>
+            </div>
+          </div>
         </div>
-         
       </div>
 
       <div className={styles.InventoryLabel}>
