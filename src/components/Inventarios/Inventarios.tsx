@@ -1,204 +1,62 @@
 import React, { useEffect, useState } from "react";
-import * as XLSX from "xlsx";
 import LogoOcasa from "../LogoOcasa/LogoOcasa";
 import styles from "./Inventarios.module.css";
-import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { useCountUp } from "../../components/Inventarios/hooks/useCountUp";
+import { getResumenUbicaciones, getResumenInventarios } from "../../services/excelService";
+import UbicacionesGrid from "./UbicacionesGrid";
+import InventariosGrid from "./InventariosGrid";
+
 ChartJS.register(ArcElement, Tooltip, Legend);
-import { useNavigate } from "react-router-dom";
-
-// Interfaces
-interface RegistroUbicacion {
-  tipoAlmacen: string;
-  ubicacion: string;
-  tipoUbicacion: string;
-  material: string;
-}
-
-interface RegistroInventario {
-  fecha: string | number;
-  almacen: string;
-  ubicacion: string;
-  material: string;
-  nombre: string;
-  totalTeorico: number;
-  contado: number;
-  resultado: number;
-}
-
-// Hook de animación
-const useCountUp = (end: number, duration: number = 2500) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const increment = Math.ceil(end / (duration / 16)); // 16ms ≈ 60fps
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(start);
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [end, duration]);
-
-  return count;
-};
-
-// Funciones auxiliares para fechas
-const excelDateToJSDate = (serial: number): Date => {
-  const utc_days = Math.floor(serial - 25569);
-  const utc_value = (utc_days + 1) * 86400;
-  return new Date(utc_value * 1000);
-};
-
-const safeFormatFecha = (fecha: string | number): string => {
-  let fechaObj: Date;
-  if (typeof fecha === "number" && !isNaN(fecha)) {
-    fechaObj = excelDateToJSDate(fecha);
-  } else {
-    const parsed = new Date(fecha);
-    fechaObj = isNaN(parsed.getTime()) ? new Date() : parsed;
-  }
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(fechaObj);
-};
-
-const obtenerMes = (fecha: string | number): number => {
-  let fechaObj: Date;
-  if (typeof fecha === "number" && !isNaN(fecha)) {
-    fechaObj = excelDateToJSDate(fecha);
-  } else {
-    fechaObj = new Date(fecha);
-  }
-  return fechaObj.getMonth(); // 0 = enero
-};
 
 const Inventario: React.FC = () => {
-  const navigate = useNavigate();
+  
+const meses = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
+  const [mesesSeleccionados, setMesesSeleccionados] = useState<string[]>(["Enero"]);
 
-  const [registrosFiltrados, setRegistrosFiltrados] = useState<RegistroInventario[]>([]);
-
-  // Estado para ubicaciones.xlsx
   const [resumenUbicaciones, setResumenUbicaciones] = useState({
     cantidadUbicaciones: 0,
     ubicacionesPallet: 0,
     ubicacionesEstanteria: 0,
   });
 
-  // Estado para Ylx22.xlsx
   const [resumenInventarios, setResumenInventarios] = useState({
     cantidadPosiciones: 0,
     inventariosDiferencia: 0,
     inventariosOk: 0,
   });
 
+  const [registrosFiltrados, setRegistrosFiltrados] = useState<any[]>([]);
   const [ultimaFecha, setUltimaFecha] = useState<string>("");
 
-  // Filtro de meses
-  const meses = [
-    "Año 2026",
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-  ];
-  const [mesSeleccionado, setMesSeleccionado] = useState("Año 2026");
-
-  // Cargar ubicaciones.xlsx
+  // ✅ Cargar resumen de ubicaciones
   useEffect(() => {
-    const fetchExcelUbicaciones = async () => {
-      const response = await fetch("/data/ubicaciones.xlsx");
-      const arrayBuffer = await response.arrayBuffer();
-      const workbook = XLSX.read(arrayBuffer, { type: "array" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-      const registros: RegistroUbicacion[] = jsonData.slice(1).map((row) => ({
-        tipoAlmacen: row[1],
-        ubicacion: row[2],
-        tipoUbicacion: row[3],
-        material: row[7],
-      }));
-
-      const uniqueUbicaciones = new Map<string, RegistroUbicacion>();
-      registros.forEach((r) => {
-        if (r.ubicacion && !uniqueUbicaciones.has(r.ubicacion)) {
-          uniqueUbicaciones.set(r.ubicacion, r);
-        }
-      });
-
-      const finalData = Array.from(uniqueUbicaciones.values());
-
-      const cantidadUbicaciones = finalData.length;
-      const ubicacionesPallet = finalData.filter((r) =>
-        r.tipoUbicacion?.toUpperCase().startsWith("P")
-      ).length;
-      const ubicacionesEstanteria = finalData.filter((r) =>
-        r.tipoUbicacion?.toUpperCase().startsWith("E")
-      ).length;
-
-      setResumenUbicaciones({ cantidadUbicaciones, ubicacionesPallet, ubicacionesEstanteria });
+    const fetchUbicaciones = async () => {
+      const resumen = await getResumenUbicaciones();
+      setResumenUbicaciones(resumen);
     };
-
-    fetchExcelUbicaciones();
+    fetchUbicaciones();
   }, []);
 
-  // Cargar Ylx22.xlsx
-  useEffect(() => {
-    const fetchExcelInventarios = async () => {
-      const response = await fetch("/data/Ylx22.xlsx");
-      const arrayBuffer = await response.arrayBuffer();
-      const workbook = XLSX.read(arrayBuffer, { type: "array" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+  // ✅ Cargar resumen de inventarios
+useEffect(() => {
+  const fetchInventarios = async () => {
+    const resumen = await getResumenInventarios(mesesSeleccionados, meses);
+    setResumenInventarios({
+      cantidadPosiciones: resumen.cantidadPosiciones,
+      inventariosDiferencia: resumen.inventariosDiferencia,
+      inventariosOk: resumen.inventariosOk,
+    });
+    setRegistrosFiltrados(resumen.registrosFiltrados);
+    setUltimaFecha(resumen.ultimaFecha);
+  };
+  fetchInventarios();
+}, [mesesSeleccionados]);
 
-      const registros: RegistroInventario[] = jsonData.slice(1).map((row) => ({
-        fecha: row[0],
-        almacen: row[6],
-        ubicacion: row[8],
-        material: row[9],
-        nombre: row[10],
-        totalTeorico: Number(row[12]) || 0,
-        contado: Number(row[13]) || 0,
-        resultado: parseFloat(row[14]) || 0,
-      }));
-
-      registros.forEach((r) => {
-        if (!r.resultado) r.resultado = 0;
-      });
-
-      const filtrados = mesSeleccionado === "Año 2026"
-        ? registros
-        : registros.filter((r) => obtenerMes(r.fecha) === meses.indexOf(mesSeleccionado) - 1);
-
-      setRegistrosFiltrados(filtrados);
-
-      const cantidadPosiciones = filtrados.filter((r) => r.almacen).length;
-      const inventariosDiferencia = filtrados.filter((r) => r.resultado !== 0).length;
-      const inventariosOkRaw = filtrados.filter((r) => r.resultado === 0).length;
-
-      const inventariosOk =
-        mesSeleccionado === "Año 2026" && inventariosOkRaw > 0
-          ? inventariosOkRaw - 1
-          : inventariosOkRaw;
-
-      setResumenInventarios({ cantidadPosiciones, inventariosDiferencia, inventariosOk });
-
-      if (registros.length > 0) {
-        const ultimaRaw = registros[registros.length - 2].fecha;
-        setUltimaFecha(safeFormatFecha(ultimaRaw));
-      }
-    };
-
-    fetchExcelInventarios();
-  }, [mesSeleccionado]);
-
-  // Animaciones
+  // ✅ Animaciones
   const countUbicaciones = useCountUp(resumenUbicaciones.cantidadUbicaciones);
   const countPallet = useCountUp(resumenUbicaciones.ubicacionesPallet);
   const countEstanteria = useCountUp(resumenUbicaciones.ubicacionesEstanteria);
@@ -207,6 +65,7 @@ const Inventario: React.FC = () => {
   const countDiferencia = useCountUp(resumenInventarios.inventariosDiferencia);
   const countOk = useCountUp(resumenInventarios.inventariosOk);
 
+  // ✅ Datos para los gráficos
   const pieUbicaciones = {
     labels: ["Pallet (P)", "Estantería (E)"],
     datasets: [
@@ -244,94 +103,27 @@ const Inventario: React.FC = () => {
         <LogoOcasa />
       </div>
 
-      {/* Grilla Ubicaciones */}
-      <div className={styles.layout}>
-        <div className={styles.grid}>
-          <p>
-            Cantidad de ubicaciones:{" "}
-            <span className={styles.numero}>{countUbicaciones}</span>
-          </p>
-          <p>
-            Ubicaciones de Pallet:{" "}
-            <span className={styles.numero}>{countPallet}</span>
-          </p>
-          <p>
-            Ubicaciones Estanteria:{" "}
-            <span className={styles.numero}>{countEstanteria}</span>
-          </p>
-        </div>
-        <div style={{ width: "250px", height: "250px" }}>
-          <Pie data={pieUbicaciones} />
-        </div>
-      </div>
+      {/* Grilla Ubicaciones modularizada */}
+      <UbicacionesGrid
+        countUbicaciones={countUbicaciones}
+        countPallet={countPallet}
+        countEstanteria={countEstanteria}
+        pieUbicaciones={pieUbicaciones}
+      />
 
-      {/* Grilla Inventarios */}
-      <div className={styles.layout}>
-        <div className={styles.grid}>
-          <p>
-            Posiciones inventariadas:{" "}
-            <span className={styles.numero}>{countPosiciones}</span>
-          </p>
-          <p>
-            Inventarios Ok:{" "}
-            <span className={styles.numero}>
-              {countOk} (
-              {(
-                (resumenInventarios.inventariosOk /
-                  resumenInventarios.cantidadPosiciones) *
-                100
-              ).toFixed(2)}
-              %)
-            </span>
-          </p>
-          <p>
-            Inventarios con diferencia:{" "}
-            <span className={styles.numero}>
-              {countDiferencia} (
-              {(
-                (resumenInventarios.inventariosDiferencia /
-                  resumenInventarios.cantidadPosiciones) *
-                100
-              ).toFixed(2)}
-              %)
-            </span>
-          </p>
-        </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ width: "250px", height: "250px" }}>
-            <Pie data={pieInventarios} />
-          </div>
-          <div style={{ marginLeft: "20px" }}>
-            <label className={styles.InventoryLabel}>Visualizar: </label>
-            <select
-              className={styles.InventorySelect}
-              value={mesSeleccionado}
-              onChange={(e) => setMesSeleccionado(e.target.value)}
-            >
-              {meses.map((mes) => (
-                <option key={mes} value={mes}>
-                  {mes}
-                </option>
-              ))}
-            </select>
-
-            <div style={{ marginLeft: "20px", marginTop: "10px" }}>
-              <button
-                className={styles.InventoryDetailButton}
-                onClick={() =>
-                  navigate("/InventoryDetail", { state: { registros: registrosFiltrados } })
-                }
-              >
-                Ver detalles
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.InventoryLabel}>
-        Última actualización: {ultimaFecha}
-      </div>
+      {/* Grilla Inventarios modularizada */}
+      <InventariosGrid
+        countPosiciones={countPosiciones}
+        countOk={countOk}
+        countDiferencia={countDiferencia}
+        resumenInventarios={resumenInventarios}
+        pieInventarios={pieInventarios}
+        meses={meses}
+        mesesSeleccionados={mesesSeleccionados}
+        setMesesSeleccionados={setMesesSeleccionados}
+        registrosFiltrados={registrosFiltrados}
+        ultimaFecha={ultimaFecha}
+      />
     </div>
   );
 };
