@@ -1,11 +1,11 @@
 // src/services/excelService.ts
 import * as XLSX from "xlsx";
-import { safeFormatFecha, obtenerMes } from "../utils/dateUtils";
+import { safeFormatFecha, excelDateToJSDate } from "../utils/dateUtils";
 
 export interface ResumenUbicaciones {
   cantidadUbicaciones: number;
-  ubicacionesPallet: number;
-  ubicacionesEstanteria: number;
+  posicionesInventariadas: number;
+  posicionesSinInventariar: number;
 }
 
 export interface ResumenInventarios {
@@ -16,8 +16,19 @@ export interface ResumenInventarios {
   registrosFiltrados: any[];
 }
 
-// ✅ Procesar ubicaciones.xlsx y devolver resumen
-export const getResumenUbicaciones = async (): Promise<ResumenUbicaciones> => {
+// ✅ Array fijo de meses
+export const nombreMeses = [
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+];
+
+export const obtenerMes = (fechaExcel: number | string): number => {
+  const fecha = excelDateToJSDate(fechaExcel);
+  return fecha.getMonth();
+};
+
+// ✅ Cargar ubicaciones únicas (columna B = Tipo almacén)
+export const loadUbicaciones = async (): Promise<string[]> => {
   const response = await fetch("/data/ubicaciones.xlsx");
   const arrayBuffer = await response.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
@@ -25,36 +36,26 @@ export const getResumenUbicaciones = async (): Promise<ResumenUbicaciones> => {
   const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
   const registros = jsonData.slice(1).map((row) => ({
-    tipoAlmacen: row[1],
-    ubicacion: row[2],
-    tipoUbicacion: row[3],
-    material: row[7],
+    tipoAlmacen: row[1], // columna B
+    ubicacion: row[2],   // columna C
   }));
 
-  const uniqueUbicaciones = new Map<string, any>();
+  const uniqueUbicaciones = new Map<string, string>();
   registros.forEach((r) => {
     if (r.ubicacion && !uniqueUbicaciones.has(r.ubicacion)) {
-      uniqueUbicaciones.set(r.ubicacion, r);
+      uniqueUbicaciones.set(r.ubicacion, r.tipoAlmacen);
     }
   });
 
-  const finalData = Array.from(uniqueUbicaciones.values());
-  const cantidadUbicaciones = finalData.length;
-  const ubicacionesPallet = finalData.filter((r) =>
-    r.tipoUbicacion?.toUpperCase().startsWith("P")
-  ).length;
-  const ubicacionesEstanteria = finalData.filter((r) =>
-    r.tipoUbicacion?.toUpperCase().startsWith("E")
-  ).length;
-
-  return { cantidadUbicaciones, ubicacionesPallet, ubicacionesEstanteria };
+  return Array.from(uniqueUbicaciones.keys()); // lista de ubicaciones únicas
 };
 
-// ✅ Procesar Ylx22.xlsx y devolver resumen (multi-mes)
+// ✅ Procesar inventarios y calcular posiciones inventariadas vs sin inventariar
 export const getResumenInventarios = async (
   mesesSeleccionados: string[],
-  meses: string[]
-): Promise<ResumenInventarios> => {
+  meses: string[],
+  ubicacionesUnicas: string[]
+): Promise<{ resumenInventarios: ResumenInventarios; resumenUbicaciones: ResumenUbicaciones }> => {
   const response = await fetch("/data/Ylx22.xlsx");
   const arrayBuffer = await response.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
@@ -76,27 +77,40 @@ export const getResumenInventarios = async (
     if (!r.resultado) r.resultado = 0;
   });
 
-  // ✅ Filtrado correcto por múltiples meses
+  // Filtrar por meses seleccionados
   const filtrados = registros.filter((r) =>
     mesesSeleccionados.some(
-      (mes) => obtenerMes(r.fecha) === meses.indexOf(mes)
+      (mes) => obtenerMes(r.fecha) === nombreMeses.indexOf(mes)
     )
   );
 
+  // Calcular inventarios
   const cantidadPosiciones = filtrados.filter((r) => r.almacen).length;
   const inventariosDiferencia = filtrados.filter((r) => r.resultado !== 0).length;
-  const inventariosOkRaw = filtrados.filter((r) => r.resultado === 0).length;
-
-  const inventariosOk = inventariosOkRaw;
+  const inventariosOk = filtrados.filter((r) => r.resultado === 0).length;
 
   const ultimaFecha =
     registros.length > 0 ? safeFormatFecha(registros[registros.length - 2].fecha) : "";
 
+  // ✅ Calcular posiciones inventariadas vs sin inventariar
+  const ubicacionesInventariadas = new Set(
+    filtrados.map((r) => r.ubicacion).filter((u) => u)
+  );
+  const posicionesInventariadas = ubicacionesInventariadas.size;
+  const posicionesSinInventariar = ubicacionesUnicas.length - posicionesInventariadas;
+
   return {
-    cantidadPosiciones,
-    inventariosDiferencia,
-    inventariosOk,
-    ultimaFecha,
-    registrosFiltrados: filtrados,
+    resumenInventarios: {
+      cantidadPosiciones,
+      inventariosDiferencia,
+      inventariosOk,
+      ultimaFecha,
+      registrosFiltrados: filtrados,
+    },
+    resumenUbicaciones: {
+      cantidadUbicaciones: ubicacionesUnicas.length,
+      posicionesInventariadas,
+      posicionesSinInventariar,
+    },
   };
 };

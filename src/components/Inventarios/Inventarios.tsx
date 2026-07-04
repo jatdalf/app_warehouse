@@ -3,24 +3,25 @@ import LogoOcasa from "../LogoOcasa/LogoOcasa";
 import styles from "./Inventarios.module.css";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useCountUp } from "../../components/Inventarios/hooks/useCountUp";
-import { getResumenUbicaciones, getResumenInventarios } from "../../services/excelService";
+import { loadUbicaciones, getResumenInventarios } from "../../services/excelService";
 import UbicacionesGrid from "./UbicacionesGrid";
 import InventariosGrid from "./InventariosGrid";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Inventario: React.FC = () => {
-  
-const meses = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-];
+  const meses = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+
+  // Estado inicial → Enero seleccionado
   const [mesesSeleccionados, setMesesSeleccionados] = useState<string[]>(["Enero"]);
 
   const [resumenUbicaciones, setResumenUbicaciones] = useState({
     cantidadUbicaciones: 0,
-    ubicacionesPallet: 0,
-    ubicacionesEstanteria: 0,
+    posicionesInventariadas: 0,
+    posicionesSinInventariar: 0,
   });
 
   const [resumenInventarios, setResumenInventarios] = useState({
@@ -32,34 +33,49 @@ const meses = [
   const [registrosFiltrados, setRegistrosFiltrados] = useState<any[]>([]);
   const [ultimaFecha, setUltimaFecha] = useState<string>("");
 
-  // ✅ Cargar resumen de ubicaciones
+  const [ubicacionesUnicas, setUbicacionesUnicas] = useState<string[]>([]);
+
+  // ✅ Cargar ubicaciones únicas
   useEffect(() => {
     const fetchUbicaciones = async () => {
-      const resumen = await getResumenUbicaciones();
-      setResumenUbicaciones(resumen);
+      const ubicaciones = await loadUbicaciones();
+      setUbicacionesUnicas(ubicaciones);
+      setResumenUbicaciones((prev) => ({
+        ...prev,
+        cantidadUbicaciones: ubicaciones.length,
+      }));
     };
     fetchUbicaciones();
   }, []);
 
-  // ✅ Cargar resumen de inventarios
-useEffect(() => {
-  const fetchInventarios = async () => {
-    const resumen = await getResumenInventarios(mesesSeleccionados, meses);
-    setResumenInventarios({
-      cantidadPosiciones: resumen.cantidadPosiciones,
-      inventariosDiferencia: resumen.inventariosDiferencia,
-      inventariosOk: resumen.inventariosOk,
-    });
-    setRegistrosFiltrados(resumen.registrosFiltrados);
-    setUltimaFecha(resumen.ultimaFecha);
-  };
-  fetchInventarios();
-}, [mesesSeleccionados]);
+  // ✅ Cargar inventarios y calcular posiciones inventariadas vs sin inventariar
+  useEffect(() => {
+    const fetchInventarios = async () => {
+      if (ubicacionesUnicas.length === 0) return;
+
+      const { resumenInventarios, resumenUbicaciones } = await getResumenInventarios(
+        mesesSeleccionados,
+        meses,
+        ubicacionesUnicas
+      );
+
+      setResumenInventarios({
+        cantidadPosiciones: resumenInventarios.cantidadPosiciones,
+        inventariosDiferencia: resumenInventarios.inventariosDiferencia,
+        inventariosOk: resumenInventarios.inventariosOk,
+      });
+      setRegistrosFiltrados(resumenInventarios.registrosFiltrados);
+      setUltimaFecha(resumenInventarios.ultimaFecha);
+
+      setResumenUbicaciones(resumenUbicaciones);
+    };
+    fetchInventarios();
+  }, [mesesSeleccionados, ubicacionesUnicas]);
 
   // ✅ Animaciones
   const countUbicaciones = useCountUp(resumenUbicaciones.cantidadUbicaciones);
-  const countPallet = useCountUp(resumenUbicaciones.ubicacionesPallet);
-  const countEstanteria = useCountUp(resumenUbicaciones.ubicacionesEstanteria);
+  const countInventariadas = useCountUp(resumenUbicaciones.posicionesInventariadas);
+  const countSinInventariar = useCountUp(resumenUbicaciones.posicionesSinInventariar);
 
   const countPosiciones = useCountUp(resumenInventarios.cantidadPosiciones);
   const countDiferencia = useCountUp(resumenInventarios.inventariosDiferencia);
@@ -67,14 +83,14 @@ useEffect(() => {
 
   // ✅ Datos para los gráficos
   const pieUbicaciones = {
-    labels: ["Pallet (P)", "Estantería (E)"],
+    labels: ["Con inventario", "Sin inventariar"],
     datasets: [
       {
         data: [
-          resumenUbicaciones.ubicacionesPallet,
-          resumenUbicaciones.ubicacionesEstanteria,
+          resumenUbicaciones.posicionesInventariadas,
+          resumenUbicaciones.posicionesSinInventariar,
         ],
-        backgroundColor: ["#2b8179ff", "#87e2e7ff"],
+        backgroundColor: ["rgb(35, 200, 183)", "rgb(241, 232, 132)"],
         borderColor: ["#fff", "#fff"],
         borderWidth: 2,
       },
@@ -106,8 +122,8 @@ useEffect(() => {
       {/* Grilla Ubicaciones modularizada */}
       <UbicacionesGrid
         countUbicaciones={countUbicaciones}
-        countPallet={countPallet}
-        countEstanteria={countEstanteria}
+        countInventariadas={countInventariadas}
+        countSinInventariar={countSinInventariar}
         pieUbicaciones={pieUbicaciones}
       />
 
@@ -129,3 +145,4 @@ useEffect(() => {
 };
 
 export default Inventario;
+
