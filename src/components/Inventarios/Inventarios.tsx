@@ -55,7 +55,6 @@ const Inventario: React.FC = () => {
 
       const { resumenInventarios, resumenUbicaciones } = await getResumenInventarios(
         mesesSeleccionados,
-        meses,
         ubicacionesUnicas
       );
 
@@ -145,4 +144,3 @@ const Inventario: React.FC = () => {
 };
 
 export default Inventario;
-
