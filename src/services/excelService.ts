@@ -16,12 +16,13 @@ export interface ResumenInventarios {
   registrosFiltrados: any[];
 }
 
-// ✅ Array fijo de meses
+// ✅ Array fijo de nombres de meses
 export const nombreMeses = [
   "Enero","Febrero","Marzo","Abril","Mayo","Junio",
   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
 ];
 
+// ✅ Obtener índice del mes (0 = Enero, 1 = Febrero, etc.)
 export const obtenerMes = (fechaExcel: number | string): number => {
   const fecha = excelDateToJSDate(fechaExcel);
   return fecha.getMonth();
@@ -53,7 +54,6 @@ export const loadUbicaciones = async (): Promise<string[]> => {
 // ✅ Procesar inventarios y calcular posiciones inventariadas vs sin inventariar
 export const getResumenInventarios = async (
   mesesSeleccionados: string[],
-  meses: string[],
   ubicacionesUnicas: string[]
 ): Promise<{ resumenInventarios: ResumenInventarios; resumenUbicaciones: ResumenUbicaciones }> => {
   const response = await fetch("/data/Ylx22.xlsx");
@@ -77,7 +77,7 @@ export const getResumenInventarios = async (
     if (!r.resultado) r.resultado = 0;
   });
 
-  // Filtrar por meses seleccionados
+  // ✅ Filtrar usando array fijo de meses
   const filtrados = registros.filter((r) =>
     mesesSeleccionados.some(
       (mes) => obtenerMes(r.fecha) === nombreMeses.indexOf(mes)
