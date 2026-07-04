@@ -5,17 +5,37 @@ import styles from "./Inventarios.module.css";
 
 interface UbicacionesGridProps {
   countUbicaciones: number;
-  countPallet: number;
-  countEstanteria: number;
+  countInventariadas: number;
+  countSinInventariar: number;
   pieUbicaciones: any;
 }
 
 const UbicacionesGrid: React.FC<UbicacionesGridProps> = ({
   countUbicaciones,
-  countPallet,
-  countEstanteria,
+  countInventariadas,
+  countSinInventariar,
   pieUbicaciones,
 }) => {
+  // ✅ Opciones con tooltip personalizado
+  const optionsPieUbicaciones = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            const dataset = context.dataset;
+            const total = dataset.data.reduce(
+              (acc: number, val: number) => acc + val,
+              0
+            );
+            const value = dataset.data[context.dataIndex];
+            const percentage = ((value / total) * 100).toFixed(2);
+            return `${context.label}: ${value} (${percentage}%)`;
+          },
+        },
+      },
+    },
+  };
+
   return (
     <div className={styles.layout}>
       <div className={styles.grid}>
@@ -24,16 +44,17 @@ const UbicacionesGrid: React.FC<UbicacionesGridProps> = ({
           <span className={styles.numero}>{countUbicaciones}</span>
         </p>
         <p>
-          Ubicaciones de Pallet:{" "}
-          <span className={styles.numero}>{countPallet}</span>
+          Posiciones inventariadas:{" "}
+          <span className={styles.numero}>{countInventariadas}</span>
         </p>
         <p>
-          Ubicaciones Estanteria:{" "}
-          <span className={styles.numero}>{countEstanteria}</span>
+          Posiciones sin inventariar:{" "}
+          <span className={styles.numero}>{countSinInventariar}</span>
         </p>
       </div>
+
       <div style={{ width: "250px", height: "250px" }}>
-        <Pie data={pieUbicaciones} />
+        <Pie data={pieUbicaciones} options={optionsPieUbicaciones} />
       </div>
     </div>
   );

@@ -1,45 +1,39 @@
 // src/utils/dateUtils.ts
 
-/**
- * Convierte un serial de Excel a objeto Date.
- * Excel cuenta días desde 1/1/1900, con el bug del año bisiesto 1900.
- */
-export const excelDateToJSDate = (serial: number): Date => {
-  const utc_days = Math.floor(serial - 25569);
-  const utc_value = (utc_days + 1) * 86400;
-  return new Date(utc_value * 1000);
-};
+// ✅ Array fijo de nombres de meses
+export const nombreMeses = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
 
-/**
- * Formatea una fecha (serial o string) a dd/mm/yyyy.
- * Si la fecha es inválida, devuelve la fecha actual.
- */
-export const safeFormatFecha = (fecha: string | number): string => {
-  let fechaObj: Date;
-
-  if (typeof fecha === "number" && !isNaN(fecha)) {
-    fechaObj = excelDateToJSDate(fecha);
-  } else {
-    const parsed = new Date(fecha);
-    fechaObj = isNaN(parsed.getTime()) ? new Date() : parsed;
+// ✅ Convertir fecha de Excel (serial number) a objeto Date
+export const excelDateToJSDate = (excelDate: number | string): Date => {
+  if (typeof excelDate === "string") {
+    // Si ya viene como string, intentamos parsear directamente
+    return new Date(excelDate);
   }
 
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(fechaObj);
+  // Excel cuenta días desde 1900-01-01 (con bug de 1900 como año bisiesto)
+  const epoch = new Date(Date.UTC(1899, 11, 30));
+  const jsDate = new Date(epoch.getTime() + excelDate * 24 * 60 * 60 * 1000);
+  return jsDate;
 };
 
-/**
- * Devuelve el mes (0 = enero) de una fecha serial o string.
- */
-export const obtenerMes = (fecha: string | number): number => {
-  let fechaObj: Date;
-  if (typeof fecha === "number" && !isNaN(fecha)) {
-    fechaObj = excelDateToJSDate(fecha);
-  } else {
-    fechaObj = new Date(fecha);
+// ✅ Obtener índice del mes (0 = Enero, 1 = Febrero, etc.)
+export const obtenerMes = (fechaExcel: number | string): number => {
+  const fecha = excelDateToJSDate(fechaExcel);
+  return fecha.getMonth();
+};
+
+// ✅ Formatear fecha segura (dd/mm/yyyy)
+export const safeFormatFecha = (fechaExcel: number | string): string => {
+  try {
+    const fecha = excelDateToJSDate(fechaExcel);
+    const dia = fecha.getDate().toString().padStart(2, "0");
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
+  } catch {
+    return "";
   }
-  return fechaObj.getMonth();
 };

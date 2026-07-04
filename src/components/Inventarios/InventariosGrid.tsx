@@ -39,7 +39,7 @@ const InventariosGrid: React.FC<InventariosGridProps> = ({
     <div className={styles.layout}>
       <div className={styles.grid}>
         <p>
-          Posiciones inventariadas:{" "}
+          Inventarios Realizados:{" "}
           <span className={styles.numero}>{countPosiciones}</span>
         </p>
         <p>
