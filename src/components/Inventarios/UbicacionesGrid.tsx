@@ -1,6 +1,7 @@
 // src/components/Inventarios/UbicacionesGrid.tsx
 import React from "react";
 import { Pie } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom";
 import styles from "./Inventarios.module.css";
 
 interface UbicacionesGridProps {
@@ -8,6 +9,7 @@ interface UbicacionesGridProps {
   countInventariadas: number;
   countSinInventariar: number;
   pieUbicaciones: any;
+  ubicacionesSinInventariar: { tipoAlmacen: string; ubicacion: string }[];
 }
 
 const UbicacionesGrid: React.FC<UbicacionesGridProps> = ({
@@ -15,8 +17,10 @@ const UbicacionesGrid: React.FC<UbicacionesGridProps> = ({
   countInventariadas,
   countSinInventariar,
   pieUbicaciones,
+  ubicacionesSinInventariar,
 }) => {
-  // ✅ Opciones con tooltip personalizado
+  const navigate = useNavigate();
+
   const optionsPieUbicaciones = {
     plugins: {
       tooltip: {
@@ -33,6 +37,17 @@ const UbicacionesGrid: React.FC<UbicacionesGridProps> = ({
           },
         },
       },
+    },
+    onClick: (_event: any, elements: any[]) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        const label = pieUbicaciones.labels[index];
+        if (label === "Sin inventariar") {
+          navigate("/UbicacionesDetail", {
+            state: { registros: ubicacionesSinInventariar },
+          });
+        }
+      }
     },
   };
 

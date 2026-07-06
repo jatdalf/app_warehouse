@@ -6,7 +6,7 @@ import GuiaYwm005 from "./components/GuiaYwm005/GuiaYwm005";
 import Traslados from "./components/Traslados/Traslados";
 import Inventarios from "./components/Inventarios/Inventarios";
 import InventoryDetail from "./components/InventoryDetail/InventoryDetail";
-
+import UbicacionesDetail from "./components/Inventarios/UbicacionesDetail";
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
         <Route path="/Traslados" element={<Traslados />} />
         <Route path="/Inventarios" element={<Inventarios />} />
         <Route path="/InventoryDetail" element={<InventoryDetail />} />
+        <Route path="/UbicacionesDetail" element={<UbicacionesDetail />} />
       </Routes>
     </Router>
   );

@@ -11,17 +11,18 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Inventario: React.FC = () => {
   const meses = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+    "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
   ];
 
-  // Estado inicial → Enero seleccionado
   const [mesesSeleccionados, setMesesSeleccionados] = useState<string[]>(["Enero"]);
 
+  // ✅ Estado inicial ahora incluye listaSinInventariar
   const [resumenUbicaciones, setResumenUbicaciones] = useState({
     cantidadUbicaciones: 0,
     posicionesInventariadas: 0,
     posicionesSinInventariar: 0,
+    listaSinInventariar: [] as { tipoAlmacen: string; ubicacion: string }[],
   });
 
   const [resumenInventarios, setResumenInventarios] = useState({
@@ -33,9 +34,8 @@ const Inventario: React.FC = () => {
   const [registrosFiltrados, setRegistrosFiltrados] = useState<any[]>([]);
   const [ultimaFecha, setUltimaFecha] = useState<string>("");
 
-  const [ubicacionesUnicas, setUbicacionesUnicas] = useState<string[]>([]);
+  const [ubicacionesUnicas, setUbicacionesUnicas] = useState<{ tipoAlmacen: string; ubicacion: string }[]>([]);
 
-  // ✅ Cargar ubicaciones únicas
   useEffect(() => {
     const fetchUbicaciones = async () => {
       const ubicaciones = await loadUbicaciones();
@@ -48,7 +48,6 @@ const Inventario: React.FC = () => {
     fetchUbicaciones();
   }, []);
 
-  // ✅ Cargar inventarios y calcular posiciones inventariadas vs sin inventariar
   useEffect(() => {
     const fetchInventarios = async () => {
       if (ubicacionesUnicas.length === 0) return;
@@ -71,7 +70,6 @@ const Inventario: React.FC = () => {
     fetchInventarios();
   }, [mesesSeleccionados, ubicacionesUnicas]);
 
-  // ✅ Animaciones
   const countUbicaciones = useCountUp(resumenUbicaciones.cantidadUbicaciones);
   const countInventariadas = useCountUp(resumenUbicaciones.posicionesInventariadas);
   const countSinInventariar = useCountUp(resumenUbicaciones.posicionesSinInventariar);
@@ -80,7 +78,6 @@ const Inventario: React.FC = () => {
   const countDiferencia = useCountUp(resumenInventarios.inventariosDiferencia);
   const countOk = useCountUp(resumenInventarios.inventariosOk);
 
-  // ✅ Datos para los gráficos
   const pieUbicaciones = {
     labels: ["Con inventario", "Sin inventariar"],
     datasets: [
@@ -118,15 +115,14 @@ const Inventario: React.FC = () => {
         <LogoOcasa />
       </div>
 
-      {/* Grilla Ubicaciones modularizada */}
       <UbicacionesGrid
         countUbicaciones={countUbicaciones}
         countInventariadas={countInventariadas}
         countSinInventariar={countSinInventariar}
         pieUbicaciones={pieUbicaciones}
+        ubicacionesSinInventariar={resumenUbicaciones.listaSinInventariar}
       />
 
-      {/* Grilla Inventarios modularizada */}
       <InventariosGrid
         countPosiciones={countPosiciones}
         countOk={countOk}

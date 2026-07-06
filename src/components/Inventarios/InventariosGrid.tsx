@@ -74,35 +74,41 @@ const InventariosGrid: React.FC<InventariosGridProps> = ({
         </div>
         <div style={{ marginLeft: "20px" }}>
   <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-    <label className={styles.InventoryLabel}>Visualizar </label>
-    <select
-      multiple
-      className={styles.InventorySelect}
-      value={mesesSeleccionados}
-      onChange={(e) =>
-        setMesesSeleccionados(
-          Array.from(e.target.selectedOptions, (opt) => opt.value)
-        )
-      }
-    >
-      {meses.map((mes) => (
-        <option key={mes} value={mes}>
-          {mes}
-        </option>
-      ))}
-    </select>
+      {/* ✅ Fieldset con meses */}
+      <fieldset className={styles.fieldsetMeses}>
+        <legend className={styles.legendMeses}>Visualizar</legend>
+    
+<select
+  multiple
+  size={12}   // ✅ muestra todos los meses sin scroll
+  className={styles.InventorySelect}
+  value={mesesSeleccionados}
+  onChange={(e) =>
+    setMesesSeleccionados(
+      Array.from(e.target.selectedOptions, (opt) => opt.value)
+    )
+  }
+>
+  {meses.map((mes) => (
+    <option key={mes} value={mes}>
+      {mes}
+    </option>
+  ))}
+</select>
+
+    </fieldset>
   </div>
 
-  <div style={{ marginTop: "10px" }}>
-    <button
-      className={styles.InventoryDetailButton}
-      onClick={() =>
-        navigate("/InventoryDetail", { state: { registros: registrosFiltrados } })
-      }
-    >
-      Ver detalles
-    </button>
-  </div>
+   <div style={{ marginTop: "10px" }}>
+        <button
+          className={styles.InventoryDetailButton}
+          onClick={() =>
+            navigate("/InventoryDetail", { state: { registros: registrosFiltrados } })
+          }
+        >
+          Ver detalles
+        </button>
+      </div>
 </div>
       </div>
 

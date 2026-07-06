@@ -1,3 +1,4 @@
+/* Contenedor general */
 .container {
   display: flex;
   flex-direction: column;
@@ -5,6 +6,7 @@
   padding: 20px;
 }
 
+/* Header */
 .header {
   display: flex;
   align-items: center;
@@ -16,9 +18,10 @@
   margin: 0;
   font-weight: bold;
   color: #155724;
-  font-size: 24px; /* tamaño base */
+  font-size: 24px;
 }
 
+/* Grids (Inventarios.tsx) */
 .grid {
   background-color: #d4edda;
   padding: 10px;
@@ -31,7 +34,7 @@
   text-align: left;
   font-size: 18px;
   font-weight: bold;
-  color: rgb(0, 0, 0);
+  color: #000;
 }
 
 .numero {
@@ -39,63 +42,6 @@
   color: rgb(16, 2, 144);
   font-size: 22px;
   animation: countUp 1s ease-out forwards;
-}
-
-.InventorySelect {
-  padding: 8px 12px;
-  border: 1px solid #2b8179;
-  border-radius: 6px;
-  background-color: #f8f9fa;
-  color: #333;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  height: 230px;
-}
-
-.InventorySelect:hover {
-  border-color: #1f5f59;
-  background-color: #e9f7f6;
-}
-
-.InventorySelect:focus {
-  outline: none;
-  border-color: #2b8179;
-  box-shadow: 0 0 6px rgba(43, 129, 121, 0.4);
-}
-
-.InventoryLabel {
-  font-weight: 600;
-  margin-right: 8px;
-  color: #2b8179;
-}
-
-.InventoryDetailButton {
-  padding: 8px 16px;
-  background-color: #2b8179;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.InventoryDetailButton:hover {
-  background-color: #1f5f59;
-  transform: translateY(-2px);
-}
-
-.InventoryDetailButton:active {
-  background-color: #14504b;
-  transform: translateY(0);
-}
-
-.InventoryDetailButton:focus {
-  outline: none;
-  box-shadow: 0 0 6px rgba(43, 129, 121, 0.4);
 }
 
 @keyframes countUp {
@@ -109,48 +55,107 @@
   }
 }
 
+/* Layout para Inventarios */
 .layout {
   display: flex;
   gap: 40px;
   align-items: flex-start;
 }
 
-/* 📱 Responsive para pantallas pequeñas */
+/* Filtro UbicacionesDetail */
+.filterContainer {
+  margin-bottom: 16px;
+}
+
+.UbicacionesLabel {
+  font-weight: 600;
+  margin-right: 8px;
+  color: #2b8179;
+}
+.InventorySelect {
+  padding: 8px 12px;
+  border: 1px solid #2b8179;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 140px;   /* ✅ ancho fijo para que se vea prolijo */
+  height: auto;   /* ✅ no forzar altura */
+}
+
+.UbicacionesSelect {
+  padding: 8px 12px;
+  border: 1px solid #2b8179;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.UbicacionesSelect:hover {
+  border-color: #1f5f59;
+  background-color: #e9f7f6;
+}
+
+.UbicacionesSelect:focus {
+  outline: none;
+  border-color: #2b8179;
+  box-shadow: 0 0 6px rgba(43, 129, 121, 0.4);
+}
+
+/* Tabla UbicacionesDetail */
+.tableUbicaciones {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.tableUbicaciones thead {
+  background-color: #2b8179;
+  color: #fff;
+}
+
+.tableUbicaciones th,
+.tableUbicaciones td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.tableUbicaciones tbody tr:nth-child(odd) {
+  background-color: #e6f7ff;
+  color: #000;
+}
+
+.tableUbicaciones tbody tr:nth-child(even) {
+  background-color: #f2fbff;
+  color: #000;
+}
+
+.tableUbicaciones tbody tr:hover {
+  background-color: #d0f0f7;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .header h2 {
-    font-size: 18px; /* título más chico */
+    font-size: 18px;
   }
 
   .header img {
-    max-width: 60px; /* logo reducido */
+    max-width: 60px;
     height: auto;
   }
 
   .layout {
-    flex-direction: column; /* apilar elementos */
+    flex-direction: column;
     gap: 20px;
-    align-items: center;
-  }
-
-  /* Primer grid: solo mostrar cantidad de ubicaciones */
-  .layout:first-of-type .grid p:not(:first-child) {
-    display: none;
-  }
-
-  .layout:first-of-type .Pie {
-    display: none; /* ocultar pie chart en primer grid */
-  }
-
-  /* Segundo grid: pie debajo del grid */
-  .layout:nth-of-type(2) {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .layout:nth-of-type(2) > div {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
     align-items: center;
   }
 
@@ -161,5 +166,66 @@
 
   .numero {
     font-size: 20px;
+  }
+
+  /* Tabla responsive como tarjetas */
+  .tableUbicaciones,
+  .tableUbicaciones thead,
+  .tableUbicaciones tbody,
+  .tableUbicaciones th,
+  .tableUbicaciones td,
+  .tableUbicaciones tr {
+    display: block;
+    width: 100%;
+  }
+
+  .tableUbicaciones thead {
+    display: none;
+  }
+
+  .InventorySelect{
+    height: 300px;
+  }
+
+  .fieldsetMeses {
+  border: 2px solid #2b8179;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 16px;
+  background-color: #f8f9fa;
+}
+.legendMeses {
+  font-weight: bold;
+  color: #2b8179;
+  padding: 0 6px;
+}
+
+.mesesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+  height: 100px;
+}
+
+  .tableUbicaciones tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    padding: 10px;
+  }
+
+  .tableUbicaciones td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px;
+  }
+
+  .tableUbicaciones td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #2b8179;
   }
 }
