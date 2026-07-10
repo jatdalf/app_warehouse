@@ -1,0 +1,149 @@
+/* Contenedor general */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Header con logos */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logoLeft {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.logoRight {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.barcodeFont {
+  font-family: 'Libre Barcode 39', cursive;
+  font-size: 28px;
+}
+
+.gridWrapperPicking {
+  width: 98%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 0 auto;
+  margin-top: 10%;
+}
+
+.pickingHeader {
+  margin: -50px 0;
+  text-align: center;
+}
+
+.pickingHeader h2 {
+  margin-bottom: 8px;
+  color: #2b8179;
+}
+
+.stDetailInline {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  font-size: 18px;
+  margin-top: 8px;
+  color: #333;
+}
+
+.stDetailInline strong {
+  font-size: 20px;
+}
+
+.actionsBox {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.actionButton {
+  padding: 12px 24px;
+  background-color: #2b8179;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: #1f5f59;
+  transform: translateY(-2px);
+}
+
+.actionButton:active {
+  background-color: #14504b;
+  transform: translateY(0);
+}
+
+.actionButton:focus {
+  outline: none;
+  box-shadow: 0 0 6px rgba(43, 129, 121, 0.4);
+}
+
+/* Estilos de impresión */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 5mm;
+  }
+
+  .header {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+  }
+
+  .pickingHeader {
+    margin-top: -40px !important;
+  }
+
+  .MuiDataGrid-columnHeaders {
+    font-weight: 900 !important;
+    font-size: 16px !important;
+  }
+
+  .actionsBox, .actionButton {
+    display: none !important;
+  }
+
+  .barcodeFont {
+    font-size: 30px !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .MuiDataGrid-cell {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .MuiDataGrid-virtualScroller {
+    overflow-x: hidden !important;
+  }
+
+  .gridWrapperPicking {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+}

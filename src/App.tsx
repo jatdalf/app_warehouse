@@ -7,6 +7,15 @@ import Traslados from "./components/Traslados/Traslados";
 import Inventarios from "./components/Inventarios/Inventarios";
 import InventoryDetail from "./components/InventoryDetail/InventoryDetail";
 import UbicacionesDetail from "./components/Inventarios/UbicacionesDetail";
+import WhGral from "./components/whGral/WhGral";
+import PeYa from "./components/PeYa/PeYa";
+import PeYaIngresos from "./components/PeYa/PeYaIngresos";
+import PeYaEgresos from "./components/PeYa/PeYaEgresos/PeYaEgresos";
+import PeYaInformes from "./components/PeYa/PeYaInformes";
+import PeYaPicking from "./components/PeYa/PeYaPicking/PeYaPicking";
+import PeYaRemito from "./components/PeYa/PeYaRemito/PeYaRemito";
+
+
 
 function App() {
   return (
@@ -20,6 +29,13 @@ function App() {
         <Route path="/Inventarios" element={<Inventarios />} />
         <Route path="/InventoryDetail" element={<InventoryDetail />} />
         <Route path="/UbicacionesDetail" element={<UbicacionesDetail />} />
+        <Route path="/WhGral" element={<WhGral />} />
+        <Route path="/PeYa" element={<PeYa />} />
+        <Route path="/PeYaIngresos" element={<PeYaIngresos />} />
+        <Route path="/PeYaEgresos" element={<PeYaEgresos />} />
+        <Route path="/PeYaInformes" element={<PeYaInformes />} />
+        <Route path="/PeYaPicking" element={<PeYaPicking  />} />
+        <Route path="/PeYaRemito" element={<PeYaRemito  />} />
       </Routes>
     </Router>
   );

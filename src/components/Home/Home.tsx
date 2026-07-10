@@ -4,7 +4,7 @@ import logo from "../../assets/OcasaLogoSmall.png";
 import UOM from "../../assets/UOM.png";
 import forklift from "../../assets/Forklift.png";
 import Inventario from "../../assets/inventario.png";
-// import accidentIcon from "../../assets/accident.gif";
+import whGralIcon from "../../assets/whGral.png";
 // import riskIcon from "../../assets/risk.gif";
 // import environmentIcon from "../../assets/environment.gif";
 // import ideaIcon from "../../assets/idea.gif";
@@ -50,13 +50,13 @@ const Home: React.FC = () => {
           <p className={styles.cardText}>Inventarios</p>
         </Link>
 
-        {/* 
 
-        <Link to="/accidentes" className={styles.card}>
-          <img src={accidentIcon} alt="Accidentes" className={styles.icon} />
-          <p className={styles.cardText}>Stand By</p>
+        <Link to="/whGral" className={styles.card}>
+          <img src={whGralIcon} alt="whGral" className={styles.icon} />
+          <p className={styles.cardText}>Warehouse General</p>
         </Link>
 
+        {/* 
         <Link to="/noticias" className={`${styles.card} ${styles.cardNoticias}`}>
           <div>
           <img src={hashtagIcon} alt="Hastag" className={styles.SmallIcon} />
