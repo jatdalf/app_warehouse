@@ -1,20 +1,132 @@
-/* Compacto: 2px entre párrafos */
-.leftBox p,
-.rightBox p,
+.container {
+  width: 100%;
+  padding: 8px;
+  font-family: Arial, sans-serif;
+  
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative; /* ✅ referencia para el pseudo-elemento */
+  padding-bottom: 4px;
+  margin-left: -20%;
+  margin-right: -7%;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 110%; /* ✅ estira un 15% más a la derecha */
+  border-bottom: 1px solid #000;
+}
+
+.leftBox {
+  flex: 1;
+  font-size: 10px;
+  line-height: 1.1; 
+}
+
+.centerBox {
+  flex: 0 0 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bigR {
+  font-size: 60px;
+  font-weight: bold;
+  color: #000;
+}
+
+.rightBox {
+  flex: 1;
+  text-align: right;
+  font-size: 10px;
+  line-height: 1.1; /* ✅ espacio mínimo */
+  margin-right: -10%; /* ✅ más a la derecha */
+}
+
+.rightBox p {
+  margin: 1px 0;
+}
+
+.barcode {
+  font-family: "Libre Barcode 39", cursive;
+  font-size: 20px;
+  margin: 1px 0;
+}
+
+/* Segunda parte */
+.body {
+  display: flex;
+  position: relative; /* ✅ referencia para posicionar el cuadro derecho */
+  margin-top: 6px;  
+}
+
+.leftSection {
+  flex: 3;
+  font-size: 10px;
+  line-height: 1.1;
+  margin-left: -20%;
+}
+
+.rightSection {
+  position: absolute; /* ✅ se posiciona respecto a .body */
+  top: -7px;
+  bottom: 0; /* ✅ llega hasta la misma línea que el final del bloque izquierdo */
+  right: -20%; /* ✅ mantiene el desplazamiento hacia la derecha */
+  width: 9cm;   /* ✅ ancho fijo para la etiqueta */
+  border: 1px solid #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px;
+  box-sizing: border-box;
+  height: 101.5%; /* ✅ ocupa toda la altura del contenedor */
+  background-color: white; /* ✅ fondo blanco para la etiqueta */
+}
+
 .leftSection p {
   margin: 2px 0;
 }
 
+.leftSection hr {
+  border: none;
+  border-top: 1px solid #000;
+  margin: 4px 0;
+}
+
+
+
+.barcodeLarge {
+  font-family: "Libre Barcode 39", cursive;
+  font-size: 40px;
+  margin-bottom: 4px;
+}
+
+.guiaRemito {
+  font-size: 16px;
+}
+
+/* Tercera parte */
 .terceraParte {
   margin-top: 6px;
   font-size: 10px;
   line-height: 1.1;
+  margin-left: -20%; /* ✅ más a la izquierda */
+  margin-right: -20%; /* ✅ más a la derecha */
 }
 
 .leyenda {
   text-align: left;
   margin: 2px 0;
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .productosTable {
@@ -22,19 +134,184 @@
   border-collapse: collapse;
   font-size: 10px;
 }
+.productoTexto{
+  display:block;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
 
 .productosTable th,
 .productosTable td {
   border: 1px solid #000;
-  padding: 2px 4px;
+  padding: 2px 3px;
   text-align: left;
+  vertical-align: middle;
+  overflow: hidden;        /* ✅ oculta exceso */
+  text-overflow: ellipsis; /* ✅ agrega "..." */
+  white-space: nowrap;     /* ✅ evita salto de línea */
 }
 
+
+.productosTable td {
+  vertical-align: middle;
+  table-layout: fixed;   /* ✅ fija el ancho de las columnas */
+  width: 100%;           /* ✅ ocupa todo el ancho disponible */
+  max-width: 100%;       /* ✅ nunca se expande más */
+  border-collapse: collapse;
+  font-size: 10px;
+}
 .productosTable th {
   background-color: #f0f0f0;
+  font-weight: normal;
 }
 
-.totalRow td {
+.productosTable tr {
+  height: 20px; /* ✅ altura fija para todas las filas */
+}
+
+.productosTable th:nth-child(1),
+.productosTable td:nth-child(1) { width: 10%; }  /* SKU */
+
+.productosTable th:nth-child(2),
+.productosTable td:nth-child(2) { width: 15%; }  /* Cantidad */
+
+.productosTable th:nth-child(3),
+.productosTable td:nth-child(3) {
+  width: 55%;              /* ✅ Producto fijo */
+  white-space: nowrap;     /* ✅ no permite salto de línea */
+  overflow: hidden;        /* ✅ oculta exceso */
+  text-overflow: ellipsis; /* ✅ agrega "..." */
+}
+
+.productosTable th:nth-child(4),
+.productosTable td:nth-child(4) { width: 10%; }  /* Precio */
+
+.productosTable th:nth-child(5),
+.productosTable td:nth-child(5) { width: 5%; }   /* IVA */
+
+.productosTable th:nth-child(6),
+.productosTable td:nth-child(6) { width: 5%; }   /* Total */
+
+
+/* Pie - Conforme de Recepción */
+.footer {
+  margin-top: 5px;
+}
+
+.footerTitle {
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  margin-left: -20%; /* ✅ más a la izquierda */
+  margin-right: -20%; /* ✅ más a la derecha */
+}
+.firmasBox {
+  flex: 1;
+  border: 1px solid #000;
+  padding: 6px;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.firmasBox,
+.footerRight {
+  flex: 1;
+  border: 1px solid #000;
+  padding: 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center; /* ✅ títulos centrados */
+}
+.firmasBox p,
+.footerRight p {
+  margin: 2px 0;
+}
+
+.firmasBox p:last-child,
+.footerRight p:last-child {
+  display: flex;
+  justify-content: space-between; /* ✅ separa Aclaración y Fecha y Hora */
+}
+
+.fechaHora {
+  margin-right: 20%; /* ✅ empuja Fecha y Hora hacia la derecha */
+}
+
+.footerRight p {
+  margin: 2px 0;
+}
+.footerHeading {
+  margin: 0;
   font-weight: bold;
 }
+.footerSpacer {
+  height: 30px; /* ✅ espacio uniforme entre secciones */
+}
+/* Footer final */
+.footerBottom {
+  margin-top: 5px;
+  font-size: 9px;
+  display: flex;
+  justify-content: space-between; /* ✅ CAI izquierda, Hoja derecha */
+}
 
+/* Marca vertical */
+.verticalMark {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.verticalText {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+.footerP{
+    text-align: left;
+}
+
+/* Botones */
+.topActions {
+  text-align: right;
+  margin-bottom: 6px;
+}
+
+.printButton {
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.actionsBox {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.actionButton {
+  padding: 6px 12px;
+  font-size: 12px;
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+/* ✅ Ocultar todos los botones al imprimir */
+@media print {
+  .topActions,
+  .actionsBox {
+    display: none;
+  }
+
+  .container {
+    width: 100%; /* ✅ ocupar todo el ancho de la hoja */
+  }
+}

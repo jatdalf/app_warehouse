@@ -144,12 +144,12 @@ const handleGenerateRemito = () => {
         <button className={styles.actionButton} onClick={handleGeneratePicking}>
           Generar Picking
         </button>
-        <Link to="/PeYaRemito">
-          <button className={styles.actionButton} onClick={handleGenerateRemito}>
+        
+        <button className={styles.actionButton} onClick={handleGenerateRemito}>
           Generar Remito
         </button>
 
-        </Link>
+       
         <Link to="/PeYaSalida">
           <button className={styles.actionButton}>Generar Salida Infor</button>
         </Link>

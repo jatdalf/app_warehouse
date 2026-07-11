@@ -4,7 +4,8 @@ import LogoOcasa from "../../LogoOcasa/LogoOcasa";
 import LogoPeYa from "../../LogoPeYa/LogoPeya";
 import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"; // ✅ importar useNavigate
+
 
 const columns: GridColDef[] = [
   { field: "sku", headerName: "SKU", width: 90, sortable: false },
@@ -43,6 +44,7 @@ const columns: GridColDef[] = [
 
 const PeYaPicking: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // ✅ hook para navegar
   const data = (location.state as { data: any[] })?.data || [];
 
   const groupedByST = useMemo(() => {
@@ -79,6 +81,10 @@ const PeYaPicking: React.FC = () => {
     } else {
       alert("No hay más ST disponibles.");
     }
+  };
+
+    const handlePrintRemito = () => {
+    navigate("/PeYaRemito", { state: { data: currentRows } });
   };
 
   return (
@@ -154,6 +160,11 @@ const PeYaPicking: React.FC = () => {
         <button className={styles.actionButton} onClick={handleNext}>
           Siguiente ⇒
         </button>
+
+        <button className={styles.actionButton} onClick={handlePrintRemito}>
+          Imprimir Remito
+        </button>
+
       </div>
     </div>
   );
