@@ -4,7 +4,7 @@ import LogoOcasa from "../../LogoOcasa/LogoOcasa";
 import LogoPeYa from "../../LogoPeYa/LogoPeya";
 import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const columns: GridColDef[] = [
   { field: "storeName", headerName: "Store Name Único", width: 150, sortable: false },
@@ -77,7 +77,9 @@ const handleGenerateRemito = () => {
   navigate("/PeYaRemito", { state: { data: rows } });
 };
 
-
+const handleGenerateSalida = () => {
+  navigate("/PeYaSalida", { state: { data: rows } });
+};
 
   return (
     <div className={styles.container}>
@@ -148,11 +150,11 @@ const handleGenerateRemito = () => {
         <button className={styles.actionButton} onClick={handleGenerateRemito}>
           Generar Remito
         </button>
-
        
-        <Link to="/PeYaSalida">
-          <button className={styles.actionButton}>Generar Salida Infor</button>
-        </Link>
+        <button className={styles.actionButton} onClick={handleGenerateSalida}>
+          Generar Salida Infor
+        </button>
+
       </div>
     </div>
   );

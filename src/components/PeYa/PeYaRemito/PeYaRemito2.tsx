@@ -65,14 +65,11 @@ const PeYaRemito: React.FC = () => {
 
     data.forEach(row => {
       if (!row.st || !/^ST\d+/.test(row.st)) return;
-
       if (!groups[row.st]) {
         groups[row.st] = [];
       }
-
       groups[row.st].push(row);
     });
-
     return groups;
   }, [data]);
 
@@ -117,9 +114,7 @@ const PeYaRemito: React.FC = () => {
 
       {stKeys.map((st) => {
         const currentRows = groupedByST[st];
-
         const storeName = currentRows[0]?.storeName ?? "";
-
         const destino = destinos[storeName] ?? {
           domicilio: "",
           localidad: "",
@@ -172,9 +167,9 @@ const PeYaRemito: React.FC = () => {
               </div>
 
               <div className={styles.rightBox}>
-                <p>Remito Nº: R0003-00000039</p>
+                <p>Remito Nº: R0003-00000041</p>
                 <p className={styles.barcode}>
-                  *R0003-00000039*
+                  *R0003-00000041*
                 </p>
                 <p>Fecha de Emisión: {fechaEmision}</p>
                 <p>C.U.I.T. Nº 30-66204961-8</p>
@@ -204,12 +199,10 @@ const PeYaRemito: React.FC = () => {
                   Detalles de entrega - Pedido Nº:
                   <strong> {st}</strong>
                 </p>
-
                 <p>
                   Destinatario:
                   <strong> {storeName}</strong>
                 </p>
-
                 <p>
                   Domicilio:
                   <strong> {destino.domicilio}</strong>
