@@ -77,11 +77,11 @@ const PeYaRemito: React.FC<RemitoProps> = () => {
     }
   };
 
-  // Limitar a 20 productos por página
+  // Limitar a 25 productos por página
 const maxItems = 25;
 const productosConBlancos = [...productos];
 
-// Si hay menos de 20, rellenar con filas vacías
+// Si hay menos de 25, rellenar con filas vacías
 while (productosConBlancos.length < maxItems) {
   productosConBlancos.push({
     sku: "",
@@ -114,8 +114,8 @@ while (productosConBlancos.length < maxItems) {
           <span className={styles.bigR}>R</span>
         </div>
         <div className={styles.rightBox}>
-          <p>Remito Nº: R0003-00000039</p>
-          <p className={styles.barcode}>*R0003-00000039*</p>
+          <p>Remito Nº: R0003-00000043</p>
+          <p className={styles.barcode}>*R0003-00000043*</p>
           <p>Fecha de Emisión: {fechaEmision}</p>
           <p>C.U.I.T Nº 30-66204961-8</p>
           <p>INGRESOS BRUTOS Nº 901995900-0</p>

@@ -14,6 +14,7 @@ import PeYaEgresos from "./components/PeYa/PeYaEgresos/PeYaEgresos";
 import PeYaInformes from "./components/PeYa/PeYaInformes";
 import PeYaPicking from "./components/PeYa/PeYaPicking/PeYaPicking";
 import PeYaRemito from "./components/PeYa/PeYaRemito/PeYaRemito";
+import PeYaSalida from "./components/PeYa/PeYaSalida/PeYaSalida";
 
 
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/PeYaInformes" element={<PeYaInformes />} />
         <Route path="/PeYaPicking" element={<PeYaPicking  />} />
         <Route path="/PeYaRemito" element={<PeYaRemito  />} />
+        <Route path="/PeYaSalida" element={<PeYaSalida  />} />
       </Routes>
     </Router>
   );
