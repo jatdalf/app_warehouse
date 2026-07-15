@@ -16,6 +16,7 @@
     "@mui/x-data-grid": "^9.8.0",
     "canvas-confetti": "^1.6.0",
     "chart.js": "^4.5.1",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "lottie-react": "^2.4.1",
     "lottie-web": "^5.10.1",

@@ -1,138 +1,194 @@
+/* ===========================================================
+   PEYA REMITO
+   Diseño estable para impresión A4
+   =========================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 .container {
-  width: 100%;
-  padding: 8px;
-  font-family: Arial, sans-serif;
-  
+    position:relative;
+    width: 190mm;
+    margin: 0 auto;
+    padding: 8mm;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    color: #000;
+    background: #fff;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative; /* ✅ referencia para el pseudo-elemento */
-  padding-bottom: 4px;
-  margin-left: -20%;
-  margin-right: -7%;
+/*==========================
+  BOTONES
+==========================*/
+
+.topActions{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
 }
 
-.header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 110%; /* ✅ estira un 15% más a la derecha */
-  border-bottom: 1px solid #000;
+.printButton{
+    padding:6px 14px;
+    cursor:pointer;
+    font-size:12px;
 }
 
-.leftBox {
-  flex: 1;
-  font-size: 10px;
-  line-height: 1.1; 
+.actionsBox{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:15px;
 }
 
-.centerBox {
-  flex: 0 0 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.actionButton{
+    padding:6px 14px;
+    cursor:pointer;
+    font-size:12px;
 }
 
-.bigR {
-  font-size: 60px;
-  font-weight: bold;
-  color: #000;
+/*==========================
+  ENCABEZADO
+==========================*/
+
+.header{
+    display:flex;
+    align-items:stretch;
+    width:100%;
+    border-bottom:1px solid #000;
+    padding-bottom:6px;
+    gap:10px;
 }
 
-.rightBox {
-  flex: 1;
-  text-align: right;
-  font-size: 10px;
-  line-height: 1.1; /* ✅ espacio mínimo */
-  margin-right: -10%; /* ✅ más a la derecha */
+.leftBox{
+    flex:1;
+    font-size:10px;
+    line-height:1.25;
 }
 
-.rightBox p {
-  margin: 1px 0;
+.leftBox p{
+    margin:2px 0;
 }
 
-.barcode {
-  font-family: "Libre Barcode 39", cursive;
-  font-size: 20px;
-  margin: 1px 0;
+.centerBox{
+    width:55px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-shrink:0;
 }
 
-/* Segunda parte */
-.body {
-  display: flex;
-  position: relative; /* ✅ referencia para posicionar el cuadro derecho */
-  margin-top: 6px;  
+.bigR{
+    font-size:60px;
+    font-weight:bold;
+    line-height:1;
 }
 
-.leftSection {
-  flex: 3;
-  font-size: 10px;
-  line-height: 1.1;
-  margin-left: -20%;
+.rightBox{
+    flex:1;
+    text-align:right;
+    font-size:10px;
+    line-height:1.25;
 }
 
-.rightSection {
-  position: absolute; /* ✅ se posiciona respecto a .body */
-  top: -7px;
-  bottom: 0; /* ✅ llega hasta la misma línea que el final del bloque izquierdo */
-  right: -20%; /* ✅ mantiene el desplazamiento hacia la derecha */
-  width: 9cm;   /* ✅ ancho fijo para la etiqueta */
-  border: 1px solid #000;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 6px;
-  box-sizing: border-box;
-  height: 101.5%; /* ✅ ocupa toda la altura del contenedor */
-  background-color: white; /* ✅ fondo blanco para la etiqueta */
+.rightBox p{
+    margin:2px 0;
 }
 
-.leftSection p {
-  margin: 2px 0;
+.barcode{
+    font-family:"Libre Barcode 39", cursive;
+    font-size:22px;
+    line-height:1;
 }
 
-.leftSection hr {
-  border: none;
-  border-top: 1px solid #000;
-  margin: 4px 0;
+/*==========================
+  CLIENTE / DESTINO
+==========================*/
+
+.body{
+    display:flex;
+    justify-content:space-between;
+    align-items:stretch;
+    gap:12px;
+    margin-top:8px;
 }
 
-
-
-.barcodeLarge {
-  font-family: "Libre Barcode 39", cursive;
-  font-size: 40px;
-  margin-bottom: 4px;
+.leftSection{
+    flex:1;
+    min-width:0;
+    font-size:10px;
+    line-height:1.25;
 }
 
-.guiaRemito {
-  font-size: 16px;
+.leftSection p{
+    margin:2px 0;
 }
 
-/* Tercera parte */
-.terceraParte {
-  margin-top: 6px;
-  font-size: 10px;
-  line-height: 1.1;
-  margin-left: -20%; /* ✅ más a la izquierda */
-  margin-right: -20%; /* ✅ más a la derecha */
+.leftSection hr{
+    border:none;
+    border-top:1px solid #000;
+    margin:6px 0;
 }
 
-.leyenda {
-  text-align: left;
-  margin: 2px 0;
-  font-size: 9px;
+.rightSection{
+    width:90mm;
+    flex-shrink:0;
+    border:1px solid #000;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:8px;
+    margin-top: -9px;
+    margin-bottom: -9px;
 }
 
-.productosTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 10px;
+.barcodeLarge{
+    font-family:"Libre Barcode 39", cursive;
+    font-size:46px;
+    line-height:1;
+    margin-bottom:6px;
+}
+
+.guiaRemito{
+    font-size:16px;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+/*==========================
+  TERCERA PARTE
+==========================*/
+
+.terceraParte{
+    margin-top:8px;
+    font-size:10px;
+}
+
+.terceraParte hr{
+    border:none;
+    border-top:1px solid #000;
+    margin:4px 0;
+}
+
+.leyenda{
+    margin:3px 0;
+    font-size:10px;
+}
+
+/*==================================================
+=            TABLA DE PRODUCTOS                    =
+==================================================*/
+
+.productosTable{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    margin-top:6px;
+    font-size:10px;
+
 }
 .productoTexto{
   display:block;
@@ -142,176 +198,212 @@
 }
 
 .productosTable th,
-.productosTable td {
-  border: 1px solid #000;
-  padding: 2px 3px;
-  text-align: left;
-  vertical-align: middle;
-  overflow: hidden;        /* ✅ oculta exceso */
-  text-overflow: ellipsis; /* ✅ agrega "..." */
-  white-space: nowrap;     /* ✅ evita salto de línea */
+.productosTable td{
+    border:1px solid #000;
+    padding:3px 4px;
+    height:20px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    vertical-align:middle;
 }
 
+/* Encabezado */
 
-.productosTable td {
-  vertical-align: middle;
-  table-layout: fixed;   /* ✅ fija el ancho de las columnas */
-  width: 100%;           /* ✅ ocupa todo el ancho disponible */
-  max-width: 100%;       /* ✅ nunca se expande más */
-  border-collapse: collapse;
-  font-size: 10px;
-}
-.productosTable th {
-  background-color: #f0f0f0;
-  font-weight: normal;
+.productosTable th{
+    background:#f5f5f5;
+    font-weight:bold;
+    text-align:center;
 }
 
-.productosTable tr {
-  height: 20px; /* ✅ altura fija para todas las filas */
-}
+/* Columnas */
 
 .productosTable th:nth-child(1),
-.productosTable td:nth-child(1) { width: 10%; }  /* SKU */
+.productosTable td:nth-child(1){
+    width:10%;
+}
 
 .productosTable th:nth-child(2),
-.productosTable td:nth-child(2) { width: 15%; }  /* Cantidad */
+.productosTable td:nth-child(2){
+    width:15%;
+}
 
 .productosTable th:nth-child(3),
-.productosTable td:nth-child(3) {
-  width: 55%;              /* ✅ Producto fijo */
-  white-space: nowrap;     /* ✅ no permite salto de línea */
-  overflow: hidden;        /* ✅ oculta exceso */
-  text-overflow: ellipsis; /* ✅ agrega "..." */
+.productosTable td:nth-child(3){
+    width:53%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
 }
 
 .productosTable th:nth-child(4),
-.productosTable td:nth-child(4) { width: 10%; }  /* Precio */
+.productosTable td:nth-child(4){
+    width:6%;
+    text-align:center;
+}
 
 .productosTable th:nth-child(5),
-.productosTable td:nth-child(5) { width: 5%; }   /* IVA */
+.productosTable td:nth-child(5){
+    width:7%;
+    text-align:center;
+}
 
 .productosTable th:nth-child(6),
-.productosTable td:nth-child(6) { width: 5%; }   /* Total */
-
-
-/* Pie - Conforme de Recepción */
-.footer {
-  margin-top: 5px;
+.productosTable td:nth-child(6){
+    width:9%;
+    text-align:center;
 }
 
-.footerTitle {
-  text-align: center;
-  font-size: 11px;
-  font-weight: bold;
-  margin-bottom: 6px;
+/* Totales */
+
+.totalRow td{
+    font-weight:bold;
+    background:#f7f7f7;
 }
-.footerContent {
-  display: flex;
-  justify-content: space-between;
-  margin-left: -20%; /* ✅ más a la izquierda */
-  margin-right: -20%; /* ✅ más a la derecha */
+
+.totalRow td:first-child{
+    text-align:right;
 }
-.firmasBox {
-  flex: 1;
-  border: 1px solid #000;
-  padding: 6px;
-  font-size: 10px;
-  line-height: 1.2;
+
+/*==================================================
+=            FOOTER                               =
+==================================================*/
+
+.footer{
+    margin-top:10px;
+
+}
+
+.footerTitle{
+    text-align:center;
+    font-size:11px;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.footerContent{
+    display:flex;
+    gap:10px;
 }
 
 .firmasBox,
-.footerRight {
-  flex: 1;
-  border: 1px solid #000;
-  padding: 6px;
-  font-size: 10px;
-  line-height: 1.2;
-  text-align: center; /* ✅ títulos centrados */
-}
-.firmasBox p,
-.footerRight p {
-  margin: 2px 0;
+.footerRight{
+    flex:1;
+    border:1px solid #000;
+    padding:8px;
+    min-height:105px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
 }
 
-.firmasBox p:last-child,
-.footerRight p:last-child {
-  display: flex;
-  justify-content: space-between; /* ✅ separa Aclaración y Fecha y Hora */
+.footerHeading{
+    text-align:center;
+    font-weight:bold;
+    margin-bottom:18px;
 }
 
-.fechaHora {
-  margin-right: 20%; /* ✅ empuja Fecha y Hora hacia la derecha */
+.footerSpacer{
+    flex:1;
 }
 
-.footerRight p {
-  margin: 2px 0;
-}
-.footerHeading {
-  margin: 0;
-  font-weight: bold;
-}
-.footerSpacer {
-  height: 30px; /* ✅ espacio uniforme entre secciones */
-}
-/* Footer final */
-.footerBottom {
-  margin-top: 5px;
-  font-size: 9px;
-  display: flex;
-  justify-content: space-between; /* ✅ CAI izquierda, Hoja derecha */
-}
-
-/* Marca vertical */
-.verticalMark {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.verticalText {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
 .footerP{
-    text-align: left;
+    text-align:left;
 }
 
-/* Botones */
-.topActions {
-  text-align: right;
-  margin-bottom: 6px;
+.fechaHora{
+    float:right;
 }
 
-.printButton {
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
+.footerBottom{
+    margin-top:6px;
+    display:flex;
+    justify-content:space-between;
+    font-size:9px;
 }
 
-.actionsBox {
-  margin-top: 10px;
-  text-align: center;
+.footerLeft{
+    text-align:left;
 }
 
-.actionButton {
-  padding: 6px 12px;
-  font-size: 12px;
-  margin: 0 6px;
-  cursor: pointer;
+.footerRightText{
+    text-align:right;
+}
+.pageBreak{
+  display:none;
 }
 
-/* ✅ Ocultar todos los botones al imprimir */
-@media print {
-  .topActions,
-  .actionsBox {
-    display: none;
+/*==================================================
+=            MARCA VERTICAL                        =
+==================================================*/
+
+.verticalMark{
+    position:absolute;
+    left:-13mm;
+    top:50%;
+    transform:translateY(-50%);
+    width:15mm;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.verticalText{
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    font-size:15px;
+    font-weight:bold;
+    letter-spacing:0px;
+    color:#000;    
+}
+/*==================================================
+=            IMPRESION                            =
+==================================================*/
+
+@page{
+    size:A4 portrait;
+    margin:8mm;
+}
+
+@media print{
+
+    html,
+    body{
+        width:210mm;
+        margin:0;
+        padding:0;
+        overflow:hidden;
+    }
+
+    .container{
+        width:190mm;
+        margin:0 auto;
+        padding:0;        
+    }
+
+    .topActions,
+    .actionsBox{
+        display:none !important;
+    }
+
+    button{
+        display:none !important;
+    }
+
+    .productosTable{
+        page-break-inside:avoid;
+    }
+
+    .footer{
+        page-break-inside:avoid;
+    }
+  .pageBreak{
+    display:block;
+    break-after:page;
+    page-break-after:always;
   }
 
-  .container {
-    width: 100%; /* ✅ ocupar todo el ancho de la hoja */
+  .pageBreak:last-child{
+    display:none;
   }
 }
