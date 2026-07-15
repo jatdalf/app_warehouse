@@ -17,9 +17,9 @@ router.post("/remitos",async(req,res)=>{
         const resultado=await obtenerRemitos(sts,usuario);
 
         return res.json({
-            success:true,
-            data:resultado
-        });
+        success:true,
+        remitos:resultado.remitos
+    });
     }catch(err){
         console.error(err);
 

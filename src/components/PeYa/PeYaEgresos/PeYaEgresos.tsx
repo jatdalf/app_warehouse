@@ -5,6 +5,9 @@ import LogoPeYa from "../../LogoPeYa/LogoPeya";
 import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
+import {obtenerRemitos} from "../../../../src/services/remitos";
+import LoadingOverlay from "../../LoadingOverlay/LoadingOverlay";
+
 
 const columns: GridColDef[] = [
   { field: "storeName", headerName: "Store Name Único", width: 150, sortable: false },
@@ -41,7 +44,7 @@ const PeYaEgresos: React.FC = () => {
     });
     setRows([...rows, ...newRows]);
   };
-
+  
   // ✅ Cálculos de métricas
   const metrics = useMemo(() => {
     const stValues = rows.map((r) => r.st).filter((st) => st && /^ST\d+/.test(st));
@@ -65,17 +68,39 @@ const PeYaEgresos: React.FC = () => {
       }
       return acc;
     }, 0);
-
     return { pedidos, lineas, skus, bultos };
   }, [rows]);
 
   const handleGeneratePicking = () => {
     navigate("/PeYaPicking", { state: { data: rows } });
   };
+  
+  const [loading,setLoading]=useState(false);
 
-const handleGenerateRemito = () => {
-  navigate("/PeYaRemito", { state: { data: rows } });
-};
+const handleGenerateRemito=async()=>{
+    try{
+        setLoading(true);
+        const stsUnicos=[
+            ...new Set(
+                rows
+                    .map(r=>r.st)
+                    .filter((st:string)=>/^ST\d+/.test(st))
+            )
+        ];
+        const remitos=await obtenerRemitos(
+            stsUnicos,
+            "Jorge"
+        );
+        navigate("/PeYaRemito",{
+            state:{data:rows, remitos}
+        });
+    }catch(err){
+        console.error(err);
+        alert("No fue posible obtener los números de remito.");
+    }finally{
+        setLoading(false);
+    }
+  };
 
 const handleGenerateSalida = () => {
   navigate("/PeYaSalida", { state: { data: rows } });
@@ -147,15 +172,31 @@ const handleGenerateSalida = () => {
           Generar Picking
         </button>
         
-        <button className={styles.actionButton} onClick={handleGenerateRemito}>
-          Generar Remito
-        </button>
+      <button
+          className={styles.actionButton}
+          onClick={handleGenerateRemito}
+          disabled={loading}
+      >
+          {loading?"Generando Remitos...":"Generar Remito"}
+      </button>
+
+      <LoadingOverlay
+          open={loading}
+          title="Preparando Remitos"
+          message="Consultando la numeración disponible..."
+      />
        
         <button className={styles.actionButton} onClick={handleGenerateSalida}>
           Generar Salida Infor
         </button>
-
       </div>
+
+      <LoadingOverlay
+          open={loading}
+          title="Preparando Remitos"
+          message="Consultando la numeración disponible..."
+      />
+
     </div>
   );
 };
