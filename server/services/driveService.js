@@ -12,9 +12,7 @@ async function downloadFileBuffer(drive,fileId){
             responseType:"stream"
         }
     );
-
     const chunks=[];
-
     return new Promise((resolve,reject)=>{
         res.data.on("data",chunk=>chunks.push(chunk));
         res.data.on("end",()=>resolve(Buffer.concat(chunks)));
@@ -22,30 +20,23 @@ async function downloadFileBuffer(drive,fileId){
     });
 }
 
-async function obtenerUltimoYWM005(){
-
+async function obtenerArchivoDrive(nombreArchivo){
     const auth=new google.auth.GoogleAuth({
-        scopes:[
-            "https://www.googleapis.com/auth/drive.readonly"
-        ]
+        scopes:["https://www.googleapis.com/auth/drive.readonly"]
     });
-
     const authClient=await auth.getClient();
-
     const drive=google.drive({
         version:"v3",
         auth:authClient
     });
-
     const q=DRIVE_FOLDER_ID
         ? `'${DRIVE_FOLDER_ID}' in parents and trashed=false`
         : "trashed=false";
-
     const listRes=await drive.files.list({
         q,
         fields:"files(id,name,modifiedTime)",
         orderBy:"modifiedTime desc",
-        pageSize:50
+        pageSize:100
     });
 
     const files=listRes.data.files||[];
@@ -54,23 +45,28 @@ async function obtenerUltimoYWM005(){
         throw new Error("No files found in Drive folder.");
     }
 
-    let target=files.find(f=>/ywm005/i.test(f.name));
+    const target=files.find(f=>
+        f.name.toLowerCase().includes(nombreArchivo.toLowerCase())
+    );
 
     if(!target){
-        target=files[0];
+        throw new Error(`No se encontró el archivo "${nombreArchivo}" en Google Drive.`);
     }
 
-    const buffer=await downloadFileBuffer(
-        drive,
-        target.id
-    );
+    const buffer=await downloadFileBuffer(drive,target.id);
 
     return{
         file:target.name,
         buffer
     };
+
+}
+
+async function obtenerUltimoYWM005(){
+    return await obtenerArchivoDrive("YWM005");
 }
 
 module.exports={
-    obtenerUltimoYWM005
+    obtenerUltimoYWM005,
+    obtenerArchivoDrive
 };

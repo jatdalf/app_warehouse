@@ -8,6 +8,7 @@ const { https } = require('follow-redirects');
 const driveRoutes=require("./routes/drive");
 const healthRoutes=require("./routes/health");
 const remitosRoutes=require("./routes/remitos");
+const stockRoutes=require("./routes/stock");
 
 const app = express();
 app.use(cors());
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api",driveRoutes);
 app.use("/api",healthRoutes);
 app.use("/api",remitosRoutes);
+app.use("/api",stockRoutes);
 
 const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID; // set this to the shared folder id
 

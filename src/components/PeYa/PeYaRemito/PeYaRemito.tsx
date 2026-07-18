@@ -161,226 +161,225 @@ const groupedByST = useMemo(() => {
         );
 
         return COPIAS.map((copia) => (
-          <div
-            key={`${st}-${copia}`}
-            className={styles.container}
-          >
+          <div className={styles.remito}>
+            <div
+              key={`${st}-${copia}`}
+              className={styles.container}
+            >
 
-            <div className={styles.verticalMark}>
-              <div className={styles.verticalText}>
-                {copia}
-              </div>
-            </div>
-
-            <div className={styles.header}>
-              <div className={styles.leftBox}>
-                <p>Organización Courier Argentina S.A (OCASA)</p>
-                <p>R.N.P.S.P N° 731</p>
-                <p>Echeverría 1262/64 - C1428DQN - Capital Federal</p>
-                <p>I.V.A.: RESPONSABLE INSCRIPTO</p>
+              <div className={styles.verticalMark}>
+                <div className={styles.verticalText}>
+                  {copia}
+                </div>
               </div>
 
-              <div className={styles.centerBox}>
-                <span className={styles.bigR}>R</span>
+              <div className={styles.header}>
+                <div className={styles.leftBox}>
+                  <p>Organización Courier Argentina S.A (OCASA)</p>
+                  <p>R.N.P.S.P N° 731</p>
+                  <p>Echeverría 1262/64 - C1428DQN - Capital Federal</p>
+                  <p>I.V.A.: RESPONSABLE INSCRIPTO</p>
+                </div>
+
+                <div className={styles.centerBox}>
+                  <span className={styles.bigR}>R</span>
+                </div>
+
+                <div className={styles.rightBox}>
+                  <p>Remito Nº: {numeroRemito}</p>
+                  <p className={styles.barcode}>
+                    *{numeroRemito}*
+                  </p>
+                  <p>Fecha de Emisión: {fechaEmision}</p>
+                  <p>C.U.I.T. Nº 30-66204961-8</p>
+                  <p>Ingresos Brutos Nº 901995900-0</p>
+                  <p>Inicio de Actividades: 01/07/1993</p>
+                </div>
               </div>
 
-              <div className={styles.rightBox}>
-                <p>Remito Nº: {numeroRemito}</p>
-                <p className={styles.barcode}>
-                  *{numeroRemito}*
+              <div className={styles.body}>
+                <div className={styles.leftSection}>
+                  <p>Por cuenta y orden de: DELIVERY HERO E-COMMERCE S.A.</p>
+                  <p>Solic: 102003550 - AP: 40044001 / 10</p>
+                  <p>Domicilio: JUSTO JUAN B AV. 637</p>
+                  <p>Código Postal: 1425</p>
+                  <p>Localidad: Capital Federal</p>
+
+                  <hr />
+
+                  <p>Detalles de Origen - Warehouse Ocasa Córdoba</p>
+                  <p>Domicilio: Avenida La Voz del Interior 6051</p>
+                  <p>Código Postal: 5009</p>
+                  <p>Localidad: Córdoba</p>
+
+                  <hr />
+
+                  <p>
+                    Detalles de entrega - Pedido Nº:
+                    <strong> {st}</strong>
+                  </p>
+                  <p>
+                    Destinatario:
+                    <strong> {storeName}</strong>
+                  </p>
+                  <p>
+                    Domicilio:
+                    <strong> {destino.domicilio}</strong>
+                  </p>
+
+                  <p>
+                    Localidad:
+                    <strong> {destino.localidad}</strong>
+                    {"  "}
+                    CP:
+                    <strong> {destino.cp}</strong>
+                  </p>
+
+                  <p>
+                    Guía Remito:
+                    <strong> {st}</strong>
+                  </p>
+
+                  <hr />
+                </div>
+
+                <div className={styles.rightSection}>
+                  <p className={styles.barcodeLarge}>
+                    *{st}*
+                  </p>
+
+                  <p className={styles.guiaRemito}>
+                    {st}
+                  </p>
+                </div>
+              </div>
+              {/* Tercera parte */}
+                          <div className={styles.terceraParte}>
+                <hr />
+
+                <p className={styles.leyenda}>
+                  Remitimos a UD.(es) lo siguiente
                 </p>
-                <p>Fecha de Emisión: {fechaEmision}</p>
-                <p>C.U.I.T. Nº 30-66204961-8</p>
-                <p>Ingresos Brutos Nº 901995900-0</p>
-                <p>Inicio de Actividades: 01/07/1993</p>
-              </div>
-            </div>
-
-            <div className={styles.body}>
-              <div className={styles.leftSection}>
-                <p>Por cuenta y orden de: DELIVERY HERO E-COMMERCE S.A.</p>
-                <p>Solic: 102003550 - AP: 40044001 / 10</p>
-                <p>Domicilio: JUSTO JUAN B AV. 637</p>
-                <p>Código Postal: 1425</p>
-                <p>Localidad: Capital Federal</p>
 
                 <hr />
 
-                <p>Detalles de Origen - Warehouse Ocasa Córdoba</p>
-                <p>Domicilio: Avenida La Voz del Interior 6051</p>
-                <p>Código Postal: 5009</p>
-                <p>Localidad: Córdoba</p>
+                <table className={styles.productosTable}>
+                  <thead>
+                    <tr>
+                      <th>SKU</th>
+                      <th>EAN</th>
+                      <th>Producto</th>
+                      <th>UxB</th>
+                      <th>Bultos</th>
+                      <th>Unidades</th>
+                    </tr>
+                  </thead>
 
-                <hr />
+                  <tbody>
+                    {productosConBlancos.map((p, index) => (
+                      <tr key={index}>
+                        <td>
+                          <strong>{p.sku}</strong>
+                        </td>
 
-                <p>
-                  Detalles de entrega - Pedido Nº:
-                  <strong> {st}</strong>
-                </p>
-                <p>
-                  Destinatario:
-                  <strong> {storeName}</strong>
-                </p>
-                <p>
-                  Domicilio:
-                  <strong> {destino.domicilio}</strong>
-                </p>
+                        <td>{p.ean}</td>
 
-                <p>
-                  Localidad:
-                  <strong> {destino.localidad}</strong>
-                  {"  "}
-                  CP:
-                  <strong> {destino.cp}</strong>
-                </p>
+                        <td title={p.producto}>
+                          <span className={styles.productoTexto}>
+                            {p.producto}
+                          </span>
+                        </td>
 
-                <p>
-                  Guía Remito:
-                  <strong> {st}</strong>
-                </p>
+                        <td>{p.uxb}</td>
 
-                <hr />
-              </div>
+                        <td>
+                          <strong>
+                            {p.bultos > 0 ? p.bultos : ""}
+                          </strong>
+                        </td>
 
-              <div className={styles.rightSection}>
-                <p className={styles.barcodeLarge}>
-                  *{st}*
-                </p>
+                        <td>
+                          {p.unidades > 0 ? p.unidades : ""}
+                        </td>
+                      </tr>
+                    ))}
 
-                <p className={styles.guiaRemito}>
-                  {st}
-                </p>
-              </div>
-            </div>
-            {/* Tercera parte */}
-                        <div className={styles.terceraParte}>
-              <hr />
-
-              <p className={styles.leyenda}>
-                Remitimos a UD.(es) lo siguiente
-              </p>
-
-              <hr />
-
-              <table className={styles.productosTable}>
-                <thead>
-                  <tr>
-                    <th>SKU</th>
-                    <th>EAN</th>
-                    <th>Producto</th>
-                    <th>UxB</th>
-                    <th>Bultos</th>
-                    <th>Unidades</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {productosConBlancos.map((p, index) => (
-                    <tr key={index}>
-                      <td>
-                        <strong>{p.sku}</strong>
-                      </td>
-
-                      <td>{p.ean}</td>
-
-                      <td title={p.producto}>
-                        <span className={styles.productoTexto}>
-                          {p.producto}
-                        </span>
-                      </td>
-
-                      <td>{p.uxb}</td>
-
-                      <td>
-                        <strong>
-                          {p.bultos > 0 ? p.bultos : ""}
-                        </strong>
+                    <tr className={styles.totalRow}>
+                      <td colSpan={4}>
+                        <strong>Total</strong>
                       </td>
 
                       <td>
-                        {p.unidades > 0 ? p.unidades : ""}
+                        <strong>{totalBultos}</strong>
+                      </td>
+
+                      <td>
+                        <strong>{totalUnidades}</strong>
                       </td>
                     </tr>
-                  ))}
-
-                  <tr className={styles.totalRow}>
-                    <td colSpan={4}>
-                      <strong>Total</strong>
-                    </td>
-
-                    <td>
-                      <strong>{totalBultos}</strong>
-                    </td>
-
-                    <td>
-                      <strong>{totalUnidades}</strong>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            {/* Sección de firmas y recepción */}
-                        <div className={styles.footer}>
-              <div className={styles.footerTitle}>
-                CONFORME DE RECEPCIÓN
+                  </tbody>
+                </table>
               </div>
-
-              <div className={styles.footerContent}>
-                <div className={styles.firmasBox}>
-                  <p className={styles.footerHeading}>
-                    <strong>Entrega (Chofer)</strong>
-                  </p>
-
-                  <div className={styles.footerSpacer}></div>
-
-                  <p className={styles.footerP}>Firma</p>
-
-                  <div className={styles.footerSpacer}></div>
-
-                  <p>
-                    Aclaración
-                    <span className={styles.fechaHora}>
-                      Fecha y Hora
-                    </span>
-                  </p>
+              {/* Sección de firmas y recepción */}
+                          <div className={styles.footer}>
+                <div className={styles.footerTitle}>
+                  CONFORME DE RECEPCIÓN
                 </div>
 
-                <div className={styles.footerRight}>
-                  <p className={styles.footerHeading}>
-                    <strong>Recibe</strong>
-                  </p>
+                <div className={styles.footerContent}>
+                  <div className={styles.firmasBox}>
+                    <p className={styles.footerHeading}>
+                      <strong>Entrega (Chofer)</strong>
+                    </p>
 
-                  <div className={styles.footerSpacer}></div>
+                    <div className={styles.footerSpacer}></div>
 
-                  <p className={styles.footerP}>
-                    Firma / Sello
-                  </p>
+                    <p className={styles.footerP}>Firma</p>
 
-                  <div className={styles.footerSpacer}></div>
+                    <div className={styles.footerSpacer}></div>
 
-                  <p>
-                    Aclaración
-                    <span className={styles.fechaHora}>
-                      Fecha y Hora
-                    </span>
-                  </p>
+                    <p>
+                      Aclaración
+                      <span className={styles.fechaHora}>
+                        Fecha y Hora
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className={styles.footerRight}>
+                    <p className={styles.footerHeading}>
+                      <strong>Recibe</strong>
+                    </p>
+
+                    <div className={styles.footerSpacer}></div>
+
+                    <p className={styles.footerP}>
+                      Firma / Sello
+                    </p>
+
+                    <div className={styles.footerSpacer}></div>
+
+                    <p>
+                      Aclaración
+                      <span className={styles.fechaHora}>
+                        Fecha y Hora
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className={styles.footerBottom}>
+                  <span className={styles.footerLeft}>
+                    CAI N° 522128217779710 &nbsp;&nbsp;&nbsp;
+                    Fecha de Vto: 21.09.2026
+                  </span>
+
+                  <span className={styles.footerRightText}>
+                    Hoja 1 de 1
+                  </span>
                 </div>
               </div>
-
-              <div className={styles.footerBottom}>
-                <span className={styles.footerLeft}>
-                  CAI N° 522128217779710 &nbsp;&nbsp;&nbsp;
-                  Fecha de Vto: 21.09.2026
-                </span>
-
-                <span className={styles.footerRightText}>
-                  Hoja 1 de 1
-                </span>
-              </div>
             </div>
-
-            <div className={styles.pageBreak}></div>
-
           </div>
         ));
       })}

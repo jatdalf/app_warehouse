@@ -5,6 +5,7 @@
 
   type FailureRow = {
     rowIndex: number;
+    loteSap: string | number;
     matCliente: string | number;
     descripcion: string | number;
     stockOriginal: any;
@@ -83,6 +84,7 @@
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
           // columns are 0-based: A=0, C=2, F=5, N=13
+          const loteSap = row[1];
           const matCliente = row[0];
           const descripcion = row[2];
           const stockCell = row[5];
@@ -111,6 +113,7 @@
           if (!isInteger) {
             results.push({
               rowIndex: i + 1, // human-friendly (1-based)
+              loteSap,
               matCliente,
               descripcion,
               stockOriginal: stockCell,
@@ -124,32 +127,6 @@
         return results;
       });
     };
-
-  //   const handleFetchOrPick = async () => {
-  //     setProcessing(true);
-  //     setMessage(null);
-  //     setFailures([]);
-  //     try {
-  //       // try to fetch from public/data/ywm005.xlsx (you can place the file in public/data)
-  //       const url = '/data/ywm005.xlsx';
-  //       const resp = await fetch(url);
-  //       if (resp.ok) {
-  //         const buf = await resp.arrayBuffer();
-  //         const res = await analyzeWorkbook(buf);
-  //         setFailures(res);
-  //         setMessage(`Procesado ${res.length} filas con fallo.`);
-  //         if (res.length === 0) triggerCelebration();
-  //       } else {
-  //         // fall back to file picker
-  //         setMessage('Archivo no disponible en /data/ywm005.xlsx — por favor selecciona el archivo manualmente.');
-  //         fileInputRef.current?.click();
-  //       }
-  //     } catch (err: any) {
-  //       setMessage('Error leyendo el archivo: ' + String(err?.message ?? err));
-  //     } finally {
-  //       setProcessing(false);
-  //     }
-  //   };
 
     const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const f = e.target.files?.[0];
@@ -282,49 +259,6 @@
           <button className={styles.browseBtn} type="button" onClick={() => fileInputRef.current?.click()} disabled={processing}>
             {processing ? 'Procesando...' : 'Explorar archivo...'}
           </button>
-          {/* <button
-            className={styles.driveBtn}
-            type="button"
-            onClick={async () => {
-              // Try the server proxy endpoint which avoids CORS by downloading and analyzing server-side.
-              const sheetId = '1KSBPqM3fWzR0QyuMOpn8m4_K4TVRMbgN';
-              const proxyUrl = `/api/proxy-export?sheetId=${encodeURIComponent(sheetId)}`;
-              try {
-                setProcessing(true);
-                setMessage(null);
-                setFailures([]);
-                const resp = await fetch(proxyUrl, { cache: 'no-cache' });
-                // If the backend isn't running, the dev server may return index.html (HTML) which is not JSON.
-                const contentType = resp.headers.get('content-type') || '';
-                if (!resp.ok) {
-                  const text = await resp.text().catch(() => '');
-                  throw new Error(`Error desde el servidor: ${resp.status} ${resp.statusText} ${text}`);
-                }
-                if (!contentType.includes('application/json')) {
-                  // Read text to provide context (trim long HTML)
-                  const text = await resp.text().catch(() => '');
-                  const sample = text ? (text.length > 400 ? text.slice(0, 400) + '...' : text) : '<no body>';
-                  throw new Error(`Respuesta inesperada (no JSON) del servidor. Parece que se devolvió HTML (por ejemplo index.html). Asegúrese de que el backend esté corriendo en el puerto correcto y que la ruta /api/proxy-export no esté siendo servida por el servidor de frontend. Contenido de respuesta: ${sample}`);
-                }
-                const body = await resp.json();
-                if (body?.results) {
-                  setFailures(body.results);
-                  setMessage(`Procesado ${body.results.length} filas con fallo.`);
-                  if (body.results.length === 0) triggerCelebration();
-                } else {
-                  throw new Error('Respuesta inesperada del servidor al procesar el archivo');
-                }
-              } catch (err: any) {
-                // If server not available or fails, inform about CORS/public-sheet option
-                setMessage(String(err?.message ?? 'Error descargando el archivo desde Drive. Si sigue fallando, haga público el sheet o configure el servidor para acceder a Drive.'));
-              } finally {
-                setProcessing(false);
-              }
-            }}
-            disabled={processing}
-          >
-            {processing ? 'Procesando...' : 'abrir drive'}
-          </button> */}
           <input ref={fileInputRef} type="file" accept=".xls,.xlsx" style={{ display: 'none' }} onChange={handleFile} />
         </div>
 
@@ -344,6 +278,7 @@
                 <thead>
                   <tr>
                     <th>Fila</th>
+                    <th>Lote SAP</th>
                     <th>MAT. CLIENTE</th>
                     <th>DESCRIPCIÓN</th>
                     <th>STOCK</th>
@@ -355,6 +290,7 @@
                   {failures.map((r) => (
                     <tr key={r.rowIndex}>
                       <td data-label="Fila"><span>{r.rowIndex}</span></td>
+                      <td data-label="Lote SAP"><span>{String(r.loteSap ?? '')}</span></td>
                       <td data-label="MAT. CLIENTE"><span>{String(r.matCliente ?? '')}</span></td>
                       <td data-label="DESCRIPCIÓN" className={styles.desc}><span>{String(r.descripcion ?? '')}</span></td>
                       <td data-label="STOCK" className={styles.numeric}><span>{r.stockParsed}</span></td>
