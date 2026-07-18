@@ -1,5 +1,7 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import type { OrderItem } from "../core/orders/OrderItem";
+import type { SalidaInforRow } from "./infor/SalidaInforRow";
 
 const SHEET_DATA="Data";
 const SHEET_DETAIL="Detail";
@@ -23,12 +25,8 @@ const DETAIL_COL_EXTERNORDERKEY=6;
 const DETAIL_COL_OPENQTY=7;
 const DETAIL_COL_DESTINO=8;
 
-export interface SalidaInforRow{
-    st:string;
-    sku:string;
-    bultos:number|string;
-    storeName:string;
-}
+
+
 
 function obtenerSTUnicos(
     data:SalidaInforRow[]
@@ -79,7 +77,13 @@ function escribirHojaDetail(worksheet: ExcelJS.Worksheet, data: SalidaInforRow[]
     });
 }
 
-export async function generarSalidaInfor(data: SalidaInforRow[]) {
+export async function generarSalidaInfor(pedidos: OrderItem[]) {
+    const data:SalidaInforRow[]=pedidos.map(p=>({
+        st:p.st,
+        sku:p.sku,
+        bultos:p.bultos,
+        storeName:p.storeName
+    }));
     // Leer la plantilla desde /public
     const response = await fetch("/data/Infor00000.xlsx");
     if (!response.ok) {

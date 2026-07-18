@@ -9,6 +9,20 @@
     box-sizing: border-box;
 }
 
+.remito{
+    width:100%;
+}
+
+.remito{
+    break-after:page;
+    page-break-after:always;
+}
+
+.remito:last-child{
+    break-after:auto;
+    page-break-after:auto;
+}
+
 .container {
     position:relative;
     width: 190mm;
@@ -141,8 +155,9 @@
     justify-content:center;
     align-items:center;
     padding:8px;
-    margin-top: -9px;
-    margin-bottom: -9px;
+    margin-top: -8.5px;
+    margin-bottom: 6px;
+    margin-left: -12px;
 }
 
 .barcodeLarge{
@@ -163,7 +178,7 @@
 ==========================*/
 
 .terceraParte{
-    margin-top:8px;
+    margin-top:-11px;
     font-size:10px;
 }
 
@@ -329,9 +344,7 @@
 .footerRightText{
     text-align:right;
 }
-.pageBreak{
-  display:none;
-}
+
 
 /*==================================================
 =            MARCA VERTICAL                        =
@@ -356,6 +369,11 @@
     letter-spacing:0px;
     color:#000;    
 }
+
+.pageBreak {
+  display: block;
+}
+
 /*==================================================
 =            IMPRESION                            =
 ==================================================*/
@@ -397,13 +415,14 @@
     .footer{
         page-break-inside:avoid;
     }
-  .pageBreak{
-    display:block;
-    break-after:page;
-    page-break-after:always;
+
+    .pageBreak {
+    page-break-after: always;   /* ✅ fuerza salto de página */
+    break-after: page;          /* ✅ estándar moderno */
   }
 
-  .pageBreak:last-child{
-    display:none;
+  .pageBreak:last-child {
+    page-break-after: auto;     /* ✅ evita salto extra al final */
+    break-after: auto;
   }
 }
