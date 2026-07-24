@@ -6,7 +6,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom"; // ✅ importar useNavigate
 
-
 const columns: GridColDef[] = [
   { field: "sku", headerName: "SKU", width: 90, sortable: false },
   {
@@ -25,16 +24,7 @@ const columns: GridColDef[] = [
     width: 250,
     sortable: false,
     renderCell: (params) => (
-      <div
-        style={{
-          whiteSpace: "normal",   // ✅ permite salto de línea
-          wordBreak: "break-word",// ✅ corta palabras largas
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          lineHeight: "1.2em",
-          maxHeight: "2.4em",     // ✅ máximo 2 líneas visibles
-        }}
-      >
+      <div className={styles.pikingGridColumn}>
         {params.value}
       </div>
     ),
@@ -46,7 +36,6 @@ const PeYaPicking: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate(); // ✅ hook para navegar
   const data = (location.state as { data: any[] })?.data || [];
-
   const groupedByST = useMemo(() => {
     const groups: Record<string, any[]> = {};
     data.forEach((row) => {
@@ -60,10 +49,8 @@ const PeYaPicking: React.FC = () => {
 
   const stKeys = Object.keys(groupedByST);
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const currentST = stKeys[currentIndex];
   const currentRows = groupedByST[currentST] || [];
-
   const rows = currentRows.map((r, idx) => ({
     id: idx + 1,
     sku: r.sku,
@@ -74,7 +61,6 @@ const PeYaPicking: React.FC = () => {
   }));
 
   const destino = currentRows.length > 0 ? currentRows[0].storeName : "";
-
   const handleNext = () => {
     if (currentIndex < stKeys.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -82,7 +68,6 @@ const PeYaPicking: React.FC = () => {
       alert("No hay más ST disponibles.");
     }
   };
-
     const handlePrintRemito = () => {
     navigate("/PeYaRemito", { state: { data: currentRows } });
   };
