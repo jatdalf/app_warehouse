@@ -26,10 +26,18 @@
   justify-content: flex-end;
 }
 
-
+/*Grilla*/
 .barcodeFont {
   font-family: 'Libre Barcode 39', cursive;
   font-size: 28px;
+}
+.pikingGridColumn {
+  white-space: normal;     /* ✅ permite salto de línea */
+  word-break: break-word;  /* ✅ corta palabras largas */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2em;
+  max-height: 2.4em;       /* ✅ máximo 2 líneas visibles */
 }
 
 .gridWrapperPicking {

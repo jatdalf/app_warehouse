@@ -26,6 +26,11 @@ const PeYa = () => {
           <Link to="/PeYaEgresos">
             <button className={styles.peyaButton}>Egresos</button>
           </Link>
+
+          <Link to="/PeYaWorkflow">
+            <button className={styles.peyaButton}>Egresos con ubicacion (en desarrollo)</button>
+          </Link>
+
         </fieldset>
 
         <fieldset className={styles.fieldsetPeya}>
