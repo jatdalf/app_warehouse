@@ -19,17 +19,16 @@ export class PeYaPipeline{
     ):Promise<EngineResult>{
 
         for(const step of this.steps){
+               console.log("STEP:", step.name);
             onStep?.(step.name);
             const result = await step.execute(session);
             if(!result.success){
                 return result;
             }
         }
-
         return{
             success:true,
             message:"Proceso completado."
         };
-
     }
 }

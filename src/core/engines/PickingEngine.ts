@@ -3,18 +3,26 @@ import type { EngineResult } from "../shared/EngineResult";
 import { WarehouseSession } from "../warehouse/WarehouseSession";
 import { StockAllocator } from "../stock/StockAllocator";
 
-export class PickingEngine implements PipelineStep{
-    readonly name="Generando Picking";
-    async execute(session: WarehouseSession): Promise<EngineResult> {
+export class PickingEngine implements PipelineStep {
+    readonly name = "Generando Picking";
+    async execute(
+        session: WarehouseSession
+    ): Promise<EngineResult> {
         const allocator = new StockAllocator();
-        const resultado = allocator.allocate(session.pedidos, session.stock);
-        session.picking = resultado.picking;
+
+        const resultado = allocator.allocate(
+            session.pedidos,
+            session.stock
+        );
+
         session.stock = resultado.stockActualizado;
+        session.picking = resultado.picking;
         session.shortages = resultado.shortages;
         session.stats = resultado.stats;
+
         return {
             success: true,
-            message: "Picking generado."
+            message: `Picking generado (${resultado.picking.length} líneas)`
         };
     }
 }
