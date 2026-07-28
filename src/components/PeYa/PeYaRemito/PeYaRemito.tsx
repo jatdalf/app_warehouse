@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import styles from "../PeYaRemito/PeYaRemito.module.css";
 
-
 interface Producto {
   sku: string;
   ean: string;
@@ -44,6 +43,11 @@ const destinos: Record<string, Destino> = {
     domicilio: "L de Gongora 175",
     localidad: "Córdoba",
     cp: "5001"
+  },
+    "AR_Ocasa": {
+    domicilio: "Av la voz del interior 6051",
+    localidad: "Córdoba",
+    cp: "5009"
   }
 };
 
@@ -71,7 +75,7 @@ const remitos=state?.remitos||[];
 const groupedByST = useMemo(() => {
   const groups: Record<string, RemitoData[]> = {};
     data.forEach(row => {
-      if (!row.st || !/^ST\d+/.test(row.st)) return;
+      if (!row.st || !/^ST[A-Z0-9]\d+$/.test(row.st)) return;
       if (!groups[row.st]) {
         groups[row.st] = [];
       }

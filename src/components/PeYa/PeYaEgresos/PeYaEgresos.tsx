@@ -23,6 +23,7 @@ const columns: GridColDef[] = [
 const PeYaEgresos: React.FC = () => {
   const [rows, setRows] = useState<any[]>([]);
   const navigate = useNavigate();
+  const regexST = /^ST[A-Z0-9]\d+$/;
 
   const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -47,11 +48,11 @@ const PeYaEgresos: React.FC = () => {
   
   // ✅ Cálculos de métricas
   const metrics = useMemo(() => {
-    const stValues = rows.map((r) => r.st).filter((st) => st && /^ST\d+/.test(st));
+    const stValues = rows.map((r) => r.st).filter((st) => st && regexST.test(st));
     const pedidos = new Set(stValues).size;
 
     const lineas = rows.filter(
-      (r) => r.storeName.startsWith("AR") && /^ST\d+/.test(r.st)
+      (r) => r.storeName.startsWith("AR") && regexST.test(r.st)
     ).length;
 
     const skuValues = rows.map((r) => r.sku).filter((sku) => sku && sku !== "SKU");
@@ -84,7 +85,7 @@ const handleGenerateRemito=async()=>{
             ...new Set(
                 rows
                     .map(r=>r.st)
-                    .filter((st:string)=>/^ST\d+/.test(st))
+                    .filter((st:string)=>regexST.test(st))
             )
         ];
         const remitos=await obtenerRemitos(

@@ -33,13 +33,14 @@ const columns: GridColDef[] = [
 ];
 
 const PeYaPicking: React.FC = () => {
+  const regexST = /^ST[A-Z0-9]\d+$/;
   const location = useLocation();
   const navigate = useNavigate(); // ✅ hook para navegar
   const data = (location.state as { data: any[] })?.data || [];
   const groupedByST = useMemo(() => {
     const groups: Record<string, any[]> = {};
     data.forEach((row) => {
-      if (row.st && /^ST\d+/.test(row.st)) {
+      if (row.st && regexST.test(row.st)) {
         if (!groups[row.st]) groups[row.st] = [];
         groups[row.st].push(row);
       }

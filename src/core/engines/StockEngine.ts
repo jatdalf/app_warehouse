@@ -7,12 +7,11 @@ export class StockEngine implements PipelineStep {
     readonly name = "StockEngine";
 
     async execute(
-        session: WarehouseSession
+        _session: WarehouseSession
     ): Promise<EngineResult> {
         return {
             success: true,
-            message: "StockEngine."
+            message: "StockEngine."            
         };
-                console.log(session)
-    }
+    }    
 }

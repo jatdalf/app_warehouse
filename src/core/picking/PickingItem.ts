@@ -3,5 +3,7 @@ export interface PickingItem{
     sku:string;
     descripcion:string;
     cantidad:number;
+    bultos:number;
+    storeName:string;
     ubicacion:string;
 }

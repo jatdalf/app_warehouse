@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import type { StockItem } from "../../../../core/stock/StockItem";
-import styles from "./StockSection.module.css"
+import styles from "./StockImportSection.module.css"
 import Lottie from "lottie-react";
 import checkAnimation from "../../../../assets/check-ok.json";
+import { StockInforReader } from "../../../../readers/StockInforReader";
 
 
 export interface StockInfo {
@@ -16,7 +17,6 @@ interface Props {
     onLoaded: (stock: StockItem[]) => void;
 }
 
-
 const StockSection: React.FC<Props> = ({ onLoaded }) => {
     const [info, setInfo] = useState<StockInfo>({
         fileName: "",
@@ -25,30 +25,27 @@ const StockSection: React.FC<Props> = ({ onLoaded }) => {
         loaded: false
     });   
     const [dragOver, setDragOver] = useState(false);
-
     const handleDrop = (
     e: React.DragEvent<HTMLDivElement>
     ) => {
         e.preventDefault();
         setDragOver(false);
-
         const file = e.dataTransfer.files[0];
-
         if (file) {
             processFile(file);
         }
     };
 
     const processFile = async (file: File) => {
-    setInfo({
-        fileName: file.name,
-        posiciones: 1548,
-        sku: 742,
-        loaded: true
-    });
-    onLoaded([]);
+        const stock = await StockInforReader.read(file);
+        onLoaded(stock);
+        setInfo({
+            fileName: file.name,
+            posiciones: stock.length,
+            sku: new Set(stock.map(s => s.articulo)).size,
+            loaded: true
+        });
     };
-
 
     return (
         <fieldset className={styles.section}>

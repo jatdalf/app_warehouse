@@ -28,82 +28,97 @@ interface Props {
     onLoaded: (orders: OrderItem[]) => void;
 }
 
+const regexST = /^ST[A-Z0-9]\d+$/;
+
 const OrdersSection: React.FC<Props> = ({ onLoaded }) => {
-    console.log(onLoaded)
-    // const [info, setInfo] = useState<OrdersInfo>({
-    //     pedidos: 0,
-    //     lineas: 0,
-    //     sku: 0,
-    //     bultos: 0,
-    //     loaded: false,
-    //     fileName: ""
-    // });
+    const [info, setInfo] = useState<OrdersInfo>({
+        pedidos: 0,
+        lineas: 0,
+        sku: 0,
+        bultos: 0,
+        loaded: false,
+        fileName: ""
+    });
+    console.log(info)
 
     // const [dragOver, setDragOver] = useState(false);
 
-    // const processFile = async (file: File) => {
-    //     setInfo({
-    //         fileName: file.name,
-    //         pedidos: 18,
-    //         lineas: 224,
-    //         sku: 147,
-    //         bultos: 862,
-    //         loaded: true
-    //     });
-    //     onLoaded([]);
-    // };
+    const processFile = async (file: File) => {
+        setInfo({
+            fileName: file.name,
+            pedidos: 18,
+            lineas: 224,
+            sku: 147,
+            bultos: 862,
+            loaded: true
+        });
+        onLoaded([]);
+    };
+    console.log(processFile)
    
     // paste
-      const [rows, setRows] = useState<any[]>([]);   
+    const [rows, setRows] = useState<OrderItem[]>([]);
 
-        const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
-            event.preventDefault();
-            const text = event.clipboardData.getData("text/plain");
-            const lines = text.split("\n").filter((line) => line.trim() !== "");
-            const newRows = lines.map((line, index) => {
+    const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const text = event.clipboardData.getData("text/plain");
+        const lines = text .split("\n") .filter(line => line.trim() !== "");
+        const parsedRows = lines.map((line) => {
             const cells = line.split("\t");
+            const storeName = cells[0]?.trim() ?? "";
+            const st = cells[1]?.trim() ?? "";
+            // Ignorar filas que no son pedidos
+            if (
+                !storeName.startsWith("AR") ||
+                !regexST.test(st)
+            ) {
+                return null;
+            }
+
             return {
-                id: rows.length + index + 1,
-                storeName: cells[0] || "",
-                st: cells[1] || "",
-                sku: cells[2] || "",
-                ean: cells[3] || "",
-                title: cells[4] || "",
-                uxb: cells[5] || "",
-                bultos: cells[6] || "",
-                unidades: cells[7] || "",
+                storeName,
+                st,
+                sku: cells[2]?.trim() ?? "",
+                ean: cells[3]?.trim() ?? "",
+                title: cells[4]?.trim() ?? "",
+                uxb: cells[5]?.trim() ?? "",
+                bultos: parseInt(cells[6] ?? "0", 10) || 0,
+                unidades: parseInt(cells[7] ?? "0", 10) || 0
             };
-            });
-            setRows([...rows, ...newRows]);
+        });
+
+        const newRows: OrderItem[] =
+            parsedRows.filter(
+                (row): row is OrderItem => row !== null
+            );
+        const updatedRows = [
+            ...rows,
+            ...newRows
+        ];
+        setRows(updatedRows);
+        onLoaded(updatedRows);
+    };
+
+    // ✅ Cálculos de métricas
+    const metrics = useMemo(() => {
+        const pedidos =new Set(rows.map(r => r.st)).size;
+        const lineas = rows.length; 
+        const skus = new Set(rows.map(r => r.sku)).size;
+        const bultos = rows.reduce((acc, row) => acc + row.bultos,0);
+        return {
+            pedidos,
+            lineas,
+            skus,
+            bultos
         };
+    }, [rows]);
 
-      // ✅ Cálculos de métricas
-      const metrics = useMemo(() => {
-        const stValues = rows.map((r) => r.st).filter((st) => st && /^ST\d+/.test(st));
-        const pedidos = new Set(stValues).size;
-    
-        const lineas = rows.filter(
-          (r) => r.storeName.startsWith("AR") && /^ST\d+/.test(r.st)
-        ).length;
-    
-        const skuValues = rows.map((r) => r.sku).filter((sku) => sku && sku !== "SKU");
-        const skus = new Set(skuValues).size;
-    
-        const bultos = rows.reduce((acc, r) => {
-          if (
-            r.storeName &&
-            !r.storeName.toLowerCase().startsWith("total") &&
-            r.bultos &&
-            !isNaN(Number(r.bultos))
-          ) {
-            return acc + Number(r.bultos);
-          }
-          return acc;
-        }, 0);
-        return { pedidos, lineas, skus, bultos };
-      }, [rows]);
+    const gridRows = rows.map((row, index) => ({
+        id: index + 1,
+        ...row
+    }));
 
-    return (
+    return (        
         <fieldset>
             <legend>2. Pedidos</legend>
             
@@ -130,7 +145,7 @@ const OrdersSection: React.FC<Props> = ({ onLoaded }) => {
 
                     <div className={styles.gridWrapper} tabIndex={0} onPaste={handlePaste} >
                         <DataGrid
-                            rows={rows}
+                            rows={gridRows}
                             columns={columns}
                             disableColumnMenu
                             disableRowSelectionOnClick

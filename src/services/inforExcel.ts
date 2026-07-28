@@ -1,6 +1,5 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import type { OrderItem } from "../core/orders/OrderItem";
 import type { SalidaInforRow } from "./infor/SalidaInforRow";
 
 const SHEET_DATA="Data";
@@ -25,7 +24,7 @@ const DETAIL_COL_EXTERNORDERKEY=6;
 const DETAIL_COL_OPENQTY=7;
 const DETAIL_COL_DESTINO=8;
 
-
+const regexST = /^ST[A-Z0-9]\d+$/;
 
 
 function obtenerSTUnicos(
@@ -35,7 +34,7 @@ function obtenerSTUnicos(
         ...new Set(
             data
                 .map(r=>r.st)
-                .filter(st=>/^ST\d+$/.test(st))
+                .filter(st=>regexST.test(st))
         )
     ];
 }
@@ -62,7 +61,7 @@ function escribirHojaDetail(worksheet: ExcelJS.Worksheet, data: SalidaInforRow[]
     data.forEach(r=>{
         if(
             !r.st ||
-            !/^ST\d+$/.test(r.st) ||
+            !regexST.test(r.st) ||
             !r.sku
         ){
             return;
@@ -77,13 +76,9 @@ function escribirHojaDetail(worksheet: ExcelJS.Worksheet, data: SalidaInforRow[]
     });
 }
 
-export async function generarSalidaInfor(pedidos: OrderItem[]) {
-    const data:SalidaInforRow[]=pedidos.map(p=>({
-        st:p.st,
-        sku:p.sku,
-        bultos:p.bultos,
-        storeName:p.storeName
-    }));
+export async function generarSalidaInfor( movimientos: SalidaInforRow[]) {
+const data = movimientos;
+
     // Leer la plantilla desde /public
     const response = await fetch("/data/Infor00000.xlsx");
     if (!response.ok) {
@@ -106,7 +101,7 @@ export async function generarSalidaInfor(pedidos: OrderItem[]) {
     escribirHojaData(wsData, data);
     escribirHojaDetail(wsDetail, data);
     const buffer=await workbook.xlsx.writeBuffer();
-    saveAs(
+    saveAs(        
         new Blob(
             [buffer],
             {
