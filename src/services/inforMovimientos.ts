@@ -9,7 +9,7 @@
             st: item.st,
             sku: item.sku,
             bultos: item.bultos,
-            storeName: item.storeName
+            storeName: item.destino
         }));
 
     }   

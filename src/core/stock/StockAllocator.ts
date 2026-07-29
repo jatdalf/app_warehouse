@@ -30,10 +30,9 @@ export class StockAllocator {
             items.push({
                 st: pedido.st,
                 sku: pedido.sku,
-                descripcion: pedido.title,
-                cantidad: tomar,
+                descripcion: pedido.title,   
                 bultos: tomar,
-                storeName: pedido.storeName,
+                destino: pedido.storeName,
                 ubicacion: ubicacion.ubicacion
             });
             pendiente -= tomar;

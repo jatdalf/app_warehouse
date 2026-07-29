@@ -1,5 +1,6 @@
 import type { StockItem } from "./StockItem";
 import type { StockReservationResult } from "./StockReservationResult";
+import { LocationComparer } from "../shared/LocationComparer";
 
 export class StockIndex {
     private readonly stock: StockItem[];
@@ -25,22 +26,6 @@ export class StockIndex {
                 );
             }
         }
-    }
-
-    private compararUbicaciones(a:string,b:string){
-        const pa=a.split(".");
-        const pb=b.split(".");
-        if(pa[0]!==pb[0]){
-            return pa[0].localeCompare(pb[0]);
-        }
-        for(let i=1;i<3;i++){
-            const na=Number(pa[i]??0);
-            const nb=Number(pb[i]??0);
-            if(na!==nb){
-                return na-nb;
-            }
-        }
-        return 0;
     }
 
     buscar(sku: string): StockItem | undefined {
@@ -81,19 +66,11 @@ export class StockIndex {
         return this.stock;
     }
 
-    obtenerUbicaciones(
-        sku:string):StockItem[]{
-        const lista =
-            this.skuIndex.get(sku);
-        if(!lista){
-            return [];
-        }
-        return [...lista].sort(
-            (a,b)=>
-                this.compararUbicaciones(
-                    a.ubicacion,
-                    b.ubicacion
-                )
-        );
+    obtenerUbicaciones(sku: string): StockItem[] {
+        return this.stock
+            .filter(item => item.articulo === sku)
+            .sort((a, b) =>
+                LocationComparer.compare(a.ubicacion, b.ubicacion)
+            );
     }
 }
