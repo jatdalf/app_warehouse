@@ -1,54 +1,48 @@
 import type { PickingItem } from "../../core/picking/PickingItem";
+import { buildPickingPage } from "./PickingPage";
+import { PICKING_STYLES } from "./PickingStyles";
+import type { PickingGroup } from "./PickingGroup";
 
-export function buildPickingHtml(
-    picking: PickingItem[]
-): string {
+function buildPickingGroups(picking: PickingItem[]): PickingGroup[] {
+    const grupos = new Map<string, PickingGroup>();
+    for (const item of picking) {
+        if (!grupos.has(item.st)) {
+            grupos.set(item.st, {
+                st: item.st,
+                destino: item.destino,
+                items: []
+            });
+        }
+        grupos.get(item.st)!.items.push(item);
+    }
+    return [...grupos.values()];
+}
+
+export function buildPickingHtml(picking: PickingItem[]): string {
+    const grupos = buildPickingGroups(picking);
     return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="utf-8">
-    <title>Picking</title>
-    <style>
-    body{
-        font-family:Arial;
-        margin:25px;
-    }
-    table{
-        width:100%;
-        border-collapse:collapse;
-    }
-    th,
-    td{
-        border:1px solid #000;
-        padding:6px;
-    }
-    th{
-        background:#efefef;
-    }
-    </style>
-    </head>
-    <body>
-    <h2>Picking</h2>
-    <table>
-    <tr>
-    <th>ST</th>
-    <th>Ubicación</th>
-    <th>SKU</th>
-    <th>Descripción</th>
-    <th>Cantidad</th>
-    </tr>
-    ${picking.map(item=>`
-    <tr>
-    <td>${item.st}</td>
-    <td>${item.ubicacion}</td>
-    <td>${item.sku}</td>
-    <td>${item.descripcion}</td>
-    <td>${item.cantidad}</td>
-    </tr>
-    `).join("")}
-    </table>
-    </body>
-    </html>
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <meta charset="utf-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
+        <style>
+            ${PICKING_STYLES}
+        </style>
+        </head>
+        <body>
+            ${grupos
+                .map((grupo, index) =>
+                    buildPickingPage(
+                        grupo,
+                        index + 1,
+                        grupos.length
+                    )
+                )
+                .join("")}
+        </body>
+        </html>
     `;
 }
