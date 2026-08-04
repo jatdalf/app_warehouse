@@ -1,7 +1,6 @@
 import type { PickingGroup } from "./PickingGroup";
 
-export function buildFooter(grupo: PickingGroup, pedidoActual: number, totalPedidos: number): string {
-    console.log(pedidoActual, totalPedidos)
+export function buildFooter(grupo: PickingGroup, _pedidoActual: number, _totalPedidos: number): string {
     return `
         <div class="footerBox">
             <div class="summary">

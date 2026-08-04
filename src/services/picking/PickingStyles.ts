@@ -1,7 +1,7 @@
 export const PICKING_STYLES = `
     @page{
         size:A4 portrait;
-        margin:9mm;
+        margin:5mm;
     }
     body{
         margin:0;
@@ -12,7 +12,7 @@ export const PICKING_STYLES = `
     .page{
         width:100%;
         page-break-after:always;
-        min-height:270mm;
+        min-height:272mm;
         display:flex;
         flex-direction:column;
     }
@@ -28,7 +28,7 @@ export const PICKING_STYLES = `
     =========================== */
 
     .header{
-        margin-bottom:8px;
+        margin-bottom:4px;
     }
     .headerTop{
         display:flex;
@@ -40,15 +40,15 @@ export const PICKING_STYLES = `
         justify-content:space-between;
         align-items:center;
         font-size:16px;
-        margin:8px 0;
+        margin:6px 0;
     }
     .logoBox{
-        width:60px;
+        width:56px;
     }
     .logoPeYa{
-        width:60px;
+        width:56px;
         display:block;
-        margin:0 auto 6px auto;
+        margin:0 auto 4px auto;
     }
     .titleBox{
         flex:1;
@@ -77,7 +77,7 @@ export const PICKING_STYLES = `
     }
     .separator{
         border-top:2px solid #000;
-        margin:8px 0;
+        margin:4px 0;
     }
     .st{
         text-align:center;
@@ -87,7 +87,7 @@ export const PICKING_STYLES = `
     .destino{
         text-align:center;
         font-size:18px;
-        margin-top:4px;
+        margin-top:3px;
     }
     .lineCount{
         text-align:right;
@@ -104,12 +104,12 @@ export const PICKING_STYLES = `
     =========================== */
 
     .sector{
-        margin-top:5px;
+        margin-top:2px;
     }
     .sectorTitle{
         background:#000;
         color:#fff;
-        padding:4px 4px;
+        padding:2px 2px;
         font-weight:bold;
         font-size:14px;
         letter-spacing:1px;
@@ -123,17 +123,17 @@ export const PICKING_STYLES = `
         width:100%;
         border-collapse:collapse;
         table-layout:fixed;
-        margin-bottom:8px;
+        margin-bottom:4px;
     }
     .pickingTable th{
         border-bottom:2px solid #000;
-        padding:6px;
+        padding:4px;
         font-size:12px;
         text-transform:uppercase;
     }
     .pickingTable td{
         border-bottom:1px solid #ddd;
-        padding:3px 6px;
+        padding:3px 4px;
         vertical-align:middle;
     }
 
@@ -166,7 +166,7 @@ export const PICKING_STYLES = `
     .barcodeText{
         font-size:11px;
         letter-spacing:1px;
-        margin-top:-4px;
+        margin-top:-3px;
     }
     .description{
         font-size:12px;
@@ -184,7 +184,7 @@ export const PICKING_STYLES = `
     =========================== */
 
     .footer{
-        margin-top:8px;
+        margin-top:2px;
         text-align:center;
         font-size:11px;
         color:#666;
@@ -193,7 +193,7 @@ export const PICKING_STYLES = `
         display:grid;
         grid-template-columns:1fr 1fr 1fr;
         border:2px solid #000;
-        margin-top:4px;
+        margin-top:2px;
         page-break-inside:avoid;
         break-inside:avoid;
     }
@@ -217,7 +217,7 @@ export const PICKING_STYLES = `
     .signatureTitle{
         border-bottom:2px solid #000;
         text-align:center;
-        padding:4px;
+        padding:2px;
         font-weight:bold;
         font-size:14px;
     }

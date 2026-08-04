@@ -1,9 +1,12 @@
 import React, { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import styles from "../PeYaRemito/PeYaRemito.module.css";
+import type { Remito } from "../../../core/remitos/Remito";
+import RemitoDocument from "../../../services/remito/RemitoDocument";
+
 
 interface Producto {
-  sku: string;
+  sku: string;  
   ean: string;
   producto: string;
   uxb: string;
@@ -60,22 +63,21 @@ const COPIAS = [
 const MAX_ITEMS = 25;
 
 const PeYaRemito: React.FC = () => {
-  const location = useLocation();
-  const state=location.state as{
-    data:any[];
-    remitos:{
-        st:string;
-        remito:string;
-    }[];
+const location = useLocation();
+const state = location.state as {
+    data?: any[];
+    remitos?: {st: string; remito: string;}[];
+    remitosGenerados?: Remito[];
 };
 
-const data=state?.data||[];
-const remitos=state?.remitos||[];
-
+const data = state?.data ?? [];
+const remitos = state?.remitos ?? [];
+const remitosGenerados = state?.remitosGenerados ?? [];
+const regexST = /^ST[A-Z0-9]\d+$/;
 const groupedByST = useMemo(() => {
   const groups: Record<string, RemitoData[]> = {};
     data.forEach(row => {
-      if (!row.st || !/^ST[A-Z0-9]\d+$/.test(row.st)) return;
+      if (!row.st || !regexST.test(row.st)) return;
       if (!groups[row.st]) {
         groups[row.st] = [];
       }
@@ -93,19 +95,10 @@ const groupedByST = useMemo(() => {
       );
   },[remitos]);
 
-  const stKeys = useMemo(
-    () => Object.keys(groupedByST).sort(),
-    [groupedByST]
-  );
-
-  const fechaEmision = useMemo(
-    () => new Intl.DateTimeFormat("es-AR").format(new Date()),
-    []
-  );
-
+  const stKeys = useMemo(() => Object.keys(groupedByST).sort(),[groupedByST]);
+  const fechaEmision = useMemo(() => new Intl.DateTimeFormat("es-AR").format(new Date()),[]);
   const completarProductos = (productos: Producto[]) => {
     const lista = [...productos];
-
     while (lista.length < MAX_ITEMS) {
       lista.push({
         sku: "",
@@ -116,13 +109,30 @@ const groupedByST = useMemo(() => {
         unidades: 0
       });
     }
-
     return lista;
   };
 
   const imprimir = () => {
     window.print();
   };
+
+  if (remitosGenerados.length > 0) {
+    return (
+        <>
+            <div className={styles.topActions}>
+                <button className={styles.printButton} onClick={imprimir}>
+                    Imprimir
+                </button>
+            </div>
+            {remitosGenerados.map(remito => (
+                <RemitoDocument
+                    key={remito.numero}
+                    remitos={[remito]}
+                />
+            ))}
+        </>
+    );
+  }
 
   return (
         <>

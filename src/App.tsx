@@ -7,7 +7,7 @@ import Traslados from "./components/Traslados/Traslados";
 import Inventarios from "./components/Inventarios/Inventarios";
 import InventoryDetail from "./components/InventoryDetail/InventoryDetail";
 import UbicacionesDetail from "./components/Inventarios/UbicacionesDetail";
-import WhGral from "./components/whGral/WhGral";
+import WhGral from "./components/WhGeneral/WhGral";
 import PeYa from "./components/PeYa/PeYa";
 import PeYaIngresos from "./components/PeYa/PeYaIngresos";
 import PeYaEgresos from "./components/PeYa/PeYaEgresos/PeYaEgresos";

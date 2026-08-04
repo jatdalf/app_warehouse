@@ -6,8 +6,13 @@ import type { PickingProcessResult } from "../picking/PickingProcessResult";
 import type { StockShortage } from "./StockShortage";
 import type { PickingStats } from "../picking/PickingStats";
 import { StockIndex } from "./StockIndex";
+import type { PickingSortStrategy } from "../picking/strategies/PickingSortStrategy";
 
 export class StockAllocator {
+    private strategy: PickingSortStrategy;
+    constructor(strategy: PickingSortStrategy) {
+        this.strategy = strategy;
+    }
 
     distribuirCantidad(
         ubicaciones: StockItem[],
@@ -59,8 +64,9 @@ export class StockAllocator {
             faltantes: 0
         };
         for (const pedido of pedidos) {
-            const ubicaciones = stockIndex.obtenerUbicaciones(pedido.sku);
-            const resultado = this.distribuirCantidad(ubicaciones, pedido);
+        const ubicaciones = stockIndex.obtenerUbicaciones(pedido.sku);
+        const ubicacionesOrdenadas = this.strategy.sort(ubicaciones);
+        const resultado = this.distribuirCantidad(ubicacionesOrdenadas, pedido);
             picking.push(...resultado.items);
             if (resultado.pendiente > 0) {
                 shortages.push({
