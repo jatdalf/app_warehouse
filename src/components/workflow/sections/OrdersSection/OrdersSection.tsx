@@ -41,8 +41,6 @@ const OrdersSection: React.FC<Props> = ({ onLoaded }) => {
     });
     console.log(info)
 
-    // const [dragOver, setDragOver] = useState(false);
-
     const processFile = async (file: File) => {
         setInfo({
             fileName: file.name,

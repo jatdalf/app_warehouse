@@ -1,0 +1,117 @@
+.card{
+    width:210px;
+    min-height:320px;
+    border:2px solid #d9d9d9;
+    border-radius:18px;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:12px;
+    transition:.25s;
+    box-shadow:0 3px 8px rgba(0,0,0,.08);
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,.18);
+}
+
+/*==========================
+  ESTADOS
+==========================*/
+
+.pending{
+    border-color:#bdbdbd;
+}
+.running{
+    border-color:#2196f3;
+}
+.success{
+    border-color:#4caf50;
+}
+.error{
+    border-color:#f44336;
+}
+
+/*==========================
+  ICONO
+==========================*/
+
+.icon{
+    font-size:54px;
+    margin-top:4px;
+    margin-bottom:10px;
+}
+.pending .icon{
+    color:#999;
+}
+.running .icon{
+    color:#2196f3;
+}
+.success .icon{
+    color:#4caf50;
+}
+.error .icon{
+    color:#f44336;
+}
+
+/*==========================
+  TITULO
+==========================*/
+
+.title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:14px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+/*==========================
+  RESUMEN
+==========================*/
+
+.summary{
+    flex:1;
+    width:100%;
+}
+
+.resume{
+    text-align:center;
+    font-size:13px;
+    margin:4px 0;
+    color:#444;
+}
+
+/*==========================
+  BOTON
+==========================*/
+
+.detailButton{
+    width:100%;
+    margin-top:16px;
+    padding:10px;
+    border:none;
+    border-top:1px solid #e5e5e5;
+    background:none;
+    cursor:pointer;
+    font-weight:600;
+    color:#1976d2;
+    transition:.2s;
+}
+
+.detailButton:hover{
+    background:#f5f5f5;
+}
+
+/*==========================
+  DETALLE
+==========================*/
+
+.detail{
+    width:100%;
+    margin-top:15px;
+    border-top:1px solid #e5e5e5;
+    padding-top:15px;
+}

@@ -1,0 +1,4 @@
+export enum PickingStrategyType {
+    LOCATION = "LOCATION",
+    LEVEL = "LEVEL"
+}

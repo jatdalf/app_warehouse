@@ -10,22 +10,15 @@ export class InforEngine implements PipelineStep {
     async execute(
         session: WarehouseSession
     ): Promise<EngineResult> {
-
-        console.log("InforEngine ejecutado");
-
         try {
-
             session.movimientos = generarMovimientosInfor(
                 session.picking
             );
-
             return {
                 success: true,
                 message: "Movimientos Infor generados."
             };
-
         } catch (error) {
-
             return {
                 success: false,
                 message:
