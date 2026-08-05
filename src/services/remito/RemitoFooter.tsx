@@ -7,6 +7,7 @@ interface Props{
 
 const RemitoFooter: React.FC<Props> = ({ remito }) => {
     return (
+        console.log(remito),
         <div className="footer">
             <div className="footerTitle">
                 CONFORME DE RECEPCIÓN

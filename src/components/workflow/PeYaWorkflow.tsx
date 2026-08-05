@@ -13,8 +13,8 @@ import { RemitoSummaryBuilder } from "../../core/remitos/RemitoSummaryBuilder";
 import RemitoSection from "./sections/RemitoSection/RemitoSection";
 import { PickingMethods } from "../../core/picking/strategies/PickingMethod";
 import type { PickingMethod } from "../../core/picking/strategies/PickingMethod";
-import ExecutionPanel from "../ExecutionPanel/ExecutionPanel";
 import OrdersDetail from "./sections/OrdersSection/OrdersDetail";
+import InforSection from "./sections/InforSection/InforSection";
 
 const PeYaWorkflow: React.FC = () => {   
     const dashboard = useProcessDashboard();
@@ -29,6 +29,7 @@ const PeYaWorkflow: React.FC = () => {
         process.cargarPedidos(orders);     
         process.session.pickingMethod = pickingMethod;   
         const result = await process.ejecutar();
+        const movimientosInfor = process.session.movimientos;
         const remitoSummary = RemitoSummaryBuilder.build(process.session.remitos);
         dashboard.remitoOk(
             [
@@ -40,10 +41,15 @@ const PeYaWorkflow: React.FC = () => {
         );
         if (result.success && process.session.stats) {
             const s = process.session.stats;
-            dashboard.procesoOk([
+            const metodoTexto =
+                pickingMethod === PickingMethods.ACCESSIBILITY
+                    ? "Accesibilidad"
+                    : "Recorrido";
+            dashboard.procesoOk([                
                 `${s.pedidos} pedidos`,
                 `${s.lineas} líneas`,
-                `${s.bultosAsignados}/${s.bultosSolicitados} bultos`
+                `${s.bultosAsignados}/${s.bultosSolicitados} bultos`,
+                `Método: ${metodoTexto}`,
             ]);
         const pickingSummary = PickingSummaryBuilder.build(process.session.picking);
         dashboard.pickingOk(
@@ -58,6 +64,22 @@ const PeYaWorkflow: React.FC = () => {
                     stats={process.session.stats}
                 />
             );
+             const movimientosInfor = process.session.movimientos;
+            if (movimientosInfor.length > 0) {
+                dashboard.informeOk(
+                    [
+                        `${movimientosInfor.length} filas`,
+                        "Infor00000.xlsx"
+                    ],
+                    <InforSection
+                        data={movimientosInfor}
+                    />
+                );
+            } else {
+                dashboard.informeError([
+                    "No se generaron movimientos"
+                ]);
+            }
         }
     };  
 
@@ -114,15 +136,6 @@ const PeYaWorkflow: React.FC = () => {
                     orders.length > 0,
                 onExecute: handleExecute
             }}
-        />
-        <ExecutionPanel
-            method={pickingMethod}
-            onMethodChange={setPickingMethod}
-            enabled={
-                stock.length > 0 &&
-                orders.length > 0
-            }
-            onExecute={handleExecute}
         />
     </div>
     );
