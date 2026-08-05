@@ -30,8 +30,8 @@ const INITIAL_STEPS: ProcessStep[] = [
         estado: "pending"
     },
     {
-        id: "informe",
-        titulo: "Informe",
+        id: "Exportar",
+        titulo: "Exportar",
         estado: "pending"
     }
 ];
@@ -146,6 +146,39 @@ export const useProcessDashboard = () => {
                     : step
                 )
             );
-        }
+        },
+        informeOk(
+            resumen?: string[],
+            detail?: ReactNode
+        ) {
+            setSteps(prev =>
+                prev.map(step =>
+                    step.id === "Exportar"
+                        ? {
+                            ...step,
+                            estado: "success",
+                            resumen,
+                            detail,
+                            animationKey:
+                                (step.animationKey ?? 0) + 1
+                        }
+                        : step
+                )
+            );
+        },
+        informeError(resumen?: string[]) {
+            setSteps(prev =>
+                prev.map(step =>
+                    step.id === "Exportar"
+                        ? {
+                            ...step,
+                            estado: "error",
+                            resumen,
+                            detail: undefined
+                        }
+                        : step
+                )
+            );
+        },
     };
 };

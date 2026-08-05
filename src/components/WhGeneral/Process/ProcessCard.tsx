@@ -8,6 +8,7 @@ import LottieError from "../../Lotties/LottieError";
 import LottieYellowCircle from "../../Lotties/LottieYellowCircle";
 import LottieProcessing from "../../Lotties/LottieProcessing";
 import OrdersCardContent, { type OrdersCardContentRef} from "../../workflow/sections/OrdersSection/OrdersCardContent";
+import ProcessCardContent from "../../ExecutionPanel/ProcessCardContent";
 
 interface Props {
     step: ProcessStep;
@@ -23,13 +24,15 @@ const ProcessCard: React.FC<Props> = ({
     opened,
     onToggle,
     stockProps,
-    ordersProps
+    ordersProps,
+    executionProps
     }) => {
     const stockContentRef = useRef<StockCardContentRef>(null);
     const ordersContentRef = useRef<OrdersCardContentRef>(null);
     const isStockCard = step.id === "stock";
     const isOrdersCard = step.id === "pedidos";
     const isClickable = isStockCard || isOrdersCard;
+    const isProcessCard = step.id === "proceso";
   
     const handleCardClick = () => {
         if (isStockCard) {
@@ -86,6 +89,19 @@ const ProcessCard: React.FC<Props> = ({
                         onError={ordersProps.onError}
                     />
                 </div>
+            );
+        }
+        if (
+            isProcessCard &&
+            (
+                step.estado === "pending" ||
+                step.estado === "error"
+            )
+        ) {
+            return (
+                <ProcessCardContent
+                    {...executionProps}
+                />
             );
         }
         return null;

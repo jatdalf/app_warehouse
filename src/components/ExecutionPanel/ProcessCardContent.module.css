@@ -1,0 +1,79 @@
+.content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.heading {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    color: #555;
+}
+
+.method {
+    width: 100%;
+    min-height: 34px;
+    padding: 6px 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+
+    border: 1px solid #d4d4d4;
+    border-radius: 7px;
+    background: #fff;
+
+    color: #176f70;
+    font-size: 13px;
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s,
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.method:hover {
+    border-color: #23858a;
+    background: #f3fbfb;
+    transform: translateY(-1px);
+}
+
+.selected {
+    border-color: #1976d2;
+    background: #eaf3ff;
+    box-shadow: 0 0 0 1px #1976d2;
+}
+
+.methodIcon {
+    width: 22px;
+    text-align: center;
+}
+
+.executeButton {
+    width: 100%;
+    min-height: 36px;
+    margin-top: 3px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #167b80;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.executeButton:hover:not(:disabled) {
+    background: #11676b;
+}
+
+.executeButton:disabled {
+    background: #e6e6e6;
+    color: #aaa;
+    cursor: not-allowed;
+}
