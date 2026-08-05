@@ -3,11 +3,14 @@ import type { OrderItem } from "../../../core/orders/OrderItem";
 import type { PickingMethod } from "../../../core/picking/strategies/PickingMethod";
 
 export interface StockCardProps {
-    onLoaded(items: StockItem[]): void;
+    fileName: string;
+    onLoaded(items: StockItem[], fileName: string): void;
+    onError(message: string): void;
 }
 
 export interface OrdersCardProps {
     onLoaded(items: OrderItem[]): void;
+    onError(message: string): void;
 }
 
 export interface ExecutionCardProps {

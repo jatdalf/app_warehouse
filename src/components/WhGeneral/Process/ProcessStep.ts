@@ -13,4 +13,5 @@ export interface ProcessStep {
     resumen?: string[];
     content?: ReactNode;
     detail?: ReactNode;
+    animationKey?: number;
 }

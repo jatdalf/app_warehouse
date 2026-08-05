@@ -1,72 +1,83 @@
-import React, { useRef, useState } from "react";
+import {forwardRef, useImperativeHandle, useRef, useState} from "react";
 import type { StockItem } from "../../../../core/stock/StockItem";
 import { StockInforReader } from "../../../../readers/StockInforReader";
 import styles from "./StockCardContent.module.css";
 
-export interface StockInfo {
-    fileName: string;
-    posiciones: number;
-    sku: number;
-    loaded: boolean;
+export interface StockCardContentRef {
+    openFileSelector(): void;
 }
 
 interface Props {
-    onLoaded: (stock: StockItem[]) => void;
+    onLoaded(stock: StockItem[], fileName: string): void;
+    onError(message: string): void;
 }
 
-const StockCardContent: React.FC<Props> = ({ onLoaded }) => {
+const StockCardContent = forwardRef<StockCardContentRef, Props>(({ onLoaded, onError }, ref) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [info, setInfo] = useState<StockInfo>({
-        fileName: "",
-        posiciones: 0,
-        sku: 0,
-        loaded: false
-    });   
+    const [loading, setLoading] = useState(false);
+    useImperativeHandle(ref, () => ({
+        openFileSelector() {
+            inputRef.current?.click();
+        }
+    }));
 
     const processFile = async (file: File) => {
-        const stock = await StockInforReader.read(file);
-        onLoaded(stock);
-        setInfo({
-            fileName: file.name,
-            posiciones: stock.length,
-            sku: new Set(stock.map(s => s.articulo)).size,
-            loaded: true
-        });
+        try {
+            setLoading(true);
+            const stock = await StockInforReader.read(file);
+            const posiciones = stock.length;
+            const sku = new Set(stock.map(item => item.articulo)).size;
+             if (posiciones === 0 || sku === 0) {
+                onError("El archivo no contiene stock válido");
+                return;
+            }
+            onLoaded(stock, file.name);
+        } catch (error) {
+            console.error(error);
+            onError("No fue posible leer el archivo");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            void processFile(file);
+        }
+        // Permite volver a seleccionar el mismo archivo.
+        event.target.value = "";
     };
 
     return (
-        <div className={styles.section}>
-            {!info.loaded ? (
-                <>
-                    <p className={styles.small}>
-                        cargar stock desde Excel
-                    </p>
-                    <input
-                        ref={inputRef}
-                        type="file"
-                        accept=".xlsx"
-                        style={{ display: "none" }}
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                                processFile(file);
-                            }
-                        }}
-                    />
-                    <button
-                        className={styles.button}
-                        onClick={() => inputRef.current?.click()}
-                    >
-                        Elegir archivo
-                    </button>
-                </>
-            ) : (
-                <div className={styles.success}>
-                    <p>{info.fileName}</p>   
+        <div className={styles.cardContent}>
+            <input
+                ref={inputRef}
+                type="file"
+                accept=".xlsx"
+                className={styles.hiddenInput}
+                onChange={handleFile}
+            />
+
+            <div className={styles.folder}>
+                📂
+            </div>
+
+            <div className={styles.text}>
+                {loading
+                    ? "Leyendo archivo..."
+                    : "Haga clic aquí"}
+            </div>
+
+            {!loading && (
+                <div className={styles.subtext}>
+                    para seleccionar el archivo Excel
                 </div>
             )}
         </div>
-    );    
-};
+    );
+});
+
+StockCardContent.displayName = "StockCardContent";
 
 export default StockCardContent;

@@ -42,23 +42,63 @@ export const useProcessDashboard = () => {
     return {
         steps,
         stockOk(resumen?: string[]) {
-            setSteps(prev => ProcessDashboardController.success(
-                    prev,
-                    "stock",
-                    resumen
+            setSteps(prev =>
+                prev.map(step => step.id === "stock" ? {
+                        ...step,
+                        estado: "success",
+                        resumen,
+                        animationKey:
+                            (step.animationKey ?? 0) + 1
+                    }
+                    : step
                 )
             );
         },
-
-        pedidosOk(resumen?: string[]) {
-            setSteps(prev => ProcessDashboardController.success(
-                    prev,
-                    "pedidos",
-                    resumen
+        stockError(resumen?: string[]) {
+            setSteps(prev =>
+                prev.map(step =>
+                    step.id === "stock"
+                        ? {
+                            ...step,
+                            estado: "error",
+                            resumen
+                        }
+                        : step
                 )
             );
         },
-
+        pedidosOk(
+            resumen?: string[],
+            detail?: ReactNode
+        ) {
+            setSteps(prev =>
+                prev.map(step =>
+                    step.id === "pedidos"
+                        ? {
+                            ...step,
+                            estado: "success",
+                            resumen,
+                            detail,
+                            animationKey:
+                                (step.animationKey ?? 0) + 1
+                        }
+                        : step
+                )
+            );
+        },
+        pedidosError(resumen?: string[]) {
+            setSteps(prev =>
+                prev.map(step =>
+                    step.id === "pedidos"
+                        ? {
+                            ...step,
+                            estado: "error",
+                            resumen
+                        }
+                        : step
+                )
+            );
+        },
         procesoRunning() {
             setSteps(prev => ProcessDashboardController.running(
                     prev,
