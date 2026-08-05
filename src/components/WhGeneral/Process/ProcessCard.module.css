@@ -15,8 +15,21 @@
 .card:hover{
     transform:translateY(-4px);
     box-shadow:0 10px 20px rgba(0,0,0,.18);
+    cursor: pointer;
+}
+.clickable {
+    cursor: pointer;
 }
 
+.clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+}
+
+.clickable:focus-visible {
+    outline: 3px solid rgba(29, 114, 210, 0.35);
+    outline-offset: 3px;
+}
 /*==========================
   ESTADOS
 ==========================*/
@@ -114,4 +127,7 @@
     margin-top:15px;
     border-top:1px solid #e5e5e5;
     padding-top:15px;
+}
+.hiddenCardContent {
+    display: none;
 }

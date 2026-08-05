@@ -1,53 +1,116 @@
+import { useRef } from "react";
 import type { ProcessStep } from "./ProcessStep";
 import type {StockCardProps, OrdersCardProps, ExecutionCardProps} from "./ProcessDashboardProps";
 import styles from "./ProcessCard.module.css";
-import StockCardContent from "../../workflow/sections/StockImportSection/StockCardContent";
-import LottieOk from "./LottieOk";
+import StockCardContent, {type StockCardContentRef} from "../../workflow/sections/StockImportSection/StockCardContent";
+import LottieOk from "../../Lotties/LottieOk";
+import LottieError from "../../Lotties/LottieError";
+import LottieYellowCircle from "../../Lotties/LottieYellowCircle";
+import LottieProcessing from "../../Lotties/LottieProcessing";
+import OrdersCardContent, { type OrdersCardContentRef} from "../../workflow/sections/OrdersSection/OrdersCardContent";
 
 interface Props {
     step: ProcessStep;
     opened: boolean;
-    onToggle: () => void;
+    onToggle(): void;
     stockProps: StockCardProps;
     ordersProps: OrdersCardProps;
     executionProps: ExecutionCardProps;
 }
 
 const ProcessCard: React.FC<Props> = ({
-        step,
-        opened,
-        onToggle,
-        stockProps,
-        // ordersProps,
-        // executionProps
+    step,
+    opened,
+    onToggle,
+    stockProps,
+    ordersProps
     }) => {
-    const renderIcon = () => {
-        switch (step.estado) {
-            case "pending":
-                return "⚙️";
-            case "running":
-                return "⟳";
-            case "success":
-                return <LottieOk />;
-            case "error":
-                return "✖";
+    const stockContentRef = useRef<StockCardContentRef>(null);
+    const ordersContentRef = useRef<OrdersCardContentRef>(null);
+    const isStockCard = step.id === "stock";
+    const isOrdersCard = step.id === "pedidos";
+    const isClickable = isStockCard || isOrdersCard;
+  
+    const handleCardClick = () => {
+        if (isStockCard) {
+            stockContentRef.current?.openFileSelector();
+            return;
         }
-    };
-    const renderContent = () => {
-        switch (step.id) {
-            case "stock":
-                return (
-                    <div>
-                        <StockCardContent onLoaded={stockProps.onLoaded}/>
-                    </div>
-                );
-            default:
-                return null;
+        if (isOrdersCard) {
+            ordersContentRef.current?.readClipboard();
         }
     };
 
+    const renderIcon = () => {
+        switch (step.estado) {
+            case "pending":
+                return <LottieYellowCircle />;
+            case "running":
+                return <LottieProcessing />;
+            case "success":
+                return (<LottieOk key={`${step.id}-${step.animationKey ?? 0}`}/>);
+            case "error":
+                return <LottieError />;
+        }
+    };
+    const renderContent = () => {
+        if (isStockCard) {
+            return (
+                <div
+                    className={
+                        step.estado === "success"
+                            ? styles.hiddenCardContent
+                            : undefined
+                    }
+                >
+                    <StockCardContent
+                        ref={stockContentRef}
+                        onLoaded={stockProps.onLoaded}
+                        onError={stockProps.onError}
+                    />
+                </div>
+            );
+        }
+        if (isOrdersCard) {
+            return (
+                <div
+                    className={
+                        step.estado === "success"
+                            ? styles.hiddenCardContent
+                            : undefined
+                    }
+                >
+                    <OrdersCardContent
+                        ref={ordersContentRef}
+                        onLoaded={ordersProps.onLoaded}
+                        onError={ordersProps.onError}
+                    />
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
-        <div className={`${styles.card} ${styles[step.estado]}`}>
+        <div
+            className={`
+                ${styles.card}
+                ${styles[step.estado]}
+                ${isClickable ? styles.clickable : ""}
+            `}
+            onClick={handleCardClick}
+            role={isClickable ? "button" : undefined}
+            tabIndex={isClickable ? 0 : undefined}
+            onKeyDown={(event) => {
+                if (
+                    isClickable &&
+                    (event.key === "Enter" || event.key === " ")
+                ) {
+                    event.preventDefault();
+                    handleCardClick();
+                }
+            }}
+        >
             <div className={styles.icon}>
                 {renderIcon()}
             </div>
@@ -58,22 +121,31 @@ const ProcessCard: React.FC<Props> = ({
 
             <div className={styles.summary}>
                 {step.resumen?.map(linea => (
-                    <div key={linea} className={styles.resume} >
+                    <div
+                        key={linea}
+                        className={styles.resume}
+                    >
                         {linea}
                     </div>
                 ))}
             </div>
+
             {renderContent()}
+
             {step.detail && (
                 <>
                     <button
                         className={styles.detailButton}
-                        onClick={onToggle}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            onToggle();
+                        }}
                     >
                         {opened
                             ? "Ocultar detalle ▲"
                             : "Ver detalle ▼"}
                     </button>
+
                     {opened && (
                         <div className={styles.detail}>
                             {step.detail}

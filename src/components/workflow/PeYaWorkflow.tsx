@@ -2,7 +2,6 @@ import { useState } from "react";
 import styles from "./PeYaWorkflow.module.css";
 import PeYaHeader from "./PeYaHeader/PeYaHeader";
 import ProcessDashboard from "../WhGeneral/Process/ProcessDashboard";
-import OrdersSection from "./sections/OrdersSection/OrdersSection"
 import PickingSection from "./sections/PickingSection/PickingSection";
 import { WarehouseProcess } from "../../core/warehouse/WarehouseProcess";
 import type { StockItem } from "../../core/stock/StockItem";
@@ -14,12 +13,13 @@ import { RemitoSummaryBuilder } from "../../core/remitos/RemitoSummaryBuilder";
 import RemitoSection from "./sections/RemitoSection/RemitoSection";
 import { PickingMethods } from "../../core/picking/strategies/PickingMethod";
 import type { PickingMethod } from "../../core/picking/strategies/PickingMethod";
-
 import ExecutionPanel from "../ExecutionPanel/ExecutionPanel";
+import OrdersDetail from "./sections/OrdersSection/OrdersDetail";
 
 const PeYaWorkflow: React.FC = () => {   
     const dashboard = useProcessDashboard();
     const [stock,setStock]=useState<StockItem[]>([]);
+    const [stockFileName, setStockFileName] = useState("");
     const [orders,setOrders]=useState<OrderItem[]>([]);
     const [process] = useState(() => new WarehouseProcess());
     const [pickingMethod, setPickingMethod] = useState<PickingMethod>(PickingMethods.LOCATION);
@@ -65,27 +65,47 @@ const PeYaWorkflow: React.FC = () => {
     <div className={styles.container}>
         <PeYaHeader />
         <ProcessDashboard steps={dashboard.steps} stockProps={{
-            onLoaded: (items) => {
+            fileName: stockFileName,
+            onLoaded: (items, fileName) => {
                 setStock(items);
-                const sku = new Set( items.map(i => i.articulo)).size;
+                setStockFileName(fileName);
+                const sku = new Set(items.map(item => item.articulo)).size;
                 dashboard.stockOk([
+                    fileName,
                     `${items.length} posiciones`,
                     `${sku} SKU`
-                    ]);
-                }
-            }}
-            ordersProps={{
-                onLoaded: (items) => {
-                    setOrders(items);
-                    const resumen = OrderSummaryBuilder.build(items);
-                    dashboard.pedidosOk([
+                ]);
+            },
+            onError: (message) => {
+                setStock([]);
+                setStockFileName("");
+                dashboard.stockError([
+                    message
+                ]);
+            }
+        }}
+        ordersProps={{
+            onLoaded: (items) => {
+                setOrders(items);
+                const resumen = OrderSummaryBuilder.build(items);
+                const pedidos = new Set(items.map(item => item.st)).size;
+                dashboard.pedidosOk(
+                    [
+                        `${pedidos} pedidos`,
                         `${resumen.sku} SKU`,
                         `${resumen.lineas} líneas`,
                         `${resumen.bultos} bultos`
-                    ]);
-                }
-            }}
-
+                    ],
+                    <OrdersDetail orders={items} />
+                );
+            },
+            onError: (message) => {
+                setOrders([]);
+                dashboard.pedidosError([
+                    message
+                ]);
+            }
+        }}
             executionProps={{
                 method: pickingMethod,
                 onMethodChange: setPickingMethod,
@@ -104,16 +124,6 @@ const PeYaWorkflow: React.FC = () => {
             }
             onExecute={handleExecute}
         />
-
-        <OrdersSection onLoaded={(items) => {
-            setOrders(items);
-            const resumen = OrderSummaryBuilder.build(items);
-            dashboard.pedidosOk([
-                `${resumen.sku} SKU`,
-                `${resumen.lineas} líneas`,
-                `${resumen.bultos} bultos`
-            ]);
-        }}/>
     </div>
     );
 };
