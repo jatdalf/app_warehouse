@@ -4,7 +4,7 @@ import type { PickingMethod } from "../../../core/picking/strategies/PickingMeth
 
 export interface StockCardProps {
     fileName: string;
-    onLoaded(items: StockItem[], fileName: string): void;
+    onLoaded(items: StockItem[], fileName: string, lastModified: number): void;
     onError(message: string): void;
 }
 

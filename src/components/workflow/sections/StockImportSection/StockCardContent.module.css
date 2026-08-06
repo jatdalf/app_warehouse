@@ -26,3 +26,26 @@
     opacity: 0.7;
 }
 
+.fileName {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-top: 6px;
+}
+
+.fileDate {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 14px;
+}
+
+.metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric {
+    font-size: 15px;
+    color: #444;
+}
