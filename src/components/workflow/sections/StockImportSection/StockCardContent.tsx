@@ -8,7 +8,7 @@ export interface StockCardContentRef {
 }
 
 interface Props {
-    onLoaded(stock: StockItem[], fileName: string): void;
+    onLoaded(stock: StockItem[], fileName: string,  lastModified: number): void;
     onError(message: string): void;
 }
 
@@ -31,7 +31,7 @@ const StockCardContent = forwardRef<StockCardContentRef, Props>(({ onLoaded, onE
                 onError("El archivo no contiene stock válido");
                 return;
             }
-            onLoaded(stock, file.name);
+            onLoaded(stock, file.name, file.lastModified);
         } catch (error) {
             console.error(error);
             onError("No fue posible leer el archivo");

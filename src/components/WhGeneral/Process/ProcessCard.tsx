@@ -136,12 +136,11 @@ const ProcessCard: React.FC<Props> = ({
             </div>
 
             <div className={styles.summary}>
-                {step.resumen?.map(linea => (
-                    <div
-                        key={linea}
-                        className={styles.resume}
-                    >
-                        {linea}
+                {step.resumen?.map((linea, index) => (
+                    <div key={linea}>{index === 2 && (<div className={styles.separator} />)}
+                        <div className={styles.resume}>
+                            {linea}
+                        </div>
                     </div>
                 ))}
             </div>

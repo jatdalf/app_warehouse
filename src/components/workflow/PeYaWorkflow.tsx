@@ -81,19 +81,29 @@ const PeYaWorkflow: React.FC = () => {
             }
         }
     };  
+    function formatDate(value: number) {
+        return new Date(value).toLocaleString("es-AR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
 
     return (        
     <div className={styles.container}>
         <PeYaHeader />
         <ProcessDashboard steps={dashboard.steps} stockProps={{
             fileName: stockFileName,
-            onLoaded: (items, fileName) => {
+            onLoaded: (items, fileName, lastModified) => {
                 setStock(items);
                 setStockFileName(fileName);
                 const sku = new Set(items.map(item => item.articulo)).size;
                 dashboard.stockOk([
                     fileName,
-                    `${items.length} posiciones`,
+                    formatDate(lastModified),
+                    `${items.length} posiciones`, 
                     `${sku} SKU`
                 ]);
             },
