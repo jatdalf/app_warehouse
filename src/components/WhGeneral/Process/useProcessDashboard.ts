@@ -100,13 +100,8 @@ export const useProcessDashboard = () => {
             );
         },
         procesoRunning() {
-            setSteps(prev => ProcessDashboardController.running(
-                    prev,
-                    "proceso"
-                )
-            );
+            setSteps(prev => ProcessDashboardController.running(prev, "proceso"));
         },
-
         procesoOk(resumen?: string[]) {
             setSteps(prev => ProcessDashboardController.success(
                     prev,
@@ -147,38 +142,60 @@ export const useProcessDashboard = () => {
                 )
             );
         },
-        informeOk(
-            resumen?: string[],
-            detail?: ReactNode
-        ) {
-            setSteps(prev =>
-                prev.map(step =>
-                    step.id === "Exportar"
-                        ? {
-                            ...step,
-                            estado: "success",
-                            resumen,
-                            detail,
-                            animationKey:
-                                (step.animationKey ?? 0) + 1
-                        }
-                        : step
+        informeOk(resumen?: string[], detail?: ReactNode) {
+            setSteps(prev => prev.map(step => step.id === "Exportar" ? {
+                        ...step,
+                        estado: "success",
+                        resumen,
+                        detail,
+                        animationKey: (step.animationKey ?? 0) + 1
+                    } : step
                 )
             );
         },
         informeError(resumen?: string[]) {
-            setSteps(prev =>
-                prev.map(step =>
-                    step.id === "Exportar"
-                        ? {
-                            ...step,
-                            estado: "error",
-                            resumen,
-                            detail: undefined
-                        }
-                        : step
+            setSteps(prev => prev.map(step => step.id === "Exportar" ? {
+                        ...step,
+                        estado: "error",
+                        resumen,
+                        detail: undefined
+                    } : step
                 )
             );
         },
+        pickingRunning(resumen?: string[],detail?: ReactNode) {
+            setSteps(prev => prev.map(step => step.id === "picking" ? {
+                        ...step,
+                        estado: "running",
+                        resumen,
+                        detail,
+                        animationKey: (step.animationKey ?? 0) + 1
+                    } : step
+                )
+            );
+        },
+        remitoRunning(resumen?: string[],detail?: ReactNode) {
+            setSteps(prev => prev.map(step => step.id === "remito" ? {
+                        ...step,
+                        estado: "running",
+                        resumen,
+                        detail,
+                        animationKey: (step.animationKey ?? 0) + 1
+                    } : step
+                )
+            );            
+        },
+        informeRunning(resumen?: string[], detail?: ReactNode) {
+            setSteps(prev => prev.map(step => step.id === "Exportar" ? {
+                        ...step,
+                        estado: "running",
+                        resumen,
+                        detail,
+                        animationKey: (step.animationKey ?? 0) + 1
+                    } : step
+                )
+            );
+        },
+        
     };
 };

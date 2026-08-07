@@ -1,3 +1,21 @@
 .container{
     color: #2b8179;
 }
+.externalDetail {
+    width: 100%;
+    margin-top: 24px;
+    padding: 20px;
+
+    background: #ffffff;
+    border-radius: 12px;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.externalDetailTitle {
+    margin: 0 0 16px;
+    text-align: center;
+    color: #176f70;
+}

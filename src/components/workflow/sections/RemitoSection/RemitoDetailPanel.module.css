@@ -1,0 +1,67 @@
+.container {
+    width: 100%;
+}
+
+.title {
+    text-align: center;
+    color: #2b8179;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.header,
+.row {
+    display: grid;
+    grid-template-columns:
+        140px
+        160px
+        1fr
+        100px
+        130px;
+    align-items: center;
+    min-height: 46px;
+}
+
+.header {
+    background: #2b8179;
+    color: white;
+    font-weight: 600;
+}
+
+.row {
+    border-top: 1px solid #eee;
+    background: white;
+}
+
+.row:nth-child(even) {
+    background: #f7fbfb;
+}
+
+.header > div,
+.row > div {
+    padding: 10px 12px;
+}
+
+.printButton {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+
+    background: #2b8179;
+    color: white;
+
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.printButton:hover {
+    background: #1f5f59;
+}

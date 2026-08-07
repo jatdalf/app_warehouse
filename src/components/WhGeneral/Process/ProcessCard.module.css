@@ -135,3 +135,42 @@
     margin: 12px 20px;
     border-top: 1px solid #e6e6e6;
 }
+.summaryLabel {
+    text-align: center;
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.separator {
+    margin: 12px 20px;
+    border-top: 1px solid #e6e6e6;
+}
+.actionButton {
+    width: 80%;    
+    min-height: 36px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 7px;
+    color: black;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.actionButton:hover:not(:disabled) {
+    background: #bff0f3;
+    transform: translateY(-1px);
+}
+
+.actionButton:disabled {
+    background: #dedede;
+    color: #999;
+    cursor: not-allowed;
+}

@@ -76,8 +76,8 @@ function escribirHojaDetail(worksheet: ExcelJS.Worksheet, data: SalidaInforRow[]
     });
 }
 
-export async function generarSalidaInfor( movimientos: SalidaInforRow[]) {
-const data = movimientos;
+export async function generarSalidaInfor(movimientos: SalidaInforRow[], fileName: string) {
+    const data = movimientos;
 
     // Leer la plantilla desde /public
     const response = await fetch("/data/Infor00000.xlsx");
@@ -108,6 +108,6 @@ const data = movimientos;
                 type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             }
         ),
-        "Infor00000.xlsx"
+        fileName
     );
 }

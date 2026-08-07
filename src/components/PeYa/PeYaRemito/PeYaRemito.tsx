@@ -30,6 +30,11 @@ interface RemitoData {
   unidades: number;
   storeName: string;
 }
+interface RemitoPrintState {
+    data?: RemitoData[];
+    remitos?: {st: string; remito: string;}[];
+    remitosGenerados?: Remito[];
+}
 
 const destinos: Record<string, Destino> = {
   "AR_15_25deMayo": {
@@ -64,15 +69,13 @@ const MAX_ITEMS = 25;
 
 const PeYaRemito: React.FC = () => {
 const location = useLocation();
-const state = location.state as {
-    data?: any[];
-    remitos?: {st: string; remito: string;}[];
-    remitosGenerados?: Remito[];
-};
-
-const data = state?.data ?? [];
-const remitos = state?.remitos ?? [];
-const remitosGenerados = state?.remitosGenerados ?? [];
+const state = location.state as RemitoPrintState | null;
+const storedData = sessionStorage.getItem("peya-remito-print-data");
+const sessionData: RemitoPrintState | null = storedData
+        ? JSON.parse(storedData) as RemitoPrintState : null;
+const data = state?.data ?? sessionData?.data ?? [];
+const remitos = state?.remitos ?? sessionData?.remitos ?? [];
+const remitosGenerados = state?.remitosGenerados ?? sessionData?.remitosGenerados ?? [];
 const regexST = /^ST[A-Z0-9]\d+$/;
 const groupedByST = useMemo(() => {
   const groups: Record<string, RemitoData[]> = {};

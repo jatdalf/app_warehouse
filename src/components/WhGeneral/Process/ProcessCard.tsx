@@ -1,14 +1,16 @@
 import { useRef } from "react";
 import type { ProcessStep } from "./ProcessStep";
-import type {StockCardProps, OrdersCardProps, ExecutionCardProps} from "./ProcessDashboardProps";
+import type {
+    StockCardProps, OrdersCardProps, ExecutionCardProps, PickingCardProps, RemitoCardProps, ExportCardProps
+} from "./ProcessDashboardProps";
 import styles from "./ProcessCard.module.css";
 import StockCardContent, {type StockCardContentRef} from "../../workflow/sections/StockImportSection/StockCardContent";
+import OrdersCardContent, { type OrdersCardContentRef} from "../../workflow/sections/OrdersSection/OrdersCardContent";
+import ProcessCardContent from "../../ExecutionPanel/ProcessCardContent";
 import LottieOk from "../../Lotties/LottieOk";
 import LottieError from "../../Lotties/LottieError";
 import LottieYellowCircle from "../../Lotties/LottieYellowCircle";
 import LottieProcessing from "../../Lotties/LottieProcessing";
-import OrdersCardContent, { type OrdersCardContentRef} from "../../workflow/sections/OrdersSection/OrdersCardContent";
-import ProcessCardContent from "../../ExecutionPanel/ProcessCardContent";
 
 interface Props {
     step: ProcessStep;
@@ -17,6 +19,9 @@ interface Props {
     stockProps: StockCardProps;
     ordersProps: OrdersCardProps;
     executionProps: ExecutionCardProps;
+    pickingProps: PickingCardProps;
+    remitoProps: RemitoCardProps;
+    exportProps: ExportCardProps;
 }
 
 const ProcessCard: React.FC<Props> = ({
@@ -25,7 +30,10 @@ const ProcessCard: React.FC<Props> = ({
     onToggle,
     stockProps,
     ordersProps,
-    executionProps
+    pickingProps,
+    remitoProps,
+    executionProps,
+    exportProps    
     }) => {
     const stockContentRef = useRef<StockCardContentRef>(null);
     const ordersContentRef = useRef<OrdersCardContentRef>(null);
@@ -33,6 +41,9 @@ const ProcessCard: React.FC<Props> = ({
     const isOrdersCard = step.id === "pedidos";
     const isClickable = isStockCard || isOrdersCard;
     const isProcessCard = step.id === "proceso";
+    const isPickingCard = step.id === "picking";
+    const isRemitoCard = step.id === "remito";
+    const isExportCard = step.id === "Exportar";
   
     const handleCardClick = () => {
         if (isStockCard) {
@@ -104,10 +115,54 @@ const ProcessCard: React.FC<Props> = ({
                 />
             );
         }
+        if (isPickingCard && step.estado === "running") {
+            return (
+                <button
+                    type="button"
+                    className={styles.actionButton}
+                    disabled={!pickingProps.enabled}
+                    onClick={(event) => { event.stopPropagation(); pickingProps.onPrint();}}
+                >
+                    🖨️ Imprimir
+                </button>
+            );
+        }
+        if (isRemitoCard && step.estado === "running") {
+            return (
+                <button
+                    type="button"
+                    className={styles.actionButton}
+                    disabled={!remitoProps.enabled}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        remitoProps.onPrint();
+                    }}
+                >
+                    🖨️ Imprimir
+                </button>
+            );
+        }
+        if (isExportCard && step.estado === "running") {
+            return (
+                <button
+                    type="button"
+                    className={styles.actionButton}
+                    disabled={!exportProps.enabled}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        exportProps.onExport();
+                    }}
+                >
+                    📥 Exportar
+                </button>
+            );
+        }
         return null;
     };
+    const hasExternalDetail = step.id === "pedidos"|| step.id === "picking"  || step.id === "remito";
+    const hasDetail = hasExternalDetail || Boolean(step.detail);
 
-    return (
+        return (
         <div
             className={`
                 ${styles.card}
@@ -135,39 +190,56 @@ const ProcessCard: React.FC<Props> = ({
                 {step.titulo}
             </div>
 
-            <div className={styles.summary}>
-                {step.resumen?.map((linea, index) => (
-                    <div key={linea}>{index === 2 && (<div className={styles.separator} />)}
-                        <div className={styles.resume}>
+        <div className={styles.summary}>
+            {step.resumen?.map((linea, index) => {
+                const showSeparator =
+                    (step.id === "stock" && index === 2) ||
+                    (step.id === "proceso" && index === 3);
+
+                const isProcessMethodLabel = step.id === "proceso" && index === 3;
+
+                return (
+                    <div key={`${linea}-${index}`}>
+                        {showSeparator && ( <div className={styles.separator} />)}
+                        <div
+                            className={
+                                isProcessMethodLabel
+                                    ? styles.summaryLabel
+                                    : styles.resume
+                            }
+                        >
                             {linea}
                         </div>
                     </div>
-                ))}
-            </div>
+                );
+            })}
+        </div>
 
             {renderContent()}
 
-            {step.detail && (
-                <>
-                    <button
-                        className={styles.detailButton}
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            onToggle();
-                        }}
-                    >
-                        {opened
-                            ? "Ocultar detalle ▲"
-                            : "Ver detalle ▼"}
-                    </button>
+            {hasDetail && (
+            <>
+                <button
+                    className={styles.detailButton}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onToggle();
+                    }}
+                >
+                    {opened
+                        ? "Ocultar detalle ▲"
+                        : "Ver detalle ▼"}
+                </button>
 
-                    {opened && (
+                {!hasExternalDetail &&
+                    opened &&
+                    step.detail && (
                         <div className={styles.detail}>
                             {step.detail}
                         </div>
-                    )}
-                </>
-            )}
+                    )}  
+            </>
+        )}
         </div>
     );
 };

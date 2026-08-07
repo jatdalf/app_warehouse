@@ -5,7 +5,6 @@ import { PickingEngine } from "../engines/PickingEngine";
 import { RemitoEngine } from "../engines/RemitoEngine";
 import { InforEngine } from "../engines/InforEngine";
 import { StockEngine } from "../engines/StockEngine";
-import { PickingPrintEngine } from "../engines/PickingPrintEngine";
 import type { OrderItem } from "../orders/OrderItem";
 import type { StockItem } from "../stock/StockItem";
 
@@ -16,7 +15,6 @@ export class WarehouseProcess {
     readonly pipeline = new PeYaPipeline([
         new ValidationEngine(),
         new PickingEngine(),
-        new PickingPrintEngine(),
         new RemitoEngine(),
         new InforEngine(),
         new StockEngine()

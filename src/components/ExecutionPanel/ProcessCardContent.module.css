@@ -14,7 +14,8 @@
 }
 
 .method {
-    width: 100%;
+    width: 90%;
+    margin-left: 5%;
     min-height: 34px;
     padding: 6px 8px;
 
@@ -55,7 +56,8 @@
 }
 
 .executeButton {
-    width: 100%;
+    width: 90%;
+    margin: 5% auto;
     min-height: 36px;
     margin-top: 3px;
 
