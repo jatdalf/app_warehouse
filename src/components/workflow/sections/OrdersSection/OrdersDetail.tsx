@@ -68,22 +68,25 @@ const OrdersDetail: React.FC<Props> = ({
     }));
 
     return (
-        <div className={styles.gridWrapper}>
-            <DataGrid
-                rows={rows}
-                columns={columns}
-                disableColumnMenu
-                disableRowSelectionOnClick
-                hideFooter
-                sx={{
-                    "& .MuiDataGrid-row:nth-of-type(odd)": {
-                        backgroundColor: "#ffffff"
-                    },
-                    "& .MuiDataGrid-row:nth-of-type(even)": {
-                        backgroundColor: "#e6f7ff"
-                    }
-                }}
-            />
+        <div>
+            <h2>Pedidos</h2>
+            <div className={styles.gridWrapper}>
+                <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    disableColumnMenu
+                    disableRowSelectionOnClick
+                    hideFooter
+                    sx={{
+                        "& .MuiDataGrid-row:nth-of-type(odd)": {
+                            backgroundColor: "#ffffff"
+                        },
+                        "& .MuiDataGrid-row:nth-of-type(even)": {
+                            backgroundColor: "#e6f7ff"
+                        }
+                    }}
+                />
+            </div>
         </div>
     );
 };

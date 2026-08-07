@@ -1,0 +1,180 @@
+/* Contenedor general */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.topSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.title {
+    margin: 0;
+    text-align: center;
+    color: #2b8179;
+    font-size: 30px;
+}
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.orderInfo {
+    width: 98%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    margin-top: 6px;
+    font-size: 17px;
+    color: #333;
+}
+
+.destination {
+    justify-self: start;
+    margin-left: 20%;
+}
+
+.counter {
+    justify-self: center;
+    color: #666;
+}
+
+.order {
+    justify-self: end;
+    margin-right: 20%;
+}
+
+.order strong,
+.destination strong {
+    font-size: 19px;
+}
+/* Header con logos */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logoLeft {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.logoRight {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/*Grilla*/
+.barcodeFont {
+  font-family: 'Libre Barcode 39', cursive;
+  font-size: 28px;
+}
+.pikingGridColumn {
+  white-space: normal;     /* ✅ permite salto de línea */
+  word-break: break-word;  /* ✅ corta palabras largas */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2em;
+  max-height: 2.4em;       /* ✅ máximo 2 líneas visibles */
+}
+
+.gridWrapperPicking {
+  width: 98%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 0 auto;
+  margin-top: 10%;
+}
+
+.actionButton {
+  padding: 8px 24px;
+  background-color: #2b8179;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.actionButton:hover:not(:disabled) {
+    background-color: #1f5f59;
+    transform: translateY(-2px);
+}
+
+.actionButton:active:not(:disabled) {
+    background-color: #14504b;
+    transform: translateY(0);
+}
+
+.actionButton:focus {
+    outline: none;
+    box-shadow: 0 0 6px rgba(43, 129, 121, 0.4);
+}
+
+.actionButton:disabled {
+    background-color: #b8b8b8;
+    color: #eeeeee;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.6;
+}
+/* Estilos de impresión */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 5mm;
+  }
+
+  .header {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+  }
+
+  .pickingHeader {
+    margin-top: -40px !important;
+  }
+
+  .MuiDataGrid-columnHeaders {
+    font-weight: 900 !important;
+    font-size: 16px !important;
+  }
+
+  .actionsBox, .actionButton {
+    display: none !important;
+  }
+
+  .barcodeFont {
+    font-size: 30px !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .MuiDataGrid-cell {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .MuiDataGrid-virtualScroller {
+    overflow-x: hidden !important;
+  }
+
+  .gridWrapperPicking {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+}

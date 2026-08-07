@@ -19,3 +19,22 @@ export interface ExecutionCardProps {
     enabled: boolean;
     onExecute(): void;
 }
+
+export interface PickingCardProps {
+    enabled: boolean;
+    onPrint(): void;
+}
+
+export interface RemitoCardProps {
+    enabled: boolean;
+    onPrint(): void;
+}
+
+export interface ExportCardProps {
+    enabled: boolean;
+    onExport(): void;
+}
+export interface PickingCardProps {
+    onPrint(): void;
+    enabled: boolean;
+}

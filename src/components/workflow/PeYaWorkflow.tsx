@@ -14,23 +14,33 @@ import RemitoSection from "./sections/RemitoSection/RemitoSection";
 import { PickingMethods } from "../../core/picking/strategies/PickingMethod";
 import type { PickingMethod } from "../../core/picking/strategies/PickingMethod";
 import OrdersDetail from "./sections/OrdersSection/OrdersDetail";
-import InforSection from "./sections/InforSection/InforSection";
+import { PickingPrintEngine } from "../../core/engines/PickingPrintEngine";
+import PickingDetailPanel from "./sections/PickingSection/PickingDetailPanel";
+import type { PickingItem } from "../../core/picking/PickingItem";
+import { WarehouseSession } from "../../core/warehouse/WarehouseSession";
+import RemitoDetailPanel from "./sections/RemitoSection/RemitoDetailPanel";
+import type { Remito } from "../../core/remitos/Remito";
+import { generarSalidaInfor } from "../../services/inforExcel";
 
 const PeYaWorkflow: React.FC = () => {   
     const dashboard = useProcessDashboard();
     const [stock,setStock]=useState<StockItem[]>([]);
     const [stockFileName, setStockFileName] = useState("");
     const [orders,setOrders]=useState<OrderItem[]>([]);
+    const [openedDetail, setOpenedDetail] = useState<string | null>(null);
     const [process] = useState(() => new WarehouseProcess());
     const [pickingMethod, setPickingMethod] = useState<PickingMethod>(PickingMethods.LOCATION);
     const handleExecute = async () => {
         dashboard.procesoRunning();
+        dashboard.pickingRunning();
+        dashboard.remitoRunning();
+        dashboard.informeRunning();
         process.cargarStock(stock);
         process.cargarPedidos(orders);     
         process.session.pickingMethod = pickingMethod;   
         const result = await process.ejecutar();
         const remitoSummary = RemitoSummaryBuilder.build(process.session.remitos);
-        dashboard.remitoOk(
+        dashboard.remitoRunning(
             [
                 `${remitoSummary.documentos} documentos`,
                 `${remitoSummary.destinos} destinos`,
@@ -40,18 +50,21 @@ const PeYaWorkflow: React.FC = () => {
         );
         if (result.success && process.session.stats) {
             const s = process.session.stats;
-            const metodoTexto =
-                pickingMethod === PickingMethods.ACCESSIBILITY
+            const metodoTexto = pickingMethod === PickingMethods.ACCESSIBILITY
                     ? "Accesibilidad"
                     : "Recorrido";
-            dashboard.procesoOk([                
+            const metodoIcono = pickingMethod === PickingMethods.ACCESSIBILITY
+                    ? "⬇️"
+                    : "🚹";
+            dashboard.procesoOk([
                 `${s.pedidos} pedidos`,
                 `${s.lineas} líneas`,
                 `${s.bultosAsignados}/${s.bultosSolicitados} bultos`,
-                `Método: ${metodoTexto}`,
+                "Método de picking",
+                `${metodoIcono} ${metodoTexto.toLowerCase()}`
             ]);
         const pickingSummary = PickingSummaryBuilder.build(process.session.picking);
-        dashboard.pickingOk(
+        dashboard.pickingRunning(
             [
                 `${pickingSummary.sku} SKU`,
                 `${pickingSummary.lineas} líneas`,
@@ -63,22 +76,18 @@ const PeYaWorkflow: React.FC = () => {
                     stats={process.session.stats}
                 />
             );
-            const movimientosInfor = process.session.movimientos;
-            if (movimientosInfor.length > 0) {
-                dashboard.informeOk(
-                    [
-                        `${movimientosInfor.length} filas`,
-                        "Infor00000.xlsx"
-                    ],
-                    <InforSection
-                        data={movimientosInfor}
-                    />
-                );
-            } else {
-                dashboard.informeError([
-                    "No se generaron movimientos"
-                ]);
-            }
+        }
+        const movimientosInfor = process.session.movimientos;
+        if (movimientosInfor.length > 0) {
+            const fileName = buildInforFileName();
+            dashboard.informeRunning([
+                `${movimientosInfor.length} filas`,
+                fileName
+            ]);
+        } else {
+            dashboard.informeError([
+                "No se generaron movimientos"
+            ]);
         }
     };  
     function formatDate(value: number) {
@@ -88,13 +97,94 @@ const PeYaWorkflow: React.FC = () => {
             year: "numeric",
             hour: "2-digit",
             minute: "2-digit"
-        });
-    }
+            });
+        }
+        const buildInforFileName = () => {
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, "0");
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const yyyy = now.getFullYear();
+        return `Infor${dd}${mm}${yyyy}.xlsx`;
+    };
+    const handlePrintPicking = async () => {
+        const engine = new PickingPrintEngine();
+        const result = await engine.execute(process.session);
+        if (result.success) {
+            const pickingSummary = PickingSummaryBuilder.build(process.session.picking);
+            dashboard.pickingOk(
+                [
+                    `${pickingSummary.sku} SKU`,
+                    `${pickingSummary.lineas} líneas`,
+                    `${pickingSummary.bultos} bultos`
+                ],
+                <PickingSection
+                    picking={process.session.picking}
+                    shortages={process.session.shortages}
+                    stats={process.session.stats}
+                />
+            );
+        }
+    };
+    const handlePrintRemitos = () => {
+        const remitosParaVista = process.session.remitos.map(remito => ({
+                st: remito.pedido, remito: remito.numero
+            }));
+        const printData = {data: orders, remitos: remitosParaVista};
+        sessionStorage.setItem("peya-remito-print-data", JSON.stringify(printData));
+        window.open("/PeYaRemito", "_blank");
+        const remitoSummary = RemitoSummaryBuilder.build(process.session.remitos);
+        dashboard.remitoOk([
+            `${remitoSummary.documentos} documentos`,
+            `${remitoSummary.destinos} destinos`,
+            `${remitoSummary.bultos} bultos`
+        ]);
+    };
+    const handlePrintPickingST = async (st: string, items: PickingItem[]) => {
+        const tempSession = new WarehouseSession();
+        tempSession.picking = [...items];
+        const engine = new PickingPrintEngine();
+        const result = await engine.execute(tempSession);
+        if (!result.success) {
+            console.error(`No fue posible imprimir el picking ${st}`);
+        }
+    };
+    const handlePrintSingleRemito = (remito: Remito) => {
+        const orderRows = orders.filter(item => item.st === remito.pedido);
+        const printData = {
+            data: orderRows,
+            remitos: [
+                {
+                    st: remito.pedido,
+                    remito: remito.numero
+                }
+            ]
+        };
+        sessionStorage.setItem("peya-remito-print-data", JSON.stringify(printData));
+        window.open("/PeYaRemito", "_blank");
+    };
+    const handleExportInfor = async () => {
+        const movimientosInfor = process.session.movimientos;
+        if (movimientosInfor.length === 0) {
+            dashboard.informeError(["No hay movimientos para exportar"]);
+            return;
+        }
+        const fileName = buildInforFileName();
+        try {
+            await generarSalidaInfor(movimientosInfor, fileName);
+            dashboard.informeOk([
+                `${movimientosInfor.length} filas`,
+                fileName
+            ]);
+        } catch (error) {
+            console.error(error);
+            dashboard.informeError(["No fue posible generar el archivo"]);
+        }
+    };
 
     return (        
     <div className={styles.container}>
         <PeYaHeader />
-        <ProcessDashboard steps={dashboard.steps} stockProps={{
+        <ProcessDashboard steps={dashboard.steps} onOpenedChange={setOpenedDetail} stockProps={{
             fileName: stockFileName,
             onLoaded: (items, fileName, lastModified) => {
                 setStock(items);
@@ -114,40 +204,67 @@ const PeYaWorkflow: React.FC = () => {
                     message
                 ]);
             }
-        }}
-        ordersProps={{
-            onLoaded: (items) => {
-                setOrders(items);
-                const resumen = OrderSummaryBuilder.build(items);
-                const pedidos = new Set(items.map(item => item.st)).size;
-                dashboard.pedidosOk(
-                    [
-                        `${pedidos} pedidos`,
-                        `${resumen.sku} SKU`,
-                        `${resumen.lineas} líneas`,
-                        `${resumen.bultos} bultos`
-                    ],
-                    <OrdersDetail orders={items} />
-                );
-            },
-            onError: (message) => {
-                setOrders([]);
-                dashboard.pedidosError([
-                    message
-                ]);
-            }
-        }}
+            }}
+            pickingProps={{
+                enabled: process.session.picking.length > 0, onPrint: handlePrintPicking
+            }}
+            ordersProps={{
+                onLoaded: (items) => {
+                    setOrders(items);
+                    const resumen = OrderSummaryBuilder.build(items);
+                    const pedidos = new Set(items.map(item => item.st)).size;
+                    dashboard.pedidosOk(
+                        [
+                            `${pedidos} pedidos`,
+                            `${resumen.sku} SKU`,
+                            `${resumen.lineas} líneas`,
+                            `${resumen.bultos} bultos`
+                        ],
+                    );
+                },
+                onError: (message) => {
+                    setOrders([]);
+                    dashboard.pedidosError([
+                        message
+                    ]);
+                }
+            }}
             executionProps={{
                 method: pickingMethod,
-                onMethodChange: setPickingMethod,
-                enabled:
-                    stock.length > 0 &&
-                    orders.length > 0,
+                onMethodChange: setPickingMethod, enabled: stock.length > 0 && orders.length > 0,
                 onExecute: handleExecute
             }}
+            remitoProps={{
+                enabled: process.session.remitos.length > 0, onPrint: handlePrintRemitos
+            }}
+            exportProps={{
+                enabled: process.session.movimientos.length > 0,
+                onExport: handleExportInfor
+            }}
         />
+        {openedDetail === "pedidos" && orders.length > 0 && (
+            <section className={styles.externalDetail}>
+                <OrdersDetail orders={orders} />
+            </section>
+            )}
+        {openedDetail === "picking" && process.session.picking.length > 0 && (
+            <section className={styles.externalDetail}>
+                <PickingDetailPanel
+                    picking={process.session.picking}
+                    onPrintPicking={handlePrintPickingST}
+                />
+            </section>
+        )}      
+        {openedDetail === "remito" && process.session.remitos.length > 0 && (
+            <section className={styles.externalDetail}>
+                <RemitoDetailPanel
+                    remitos={process.session.remitos}
+                    onPrintRemito={handlePrintSingleRemito}
+                />
+            </section>
+        )}     
     </div>
-    );
+    );    
 };
 
 export default PeYaWorkflow;
