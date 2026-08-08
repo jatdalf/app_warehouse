@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { generarSalidaInfor } from "../../../../services/inforExcel";
 import styles from "./InforSection.module.css";
+import { buildInforFileName } from "../../../../utils/dateUtils";
 
 interface Props {
     data: any[];
@@ -15,13 +16,10 @@ const InforSection: React.FC<Props> = ({ data }) => {
             setGenerating(true);
             setError("");
 
-            await generarSalidaInfor(data);
+        await generarSalidaInfor(data, buildInforFileName());
         } catch (error) {
             console.error(error);
-
-            setError(
-                "No fue posible generar el archivo Infor."
-            );
+            setError("No fue posible generar el archivo Infor.");
         } finally {
             setGenerating(false);
         }

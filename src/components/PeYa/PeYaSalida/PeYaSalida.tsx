@@ -1,18 +1,17 @@
-    import React from "react";
-    import { useLocation } from "react-router-dom";  
-    import styles from "../PeYaSalida/PeYaSalida.module.css";
-    import LogoOcasa from "../../LogoOcasa/LogoOcasa";
-    import LogoPeYa from "../../LogoPeYa/LogoPeya";
-    import { generarSalidaInfor } from "../../../services/inforExcel";
+import React from "react";
+import { useLocation } from "react-router-dom";  
+import styles from "../PeYaSalida/PeYaSalida.module.css";
+import LogoOcasa from "../../LogoOcasa/LogoOcasa";
+import LogoPeYa from "../../LogoPeYa/LogoPeya";
+import { generarSalidaInfor } from "../../../services/inforExcel";
+import { buildInforFileName } from "../../../utils/dateUtils";
 
-    const PeYaSalida: React.FC = () => {
-    const location = useLocation();
-    const data = (location.state as { data: any[] })?.data || [];
+const PeYaSalida: React.FC = () => {
+const location = useLocation();
+const data = (location.state as { data: any[] })?.data || [];
 
-   const handleGenerateExcel=async()=>{
-    await generarSalidaInfor(data);
-    };
-
+const handleGenerateExcel=async()=>{
+    await generarSalidaInfor(data, buildInforFileName());
 
     return (
         <div className={styles.container}>
@@ -37,7 +36,8 @@
             </button>
         </div>
         </div>
-    );
+        );
     };
+}
 
-    export default PeYaSalida;
+export default PeYaSalida;

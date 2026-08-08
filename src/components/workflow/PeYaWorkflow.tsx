@@ -21,6 +21,7 @@ import { WarehouseSession } from "../../core/warehouse/WarehouseSession";
 import RemitoDetailPanel from "./sections/RemitoSection/RemitoDetailPanel";
 import type { Remito } from "../../core/remitos/Remito";
 import { generarSalidaInfor } from "../../services/inforExcel";
+import { buildInforFileName } from "../../utils/dateUtils";
 
 const PeYaWorkflow: React.FC = () => {   
     const dashboard = useProcessDashboard();
@@ -30,6 +31,7 @@ const PeYaWorkflow: React.FC = () => {
     const [openedDetail, setOpenedDetail] = useState<string | null>(null);
     const [process] = useState(() => new WarehouseProcess());
     const [pickingMethod, setPickingMethod] = useState<PickingMethod>(PickingMethods.LOCATION);
+
     const handleExecute = async () => {
         dashboard.procesoRunning();
         dashboard.pickingRunning();
@@ -99,13 +101,6 @@ const PeYaWorkflow: React.FC = () => {
             minute: "2-digit"
             });
         }
-        const buildInforFileName = () => {
-        const now = new Date();
-        const dd = String(now.getDate()).padStart(2, "0");
-        const mm = String(now.getMonth() + 1).padStart(2, "0");
-        const yyyy = now.getFullYear();
-        return `Infor${dd}${mm}${yyyy}.xlsx`;
-    };
     const handlePrintPicking = async () => {
         const engine = new PickingPrintEngine();
         const result = await engine.execute(process.session);

@@ -37,3 +37,20 @@ export const safeFormatFecha = (fechaExcel: number | string): string => {
     return "";
   }
 };
+export const buildInforFileName = (
+    date: Date = new Date()
+): string => {
+    const dia = date
+        .getDate()
+        .toString()
+        .padStart(2, "0");
+
+    const mes = (date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0");
+
+    const anio =
+        date.getFullYear();
+
+    return `Infor${dia}${mes}${anio}.xlsx`;
+};
