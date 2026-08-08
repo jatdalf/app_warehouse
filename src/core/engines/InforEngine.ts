@@ -7,13 +7,9 @@ export class InforEngine implements PipelineStep {
 
     readonly name = "Generando movimientos Infor";
 
-    async execute(
-        session: WarehouseSession
-    ): Promise<EngineResult> {
+    async execute(session: WarehouseSession): Promise<EngineResult> {
         try {
-            session.movimientos = generarMovimientosInfor(
-                session.picking
-            );
+            session.movimientos = generarMovimientosInfor(session.picking);
             return {
                 success: true,
                 message: "Movimientos Infor generados."
@@ -21,10 +17,7 @@ export class InforEngine implements PipelineStep {
         } catch (error) {
             return {
                 success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Error generando movimientos Infor."
+                message: error instanceof Error ? error.message : "Error generando movimientos Infor."
             };
         }
     }
