@@ -199,3 +199,5 @@ export const useProcessDashboard = () => {
         
     };
 };
+
+export type ProcessDashboardApi = ReturnType<typeof useProcessDashboard>;

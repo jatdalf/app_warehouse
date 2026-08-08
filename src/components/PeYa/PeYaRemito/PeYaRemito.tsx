@@ -114,6 +114,13 @@ const groupedByST = useMemo(() => {
     }
     return lista;
   };
+  const dividirEnPaginas = (productos: Producto[]): Producto[][] => {
+      const paginas: Producto[][] = [];
+      for (let i = 0; i < productos.length; i += MAX_ITEMS) {
+          paginas.push(productos.slice(i, i + MAX_ITEMS));
+      }
+      return paginas;
+  };
 
   const imprimir = () => {
     window.print();
@@ -165,25 +172,21 @@ const groupedByST = useMemo(() => {
           unidades: Number(r.unidades) || 0
         }));
 
-        const productosConBlancos = completarProductos(productos);
-
-        const totalBultos = productos.reduce(
-          (acc, p) => acc + p.bultos,
-          0
-        );
-
-        const totalUnidades = productos.reduce(
-          (acc, p) => acc + p.unidades,
-          0
-        );
-
-        return COPIAS.map((copia) => (
-          <div className={styles.remito}>
-            <div
-              key={`${st}-${copia}`}
-              className={styles.container}
-            >
-
+        const paginas = dividirEnPaginas(productos);
+        const totalPaginas = paginas.length;
+        const totalBultos = productos.reduce((acc, p) => acc + p.bultos, 0);
+        const totalUnidades = productos.reduce((acc, p) => acc + p.unidades, 0);
+        
+  return COPIAS.flatMap((copia) => paginas.map((productosPagina, pageIndex) => {
+    const productosConBlancos = completarProductos(productosPagina);
+    const subtotalPaginaBultos = productosPagina.reduce((acc, p) => acc + p.bultos, 0);
+    const subtotalPaginaUnidades = productosPagina.reduce((acc, p) => acc + p.unidades, 0);
+    return (
+        <div
+          key={`${st}-${copia}-${pageIndex}`}
+          className={styles.remito}
+        >
+          <div className={styles.container}>
               <div className={styles.verticalMark}>
                 <div className={styles.verticalText}>
                   {copia}
@@ -270,6 +273,7 @@ const groupedByST = useMemo(() => {
                   </p>
                 </div>
               </div>
+
               {/* Tercera parte */}
                           <div className={styles.terceraParte}>
                 <hr />
@@ -321,24 +325,58 @@ const groupedByST = useMemo(() => {
                       </tr>
                     ))}
 
-                    <tr className={styles.totalRow}>
-                      <td colSpan={4}>
-                        <strong>Total</strong>
-                      </td>
+{totalPaginas === 1 ? (
+    <tr className={styles.totalRow}>
+        <td colSpan={4}>
+            <strong>Total</strong>
+        </td>
 
-                      <td>
-                        <strong>{totalBultos}</strong>
-                      </td>
+        <td>
+            <strong>{totalBultos}</strong>
+        </td>
 
-                      <td>
-                        <strong>{totalUnidades}</strong>
-                      </td>
-                    </tr>
+        <td>
+            <strong>{totalUnidades}</strong>
+        </td>
+    </tr>
+) : (
+    <>
+        <tr className={styles.totalRow}>
+            <td colSpan={4}>
+                <strong>Sub-total de página</strong>
+            </td>
+
+            <td>
+                <strong>{subtotalPaginaBultos}</strong>
+            </td>
+
+            <td>
+                <strong>{subtotalPaginaUnidades}</strong>
+            </td>
+        </tr>
+
+        {pageIndex === totalPaginas - 1 && (
+              <tr className={styles.totalRow}>
+                  <td colSpan={4}>
+                      <strong>Total</strong>
+                  </td>
+
+                  <td>
+                      <strong>{totalBultos}</strong>
+                  </td>
+
+                  <td>
+                      <strong>{totalUnidades}</strong>
+                  </td>
+              </tr>
+              )}
+            </>
+          )}
                   </tbody>
                 </table>
               </div>
               {/* Sección de firmas y recepción */}
-                          <div className={styles.footer}>
+              <div className={styles.footer}>
                 <div className={styles.footerTitle}>
                   CONFORME DE RECEPCIÓN
                 </div>
@@ -392,16 +430,16 @@ const groupedByST = useMemo(() => {
                   </span>
 
                   <span className={styles.footerRightText}>
-                    Hoja 1 de 1
-                  </span>
+                    Hoja {pageIndex + 1} de {totalPaginas}
+                  </span>              
                 </div>
               </div>
             </div>
           </div>
-        ));
-      })}
-
-    </>
+        );
+      }));
+    })}
+  </>
   );
 };
 

@@ -424,4 +424,13 @@
     page-break-after: auto;     /* ✅ evita salto extra al final */
     break-after: auto;
   }
+      .remito {
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .remito:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
 }
