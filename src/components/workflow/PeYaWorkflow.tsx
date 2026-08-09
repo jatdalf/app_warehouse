@@ -22,6 +22,7 @@ const PeYaWorkflow: React.FC = () => {
     const [openedDetail, setOpenedDetail] = useState<string | null>(null);
     const [process] = useState(() => new WarehouseProcess());
     const [pickingMethod, setPickingMethod] = useState<PickingMethod>(PickingMethods.LOCATION);
+    const [stockSourceFile, setStockSourceFile] = useState<File | null>(null);
 
     const { handleExecute } = usePeYaProcessExecution({
         process,
@@ -43,45 +44,37 @@ const PeYaWorkflow: React.FC = () => {
     const {handlePrintPicking, handlePrintPickingST, handlePrintRemitos, handlePrintSingleRemito
     } = usePeYaPrintActions({process, orders, dashboard});
 
-    const {handleExportInfor} = usePeYaExportActions({process, dashboard});
+    const {handleExportInfor} = usePeYaExportActions({process, dashboard, stockSourceFile});
 
     return (        
     <div className={styles.container}>
         <PeYaHeader />
         <ProcessDashboard steps={dashboard.steps} onOpenedChange={setOpenedDetail} stockProps={{
             fileName: stockFileName,
-            onLoaded: (items, fileName, lastModified) => {
+            onLoaded: (items, fileName, lastModified, file) => {
                 setStock(items);
                 setStockFileName(fileName);
+                setStockSourceFile(file);
                 const sku = new Set(items.map(item => item.articulo)).size;
-                dashboard.stockOk([
-                    fileName,
-                    formatDate(lastModified),
-                    `${items.length} posiciones`, 
-                    `${sku} SKU`
-                ]);
+                dashboard.stockOk([fileName, formatDate(lastModified), `${items.length} posiciones`,  `${sku} SKU`]);
             },
             onError: (message) => {
                 setStock([]);
                 setStockFileName("");
                 dashboard.stockError([message]);
+                setStockSourceFile(null);
             }
             }}
             pickingProps={{enabled: process.session.picking.length > 0, onPrint: handlePrintPicking}}
             
             ordersProps={{onLoaded: (items) => {
-                    setOrders(items);
-                    const resumen = OrderSummaryBuilder.build(items);
-                    const pedidos = new Set(items.map(item => item.st)).size;
-                    dashboard.pedidosOk(
-                        [
-                            `${pedidos} pedidos`,
-                            `${resumen.sku} SKU`,
-                            `${resumen.lineas} líneas`,
-                            `${resumen.bultos} bultos`
-                        ],
-                    );
-                },
+                setOrders(items);
+                const resumen = OrderSummaryBuilder.build(items);
+                const pedidos = new Set(items.map(item => item.st)).size;
+                dashboard.pedidosOk(
+                    [`${pedidos} pedidos`, `${resumen.sku} SKU`, `${resumen.lineas} líneas`, `${resumen.bultos} bultos`],
+                );
+            },
                 onError: (message) => {
                     setOrders([]);
                     dashboard.pedidosError([message]);

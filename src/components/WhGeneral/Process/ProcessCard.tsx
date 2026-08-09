@@ -72,9 +72,7 @@ const ProcessCard: React.FC<Props> = ({
             return (
                 <div
                     className={
-                        step.estado === "success"
-                            ? styles.hiddenCardContent
-                            : undefined
+                        step.estado === "success" ? styles.hiddenCardContent : undefined
                     }
                 >
                     <StockCardContent
@@ -89,9 +87,7 @@ const ProcessCard: React.FC<Props> = ({
             return (
                 <div
                     className={
-                        step.estado === "success"
-                            ? styles.hiddenCardContent
-                            : undefined
+                        step.estado === "success" ? styles.hiddenCardContent : undefined
                     }
                 >
                     <OrdersCardContent
@@ -102,13 +98,7 @@ const ProcessCard: React.FC<Props> = ({
                 </div>
             );
         }
-        if (
-            isProcessCard &&
-            (
-                step.estado === "pending" ||
-                step.estado === "error"
-            )
-        ) {
+        if (isProcessCard && (step.estado === "pending" || step.estado === "error")) {
             return (
                 <ProcessCardContent
                     {...executionProps}
@@ -194,7 +184,8 @@ const ProcessCard: React.FC<Props> = ({
             {step.resumen?.map((linea, index) => {
                 const showSeparator =
                     (step.id === "stock" && index === 2) ||
-                    (step.id === "proceso" && index === 3);
+                    (step.id === "proceso" && index === 3) ||
+                    (step.id === "Exportar" && index === 2);
 
                 const isProcessMethodLabel = step.id === "proceso" && index === 3;
 
