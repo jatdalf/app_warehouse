@@ -7,14 +7,8 @@ async function obtenerRemitos(sts,usuario){
 
     const response=await fetch(APPS_SCRIPT_URL,{
         method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            accion:"obtenerRemitos",
-            sts,
-            usuario
-        })
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({accion:"obtenerRemitos", sts, usuario})
     });
 
     if(!response.ok){
@@ -24,6 +18,4 @@ async function obtenerRemitos(sts,usuario){
     return await response.json();
 }
 
-module.exports={
-    obtenerRemitos
-};
+module.exports={obtenerRemitos};

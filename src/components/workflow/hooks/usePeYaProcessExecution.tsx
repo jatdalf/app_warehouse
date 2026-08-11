@@ -29,7 +29,7 @@ export const usePeYaProcessExecution = ({
     const handleExecute = async () => {
         dashboard.procesoRunning();
         dashboard.pickingRunning();
-        dashboard.remitoRunning();
+        dashboard.remitoRunning(["Buscando numeración de remitos..."]);
         dashboard.informeRunning();
 
         process.cargarStock(stock);

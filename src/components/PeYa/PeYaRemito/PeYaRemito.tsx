@@ -71,8 +71,7 @@ const PeYaRemito: React.FC = () => {
 const location = useLocation();
 const state = location.state as RemitoPrintState | null;
 const storedData = sessionStorage.getItem("peya-remito-print-data");
-const sessionData: RemitoPrintState | null = storedData
-        ? JSON.parse(storedData) as RemitoPrintState : null;
+const sessionData: RemitoPrintState | null = storedData ? JSON.parse(storedData) as RemitoPrintState : null;
 const data = state?.data ?? sessionData?.data ?? [];
 const remitos = state?.remitos ?? sessionData?.remitos ?? [];
 const remitosGenerados = state?.remitosGenerados ?? sessionData?.remitosGenerados ?? [];
