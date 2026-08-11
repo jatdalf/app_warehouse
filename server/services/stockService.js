@@ -4,7 +4,6 @@ const { parseStockWorkbook } = require("../utils/stockParser");
 async function obtenerStockPeYa(){
     const {file,buffer}=await obtenerArchivoDrive("StockPeYa");
     const stock=parseStockWorkbook(buffer);
-
     return{
         file,
         stock

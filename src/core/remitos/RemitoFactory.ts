@@ -30,7 +30,7 @@ export class RemitoFactory {
         };
     }
 
-    static build(picking: PickingItem[]): Remito[] {
+    static build(picking: PickingItem[], numeros: Map<string, string>): Remito[] {
         const grupos = new Map<string, PickingItem[]>();
         for (const item of picking) {
             if (!grupos.has(item.st)) {
@@ -38,17 +38,10 @@ export class RemitoFactory {
             }
             grupos.get(item.st)!.push(item);
         }
-        let numero = 1;
         return [...grupos.entries()].map(([st, items]) => {
-            const numeroRemito =
-                numero.toString().padStart(8, "0");
-            numero++;
-            return this.create(
-                numeroRemito,
-                st,
-                items[0].destino,
-                items
-            );
-        });
+                const numeroRemito = numeros.get(st) ?? "99999999";
+                return this.create(numeroRemito, st, items[0].destino, items);
+            }
+        );
     }
 }

@@ -11,6 +11,7 @@ import LottieOk from "../../Lotties/LottieOk";
 import LottieError from "../../Lotties/LottieError";
 import LottieYellowCircle from "../../Lotties/LottieYellowCircle";
 import LottieProcessing from "../../Lotties/LottieProcessing";
+import LottieLoading from "../../Lotties/LottieLoading";
 
 interface Props {
     step: ProcessStep;
@@ -118,11 +119,17 @@ const ProcessCard: React.FC<Props> = ({
             );
         }
         if (isRemitoCard && step.estado === "running") {
+            if (!remitoProps.enabled) {
+                return (
+                    <div className={styles.loadingMessage}>
+                        <LottieLoading />   
+                    </div>
+                );
+            }
             return (
                 <button
                     type="button"
                     className={styles.actionButton}
-                    disabled={!remitoProps.enabled}
                     onClick={(event) => {
                         event.stopPropagation();
                         remitoProps.onPrint();
