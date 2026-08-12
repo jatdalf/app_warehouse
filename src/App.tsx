@@ -18,7 +18,7 @@ import PeYaSalida from "./components/PeYa/PeYaSalida/PeYaSalida";
 import PeYaWorkflow from "./components/workflow/PeYaWorkflow";
 import PeYaIngresosInforme from "./components/PeYa/PeYaInformes/ingresos/PeYaIngresosInforme"
 import PeYaOcupacionInforme from "./components/PeYa/PeYaInformes/ocupacion/PeYaOcupacionInforme"
-
+import PeYaInventariosInforme from "./components/PeYa/PeYaInformes/inventarios/PeYaInventariosInforme"
 
 
 function App() {
@@ -44,7 +44,7 @@ function App() {
         <Route path="/PeYaWorkflow" element={<PeYaWorkflow  />} />
         <Route path="/PeYaInformes/ingresos" element={<PeYaIngresosInforme  />} />
         <Route path="/PeYaInformes/ocupacion" element={<PeYaOcupacionInforme />} />    
-
+        <Route path="/PeYaInformes/inventarios" element={<PeYaInventariosInforme />} />    
       </Routes>
     </Router>
   );

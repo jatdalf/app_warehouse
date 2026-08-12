@@ -36,7 +36,7 @@ const PeYa = () => {
         <fieldset className={styles.fieldsetPeya}>
           <legend>Informes</legend>
           <Link to="/PeYaInformes">
-            <button className={styles.peyaButton}>Ver Informes<br /> (en desarrollo)</button>
+            <button className={styles.peyaButton}>📊 Ver Informes</button>
           </Link>
         </fieldset>
       </div>
