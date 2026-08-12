@@ -1,0 +1,42 @@
+.container {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.title {
+    margin-top: 32px;
+    margin-bottom: 28px;
+
+    text-align: center;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    color: #2b8179;
+}
+
+.cardsGrid {
+    width: min(1200px, 90%);
+
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 24px;
+}
+
+@media (max-width: 1000px) {
+    .cardsGrid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .cardsGrid {
+        grid-template-columns: 1fr;
+    }
+}

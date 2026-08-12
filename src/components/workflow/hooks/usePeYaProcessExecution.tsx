@@ -35,44 +35,29 @@ export const usePeYaProcessExecution = ({
         process.cargarStock(stock);
         process.cargarPedidos(orders);
 
-        process.session.pickingMethod =
-            pickingMethod;
+        process.session.pickingMethod = pickingMethod;
 
-        const result =
-            await process.ejecutar();
+        const result = await process.ejecutar();
 
-        const remitoSummary =
-            RemitoSummaryBuilder.build(
-                process.session.remitos
-            );
+        const remitoSummary = RemitoSummaryBuilder.build(process.session.remitos);
 
-        dashboard.remitoRunning(
-            [
-                `${remitoSummary.documentos} documentos`,
-                `${remitoSummary.destinos} destinos`,
-                `${remitoSummary.bultos} bultos`
-            ],
-            <RemitoSection remitos={process.session.remitos}/>
+        const remitoResumen = [
+            `${remitoSummary.documentos} documentos`,
+            `${remitoSummary.destinos} destinos`,
+            `${remitoSummary.bultos} bultos`
+        ];
+        if (process.session.remitoNumeracionProvisoria) {
+            remitoResumen.push("⚠️ Número provisorio");
+        }
+        dashboard.remitoRunning(remitoResumen, <RemitoSection remitos={process.session.remitos}/>
         );
 
-        if (
-            result.success &&
-            process.session.stats
-        ) {
-            const s =
-                process.session.stats;
+        if (result.success && process.session.stats) {
+            const s = process.session.stats;
 
-            const metodoTexto =
-                pickingMethod ===
-                PickingMethods.ACCESSIBILITY
-                    ? "Accesibilidad"
-                    : "Recorrido";
+            const metodoTexto = pickingMethod === PickingMethods.ACCESSIBILITY ? "Accesibilidad" : "Recorrido";
 
-            const metodoIcono =
-                pickingMethod ===
-                PickingMethods.ACCESSIBILITY
-                    ? "⬇️"
-                    : "🚹";
+            const metodoIcono = pickingMethod === PickingMethods.ACCESSIBILITY ? "⬇️" : "🚹";
 
             dashboard.procesoOk([
                 `${s.pedidos} pedidos`,
