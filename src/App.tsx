@@ -11,11 +11,13 @@ import WhGral from "./components/WhGeneral/WhGral";
 import PeYa from "./components/PeYa/PeYa";
 import PeYaIngresos from "./components/PeYa/PeYaIngresos";
 import PeYaEgresos from "./components/PeYa/PeYaEgresos/PeYaEgresos";
-import PeYaInformes from "./components/PeYa/PeYaInformes";
+import PeYaInformes from "./components/PeYa/PeYaInformes/PeYaInformes";
 import PeYaPicking from "./components/PeYa/PeYaPicking/PeYaPicking";
 import PeYaRemito from "./components/PeYa/PeYaRemito/PeYaRemito";
 import PeYaSalida from "./components/PeYa/PeYaSalida/PeYaSalida";
 import PeYaWorkflow from "./components/workflow/PeYaWorkflow";
+import PeYaIngresosInforme from "./components/PeYa/PeYaInformes/ingresos/PeYaIngresosInforme"
+import PeYaOcupacionInforme from "./components/PeYa/PeYaInformes/ocupacion/PeYaOcupacionInforme"
 
 
 
@@ -40,6 +42,9 @@ function App() {
         <Route path="/PeYaRemito" element={<PeYaRemito  />} />
         <Route path="/PeYaSalida" element={<PeYaSalida  />} />
         <Route path="/PeYaWorkflow" element={<PeYaWorkflow  />} />
+        <Route path="/PeYaInformes/ingresos" element={<PeYaIngresosInforme  />} />
+        <Route path="/PeYaInformes/ocupacion" element={<PeYaOcupacionInforme />} />    
+
       </Routes>
     </Router>
   );

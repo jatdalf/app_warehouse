@@ -13,6 +13,7 @@ export class WarehouseSession {
     shortages: StockShortage[] = [];
     stats?: PickingStats;
     remitos: any[] = [];
+    remitoNumeracionProvisoria: boolean = false;
     movimientos: any[] = [];
     pickingMethod: PickingMethod = PickingMethods.LOCATION;
 }

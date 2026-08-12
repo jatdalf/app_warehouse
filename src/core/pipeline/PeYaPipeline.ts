@@ -13,11 +13,7 @@ export class PeYaPipeline{
         this.steps = steps;
     }
 
-    async execute(
-        session: WarehouseSession,
-        onStep?:(step:string)=>void
-    ):Promise<EngineResult>{
-
+    async execute(session: WarehouseSession, onStep?:(step:string)=>void):Promise<EngineResult>{
         for(const step of this.steps){
                console.log("STEP:", step.name);
             onStep?.(step.name);

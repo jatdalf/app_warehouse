@@ -10,7 +10,7 @@ interface RemitoAsignado {
 }
 
 export class RemitoEngine implements PipelineStep {
-    readonly name = "Remitos";
+    readonly name = "Remitos";    
     async execute(session: WarehouseSession): Promise<EngineResult> {
         const sts = [...new Set(session.picking.map(item => item.st))];
         const numeros = new Map<string, string>();
@@ -34,6 +34,7 @@ export class RemitoEngine implements PipelineStep {
             numeros.set(st, numeroFallback);
         });
         session.remitos = RemitoFactory.build(session.picking, numeros);
+        session.remitoNumeracionProvisoria = numeracionProvisoria;
         return {
             success: true,
             message: numeracionProvisoria

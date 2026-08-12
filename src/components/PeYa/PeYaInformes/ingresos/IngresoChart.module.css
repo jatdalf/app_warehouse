@@ -1,0 +1,32 @@
+.card {
+    width: 100%;
+    height: 340px;
+    min-width: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(white, #c3f0ce);
+    border: 1px solid #d9e2e2;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+.title {
+    margin: 0 0 18px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: #2b8179;
+}
+
+.chart {
+    width: 115%;
+    height: 250px;
+    margin-left: -20%;
+    margin-top: auto;
+}
