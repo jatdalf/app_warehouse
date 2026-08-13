@@ -15,30 +15,30 @@ export interface InventarioWeeklyData {
 }
 
 export class InventarioWeeklyBuilder {
-    static build(
-        inventarios: InventarioItem[],
-        feriados: FeriadoItem[],
-        desde: Date,
-        hasta: Date
-    ): InventarioWeeklyData[] {
+    private static formatWeekLabel(desde: Date, hasta: Date): string {
+        const inicio = desde.getDate().toString().padStart(2, "0");
+        const fin = hasta.getDate().toString().padStart(2, "0");
+        const mes = new Intl.DateTimeFormat("es-AR",{month: "short"}).format(hasta).replace(".", "");
+        const mesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
+        return `${inicio} - ${fin} ${mesCapitalizado}`;
+    }
+    static build( inventarios: InventarioItem[], feriados: FeriadoItem[], desde: Date, hasta: Date,
+    fechaCorte?: Date | null): InventarioWeeklyData[] {
         const resultado: InventarioWeeklyData[] = [];
         let inicio = this.inicioSemana(desde);
-        const limite = this.finDelDia(hasta);
+        const limite = this.finDelDia(fechaCorte && fechaCorte.getTime() < hasta.getTime()
+            ? fechaCorte : hasta);
         while (inicio.getTime() <= limite.getTime()) {
             const fin = new Date(inicio);
             fin.setDate(fin.getDate() + 6);
             /* Recortamos la semana al período seleccionado.*/
             const desdeSemana = inicio < desde ? desde : inicio;
-            const hastaSemana = fin > hasta ? hasta : fin;
+            const hastaSemana = fin > limite ? limite : fin;
             const summary = InventarioSummaryBuilder.build(
-                inventarios,
-                feriados,
-                desdeSemana,
-                hastaSemana
-            );
+                inventarios, feriados, desdeSemana, hastaSemana, fechaCorte);
             resultado.push({
                 key: this.formatKey(desdeSemana),
-                label: `${this.formatDay(desdeSemana)} - ${this.formatDay(hastaSemana)}`,
+                label: this.formatWeekLabel(desdeSemana, hastaSemana),
                 desde: desdeSemana,
                 hasta: hastaSemana,
                 realizados: summary.realizados,
@@ -47,7 +47,6 @@ export class InventarioWeeklyBuilder {
                 sinDiferencias: summary.sinDiferencias,
                 conDiferencias: summary.conDiferencias
             });
-
             inicio = new Date(inicio);
             inicio.setDate(inicio.getDate() + 7);
         }
@@ -55,19 +54,11 @@ export class InventarioWeeklyBuilder {
     }
     /* Semana lunes-domingo */
     private static inicioSemana(fecha: Date): Date {
-        const result = new Date(
-            fecha.getFullYear(),
-            fecha.getMonth(),
-            fecha.getDate()
-        );
+        const result = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
         const dia = result.getDay();
         const diferencia = dia === 0 ? -6 : 1 - dia;
         result.setDate( result.getDate() + diferencia);
         return result;
-    }
-
-    private static formatDay(fecha: Date): string {
-        return fecha.getDate().toString().padStart(2, "0");
     }
 
     private static formatKey(fecha: Date): string {
@@ -75,14 +66,6 @@ export class InventarioWeeklyBuilder {
     }
 
     private static finDelDia(fecha: Date): Date {
-        return new Date(
-            fecha.getFullYear(),
-            fecha.getMonth(),
-            fecha.getDate(),
-            23,
-            59,
-            59,
-            999
-        );
+        return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59, 999);
     }
 }
