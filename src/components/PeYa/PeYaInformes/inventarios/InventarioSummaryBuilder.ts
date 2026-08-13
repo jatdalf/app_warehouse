@@ -16,11 +16,12 @@ export class InventarioSummaryBuilder {
         inventarios: InventarioItem[],
         feriados: FeriadoItem[],
         desde: Date,
-        hasta: Date
+        hasta: Date,
+        fechaCorte?: Date | null
     ): InventarioSummary {
         /*No permitimos exigir fechas futuras.*/
-        const hoy = new Date();
-        const finReal = hasta.getTime() > hoy.getTime() ? hoy : hasta;
+        const limite = fechaCorte ?? hasta;
+        const finReal = hasta.getTime() > limite.getTime() ? limite : hasta;
         /*
          * Los realizados se cuentan por fecha
          * independientemente de si fueron hechos
@@ -54,14 +55,6 @@ export class InventarioSummaryBuilder {
     }
 
     private static finDelDia(fecha: Date): Date {
-        return new Date(
-            fecha.getFullYear(),
-            fecha.getMonth(),
-            fecha.getDate(),
-            23,
-            59,
-            59,
-            999
-        );
+        return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59, 999);
     }
 }

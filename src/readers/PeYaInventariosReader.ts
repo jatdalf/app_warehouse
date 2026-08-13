@@ -1,34 +1,40 @@
 import * as XLSX from "xlsx";
 import type { InventarioItem } from "../components/PeYa/PeYaInformes/inventarios/InventarioItem";
 
+export interface PeYaInventariosData {
+    items: InventarioItem[];
+    createdAt: Date | null;
+}
+
 export class PeYaInventariosReader {
-    static async read(): Promise<InventarioItem[]> {
+    static async read(): Promise<PeYaInventariosData> {
         const response = await fetch("/data/PeYaInventarios.xlsx");
         if (!response.ok) {
             throw new Error("No fue posible cargar PeYaInventarios.xlsx");
         }
         const buffer = await response.arrayBuffer();
         const workbook = XLSX.read(buffer);
+        const rawCreated = workbook.Props?.CreatedDate;
+        const createdAt = rawCreated ? new Date(rawCreated) : null;
         const sheet = workbook.Sheets["Sheet1"];
         if (!sheet) {
             throw new Error('No existe la hoja "Sheet1" en PeYaInventarios.xlsx');
         }
         const rows = XLSX.utils.sheet_to_json<any[]>(sheet,{header: 1, raw: true});
 
-        return rows.slice(1).map(row => ({
-            propietario: String(row[0] ?? "").trim(),
-            articulo: String(row[1] ?? "").trim(),
-            ubicacion: String(row[2] ?? "").trim(),
-            fecha: this.parseDate(row[3]),
-            usuario: String(row[4] ?? "").trim(),
-            estatus: String(row[5] ?? "").trim(),
-            resultado: String(row[6] ?? "").trim(),
-            numeroTarea: String(row[7] ?? "").trim()
-        }))
-
-        // Solamente inventarios reales contabilizados
-        .filter(item => !Number.isNaN(item.fecha.getTime()) && item.estatus.toLowerCase() === "contabilizado"
-        );
+        const items = rows.slice(1).map(row => ({
+                propietario: String(row[0] ?? "").trim(),
+                articulo: String(row[1] ?? "").trim(),
+                ubicacion: String(row[2] ?? "").trim(),
+                fecha: this.parseDate(row[3]),
+                usuario: String(row[4] ?? "").trim(),
+                estatus: String(row[5] ?? "").trim(),
+                resultado: String(row[6] ?? "").trim(),
+                numeroTarea: String(row[7] ?? "").trim()
+            }))
+            .filter(item => !Number.isNaN(item.fecha.getTime()) &&
+                item.estatus.toLowerCase() === "contabilizado");
+        return {items, createdAt};
     }
 
     private static parseDate(value: unknown): Date {

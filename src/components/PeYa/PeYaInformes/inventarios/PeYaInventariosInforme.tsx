@@ -6,6 +6,7 @@ import type { FeriadoItem } from "../inventarios/FeriadoItem";
 import { InventarioSummaryBuilder } from "../inventarios/InventarioSummaryBuilder";
 import { InventarioWeeklyBuilder } from "../inventarios/InventarioWeeklyBuilder";
 import styles from "./PeYaInventariosInforme.module.css";
+import InventarioWeeklyChart from "./InventarioWeeklyChart";
 
 interface MesDisponible {
     key: string;
@@ -19,6 +20,7 @@ const PeYaInventariosInforme = () => {
     const [selectedMonth, setSelectedMonth] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [fechaActualizacion, setFechaActualizacion] = useState<Date | null>(null);
     /* =========================================
        CARGA DE ARCHIVOS
        ========================================= */
@@ -30,7 +32,8 @@ const PeYaInventariosInforme = () => {
                     PeYaInventariosReader.read(),
                     PeYaFeriadosReader.read()
                 ]);
-                setInventarios(inventariosData);
+                setInventarios(inventariosData.items);
+                setFechaActualizacion(inventariosData.createdAt);
                 setFeriados(feriadosData);
             } catch (err) {
                 console.error(err);
@@ -54,25 +57,18 @@ const PeYaInventariosInforme = () => {
             const month = item.fecha.getMonth();
             const key = `${year}-${month}`;
             if (!meses.has(key)) {
-                const rawLabel = new Intl.DateTimeFormat("es-AR",
-                        {
-                            month: "long",
-                            year: "numeric"
-                        }
+                const rawLabel = new Intl.DateTimeFormat("es-AR", {month: "long", year: "numeric"}
                     ).format(item.fecha );
                 const label = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
-                meses.set(key,{
-                        key,
-                        year,
-                        month,
-                        label
-                    }
+                meses.set(key,{key, year, month, label}
                 );
             }
         });
         return [...meses.values()].sort((a, b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
     }, [inventarios]);
 
+    const fechaActualizacionTexto = fechaActualizacion ? fechaActualizacion.toLocaleDateString(
+            "es-AR", {day: "2-digit", month: "2-digit", year: "numeric"}) : "";
     /* =========================================
        MES INICIAL
        ========================================= */
@@ -84,9 +80,7 @@ const PeYaInventariosInforme = () => {
         const keyActual = `${hoy.getFullYear()}-${hoy.getMonth()}`;
         const mesActual = mesesDisponibles.find(mes => mes.key === keyActual);
         if (mesActual) {
-            setSelectedMonth(
-                mesActual.key
-            );
+            setSelectedMonth(mesActual.key);
             return;
         }
         /*
@@ -107,11 +101,7 @@ const PeYaInventariosInforme = () => {
         }
         const desde = new Date(mes.year, mes.month, 1);
         const hasta = new Date(mes.year, mes.month + 1, 0, 23, 59, 59, 999);
-        return {
-            desde,
-            hasta,
-            mes
-        };
+        return {desde, hasta, mes};
     }, [mesesDisponibles, selectedMonth]);
 
     /* =========================================
@@ -121,8 +111,9 @@ const PeYaInventariosInforme = () => {
         if (!periodo) {
             return null;
         }
-        return InventarioSummaryBuilder.build(inventarios, feriados, periodo.desde, periodo.hasta);
-    }, [inventarios, feriados, periodo]);
+        return InventarioSummaryBuilder.build(
+            inventarios, feriados, periodo.desde, periodo.hasta, fechaActualizacion);
+    }, [inventarios, feriados, periodo, fechaActualizacion]);
 
     /* =========================================
        DATOS SEMANALES
@@ -131,9 +122,9 @@ const PeYaInventariosInforme = () => {
         if (!periodo) {
             return [];
         }
-        return InventarioWeeklyBuilder.build(inventarios, feriados, periodo.desde, periodo.hasta);
-
-    }, [inventarios, feriados, periodo]);
+        return InventarioWeeklyBuilder.build(
+            inventarios, feriados, periodo.desde, periodo.hasta, fechaActualizacion);
+    }, [inventarios, feriados, periodo, fechaActualizacion]);
 
     /* =========================================
        ESTADOS
@@ -188,6 +179,11 @@ const PeYaInventariosInforme = () => {
             <h2 className={styles.title}>
                 Inventarios{" "} {periodo.mes.label}
             </h2>
+            {fechaActualizacion  && (
+                <div className={styles.lastUpdate}>
+                    (última actualización{" "}{fechaActualizacionTexto})
+                </div>
+            )}
             {/* METRICAS */}
             <div className={styles.metricsGrid}>
                 <div className={styles.metric}>
@@ -216,7 +212,7 @@ const PeYaInventariosInforme = () => {
                     <span>Inventarios esperados</span>
                 </div>
                 <div className={`${styles.metric} ${target < 0 ? styles.metricWarning : ""}`} >
-                    <strong>{target}</strong>
+                    <strong>{target > 0 ? `+${target}` : target}</strong>
                     <span>Target</span>
                 </div>
                 <div className={styles.metric}>
@@ -231,35 +227,7 @@ const PeYaInventariosInforme = () => {
             </div>
             {/* TEMPORALMENTE PARA VALIDAR
                 EL CALCULO SEMANAL */}
-            <div className={styles.weeklyDebug}>
-                <h3>
-                    Resumen semanal
-                </h3>
-                {datosSemanales.map( semana => (
-                    <div key={semana.key} className={styles.weekRow}>
-                        <span>
-                            {semana.label}
-                        </span>
-                        <span>
-                            Esperados:{" "}
-                            <strong>
-                                {semana.esperados}
-                            </strong>
-                        </span>
-                        <span>
-                            Realizados:{" "}
-                            <strong>
-                                {semana.realizados}
-                            </strong>
-                        </span>
-                        <span>
-                            {semana.cumplimiento.toLocaleString("es-AR",{maximumFractionDigits: 1})}
-                            %
-                        </span>
-                    </div>
-                    )
-                )}
-            </div>
+            <InventarioWeeklyChart data={datosSemanales} />
         </div>
     );
 };
