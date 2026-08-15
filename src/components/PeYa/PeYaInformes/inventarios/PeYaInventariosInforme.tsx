@@ -7,6 +7,7 @@ import { InventarioSummaryBuilder } from "../inventarios/InventarioSummaryBuilde
 import { InventarioWeeklyBuilder } from "../inventarios/InventarioWeeklyBuilder";
 import styles from "./PeYaInventariosInforme.module.css";
 import InventarioWeeklyChart from "./InventarioWeeklyChart";
+import AnimatedNumber from "../../../../utils/AnimatedNumber";
 
 interface MesDisponible {
     key: string;
@@ -187,38 +188,39 @@ const PeYaInventariosInforme = () => {
             {/* METRICAS */}
             <div className={styles.metricsGrid}>
                 <div className={styles.metric}>
-                    <strong>{resumen.realizados}</strong>
+                    <strong><AnimatedNumber value={resumen.realizados} /></strong>
                     <span>Inventarios realizados</span>
                 </div>
                 <div className={styles.metric}>
-                    <strong>{resumen.sinDiferencias}</strong>
+                    <strong><AnimatedNumber value={resumen.sinDiferencias} /></strong>
                     <span>Sin diferencias</span>
                 </div>
                 <div className={styles.metric}>
-                    <strong>{resumen.conDiferencias}</strong>
+                    <strong><AnimatedNumber value={resumen.conDiferencias} /></strong>
                     <span>Con diferencias</span>
                 </div>
-                <div className={styles.metric}>
-                    <strong>{diferencias.toLocaleString("es-AR",{maximumFractionDigits: 1})}</strong>
+                <div className={styles.metric}>                    
+                    <strong>
+                        <AnimatedNumber value={diferencias} decimals={1} suffix="%" />
+                    </strong>
                     <span>% de desvio</span>
                 </div>
                 {/* segunda linea */}
                 <div className={styles.metric}>
-                    <strong>{resumen.diasLaborables}</strong>
+                    <strong><AnimatedNumber value={resumen.diasLaborables}/></strong>
                     <span>Días laborables</span>
                 </div>
                 <div className={styles.metric}>
-                    <strong>{resumen.esperados}</strong>
+                    <strong><AnimatedNumber value={resumen.esperados}/></strong>
                     <span>Inventarios esperados</span>
                 </div>
                 <div className={`${styles.metric} ${target < 0 ? styles.metricWarning : ""}`} >
-                    <strong>{target > 0 ? `+${target}` : target}</strong>
+                    <strong><AnimatedNumber value={target} prefix={target > 0 ? "+" : ""} /></strong>
                     <span>Target</span>
                 </div>
                 <div className={styles.metric}>
                     <strong>
-                        {resumen.cumplimiento.toLocaleString("es-AR",{maximumFractionDigits: 1})}
-                        %
+                        <AnimatedNumber value={resumen.cumplimiento} decimals={1} suffix="%" />
                     </strong>
                     <span>
                         Cumplimiento

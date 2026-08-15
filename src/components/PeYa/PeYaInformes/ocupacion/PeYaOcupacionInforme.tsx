@@ -4,6 +4,7 @@ import type { OcupacionItem } from "../ocupacion/OcupacionItem";
 import { OcupacionSummaryBuilder } from "../ocupacion/OcupacionSummaryBuilder";
 import OcupacionChart from "./OcupacionChart";
 import styles from "./PeYaOcupacionInforme.module.css";
+import AnimatedNumber from "../../../../utils/AnimatedNumber";
 
 interface MesDisponible {
     key: string;
@@ -105,7 +106,7 @@ const PeYaOcupacionInforme = () => {
             <div className={styles.metricsGrid}>
                 <div className={styles.metric}>
                     <strong>
-                        {resumen.posicionesActuales}
+                        <AnimatedNumber value={resumen.posicionesActuales}/>
                     </strong>
                     <span>
                         Posiciones finales
@@ -114,7 +115,7 @@ const PeYaOcupacionInforme = () => {
 
                 <div className={styles.metric}>
                     <strong>
-                        {resumen.skuActuales}
+                        <AnimatedNumber value={resumen.skuActuales}/>
                     </strong>
                     <span>
                         SKU finales
@@ -123,7 +124,7 @@ const PeYaOcupacionInforme = () => {
 
                 <div className={styles.metric}>
                     <strong>
-                        {resumen.promedioPosiciones}
+                        <AnimatedNumber value={resumen.promedioPosiciones}/>
                     </strong>
                     <span>
                         Promedio posiciones
@@ -132,7 +133,7 @@ const PeYaOcupacionInforme = () => {
 
                 <div className={styles.metric}>
                     <strong>
-                        {resumen.maximoPosiciones}
+                        <AnimatedNumber value={resumen.maximoPosiciones}/>
                     </strong>
                     <span>
                         Máximo del mes
@@ -141,7 +142,7 @@ const PeYaOcupacionInforme = () => {
 
                 <div className={styles.metric}>
                     <strong>
-                        {resumen.diasExceso}
+                        <AnimatedNumber value={resumen.diasExceso}/>
                     </strong>
                     <span>
                         Días sobre capacidad
@@ -149,7 +150,7 @@ const PeYaOcupacionInforme = () => {
                 </div>
                 <div className={styles.metric}>
                     <strong>
-                        {resumen.promedioSobrecapacidad}
+                        <AnimatedNumber value={resumen.promedioSobrecapacidad}/>
                     </strong>
                     <span>
                         Promedio de sobrecapacidad
