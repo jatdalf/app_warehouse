@@ -8,7 +8,7 @@
     padding: 24px;
     border: 1px solid #d9e2e2;
     border-radius: 14px;
-    background: #ffffff;
+    background: linear-gradient(180deg, #ffffff 0%, #f4fff8 55%, #e1f8e8 100%);;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }

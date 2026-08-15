@@ -1,0 +1,166 @@
+.container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 30px 5% 50px;
+    box-sizing: border-box;
+}
+/*  TITULO */
+.title {
+    margin: 2px 0 5px;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    color: #2b8179;
+}
+/*    SELECTOR DE MES    */
+.controls {
+    width: min(1100px, 100%);
+    margin: 0 auto 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.controls select {
+    min-width: 240px;
+    padding: 11px 15px;
+    border: 1px solid #bfcaca;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.controls select:hover {
+    border-color: #2b8179;
+}
+
+.controls select:focus {
+    border-color: #2b8179;
+    box-shadow: 0 0 0 3px rgba(43, 129, 121, 0.12);
+}
+/*  WARNING DATOS PARCIALES */
+.warning {
+    width: fit-content;
+    margin: 12px auto 28px;
+    padding: 8px 18px;
+    border: 1px solid #e6bd66;
+    border-radius: 8px;
+    background: linear-gradient( 180deg, #fffdf6 0%, #fff3d4 100%);
+    color: #8a6215;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(180, 125, 20, 0.08);
+}
+/* TABLA CLAVE DE CONTROL */
+.controlTable {
+    width: 600px;
+    margin: 35px auto 0;
+    overflow: hidden;
+    border: 1px solid #d7e1df;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 7px 24px rgba(0, 0, 0, 0.07);
+}
+/*  FILAS */
+.row {
+    min-height: 62px;   
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) 120px;
+    align-items: center;
+    border-bottom: 1px solid #e1e8e6;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.row:hover {
+    background: linear-gradient( 90deg, #ffffff 0%, #f4fff8 55%, #e8f8ed 100% );
+}
+.row:nth-child(odd) {
+    background: #ffffff;
+}
+
+.row:nth-child(even) {
+    background: #eaf7fb;
+}
+/*  CLAVE */
+.code {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #e1e8e6;
+    color: #2b8179;
+    font-size: 15px;
+    font-weight: 700;
+}
+/*  DESCRIPCION */
+.description {
+    min-width: 0;
+    padding: 0 20px;
+    color: #444;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*   CANTIDAD */
+.row strong {
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-left: 1px solid #e1e8e6;
+    background: transparent;
+    color: #2b8179;
+    font-size: 25px;
+    font-weight: 700;
+}
+/*  LOADING */
+.loading {
+    margin-top: 100px;
+    text-align: center;
+    color: #666;
+    font-size: 15px;
+}
+/*  RESPONSIVE */
+@media (max-width: 750px) {
+    .container {
+        padding: 20px;
+    }
+    .title {
+        font-size: 25px;
+        margin-top: 15px;
+    }
+    .controls select {
+        width: 100%;
+    }
+    .controlTable {
+        width: 100%;
+        margin-top: 25px;
+    }
+    .row {
+        grid-template-columns: 75px minmax(0, 1fr) 90px;
+        min-height: 90px;
+    }
+    .code {
+        font-size: 12px;
+    }
+    .description {
+        padding: 0 12px;
+        font-size: 12px;
+    }
+    .row strong {
+        font-size: 19px;
+    }
+}

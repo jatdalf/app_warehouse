@@ -49,6 +49,12 @@ const PeYaInformes = () => {
                     />
                 ))}
             </div>
+                <div className={styles.controlKeyAction}>
+                <button type="button" className={styles.controlKeyButton} onClick={() =>
+                    navigate("/PeYaInformes/clave-control")} >
+                    🔑 Clave de control
+                </button>
+            </div>
         </div>
     );
 };

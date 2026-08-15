@@ -5,6 +5,7 @@ import type { IngresoItem } from "../../../PeYa/PeYaInformes/ingresos/IngresoIte
 import styles from "./PeYaIngresosInforme.module.css";
 import { IngresosMonthlyBuilder } from "../ingresos/IngresosMonthlyBuilder";
 import IngresoChart from "./IngresoChart";
+import AnimatedNumber from "../../../../utils/AnimatedNumber";
 
 const PeYaIngresosInforme = () => {
     const [ingresos, setIngresos] = useState<IngresoItem[]>([]);
@@ -99,13 +100,13 @@ const PeYaIngresosInforme = () => {
                     </h2>
                     <div className={styles.metrics}>
                         <div>
-                            {total.sku.toLocaleString("es-AR")} SKU
+                            <AnimatedNumber value={total.sku}/> SKU
                         </div>
                         <div>
-                            {total.unidades.toLocaleString("es-AR")} unidades
+                            <AnimatedNumber value={total.unidades}/> unidades
                         </div>
                         <div>
-                            {total.pallets.toLocaleString("es-AR")} pallets
+                            <AnimatedNumber value={total.pallets}/> pallets
                         </div>
                     </div>
                 </section>
@@ -135,13 +136,13 @@ const PeYaIngresosInforme = () => {
                     </h2>
                     <div className={styles.metrics}>
                         <div>
-                            {resumenMes.sku.toLocaleString("es-AR")} SKU
+                            <AnimatedNumber value={resumenMes.sku}/> SKU
                         </div>
                         <div>
-                            {resumenMes.unidades.toLocaleString("es-AR")} unidades
+                            <AnimatedNumber value={resumenMes.unidades}/> unidades
                         </div>
                         <div>
-                            {resumenMes.pallets.toLocaleString("es-AR")} pallets
+                            <AnimatedNumber value={resumenMes.pallets}/> pallets
                         </div>
                     </div>
                 </section>
