@@ -40,15 +40,8 @@ const columns: GridColDef[] = [
 ];
 
 
-const PickingSection: React.FC<Props> = ({
-    picking,
-    shortages,
-    stats
-}) => {    
-    const gridRows = picking.map((item,index)=>({
-        id:index+1,
-        ...item
-    }));
+const PickingSection: React.FC<Props> = ({picking, shortages, stats}) => {    
+    const gridRows = picking.map((item,index)=>({id:index+1, ...item}));
     return (
         <fieldset>
             <legend>4. Picking</legend>
@@ -64,14 +57,9 @@ const PickingSection: React.FC<Props> = ({
                     disableColumnMenu
                     disableRowSelectionOnClick
                     sx={{
-                        "& .MuiDataGrid-row:nth-of-type(odd)": {
-                        backgroundColor: "#ffffff",
-                        },
-                        "& .MuiDataGrid-row:nth-of-type(even)": {
-                        backgroundColor: "#e6f7ff",
-                        },
-                    }}
-                />
+                        "& .MuiDataGrid-row:nth-of-type(odd)": {backgroundColor: "#ffffff",},
+                        "& .MuiDataGrid-row:nth-of-type(even)": {backgroundColor: "#e6f7ff",},
+                    }} />
             </div>
             {shortages.length>0 && (
                 <fieldset>
@@ -83,14 +71,9 @@ const PickingSection: React.FC<Props> = ({
                         disableColumnMenu
                         disableRowSelectionOnClick
                         sx={{
-                            "& .MuiDataGrid-row:nth-of-type(odd)": {
-                            backgroundColor: "#ffffff",
-                            },
-                            "& .MuiDataGrid-row:nth-of-type(even)": {
-                            backgroundColor: "#e6f7ff",
-                        },
-                    }}
-                    />
+                            "& .MuiDataGrid-row:nth-of-type(odd)": {backgroundColor: "#ffffff",},
+                            "& .MuiDataGrid-row:nth-of-type(even)": {backgroundColor: "#e6f7ff",},
+                    }} />
                 </fieldset>
             )}            
         </fieldset>

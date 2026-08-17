@@ -7,45 +7,47 @@ export function buildPickingHeader(pedido: string, destino: string, lineas: numb
         <div class="header">
             <div class="headerTop">
                 <div class="logoBox">
-                    <img
-                        class="logoPeYa"
-                        src="${logo}"
-                        alt="Logo"
-                    />
+                    <img class="logoPeYa" src="${logo}" alt="Logo" />
                 </div>
+
                 <div class="titleBox">
                     HOJA DE PICKING
                 </div>
+
                 <div class="dateBox">
                     <div>${fecha[0]}</div>
                     <div>${fecha[1]}</div>
                 </div>
             </div>
+
             <div class="separator"></div>
+
             <div class="headerInfo">
                 <div>
-                    <span class="label">
-                        Pedido:
-                    </span>
-                    <span class="value">
-                        ${pedido}
-                    </span>
+                    <span class="label"> Pedido: </span>
+                    <span class="value"> ${pedido} </span>
                 </div>
+
                 <div>
-                    <span class="label">
-                        Destino:
-                    </span>
-                    <span class="value">
-                        ${destino}
-                    </span>
+                    <span class="label"> Destino: </span>
+                    <span class="value"> ${destino} </span>
                 </div>
+
                 <div>
-                    <span class="label">
-                        Líneas:
-                    </span>
-                    <span class="value">
-                        ${lineas}
-                    </span>
+                    <span class="label"> Líneas: </span>
+                    <span class="value"> ${lineas} </span>
+                </div>
+            </div>
+
+            <div class="manualDataBox">
+                <div class="manualField">
+                    <span class="manualLabel"> Código Infor: </span>
+                    <span class="manualWrite"></span>
+                </div>
+
+                <div class="manualField">
+                    <span class="manualLabel"> Contenedores: </span>
+                    <span class="manualWrite"></span>
                 </div>
             </div>
             <div class="separator"></div>

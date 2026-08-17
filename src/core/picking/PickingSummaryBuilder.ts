@@ -11,10 +11,6 @@ export class PickingSummaryBuilder {
         const sku = new Set(picking.map(p => p.sku)).size;
         const lineas = picking.length;
         const bultos = picking.reduce((acc, p) => acc + p.bultos, 0);
-        return {
-            sku,
-            lineas,
-            bultos
-        };
+        return {sku, lineas, bultos};
     }
 }
