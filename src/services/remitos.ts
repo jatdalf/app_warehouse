@@ -1,27 +1,30 @@
-import {post} from "./api";
-
-export interface Remito{
-    st:string;
-    remito:string;
+interface RemitoAsignado {
+    st: string;
+    remito: string;
 }
 
-interface ObtenerRemitosResponse{
-    success:boolean;
-    remitos:Remito[];
+interface RemitosResponse {
+    success: boolean;
+    remitos: RemitoAsignado[];
+    error?: string;
 }
 
-export async function obtenerRemitos(
-    sts:string[],
-    usuario:string
-):Promise<Remito[]>{
-
-    const response=await post<ObtenerRemitosResponse>(
-        "/remitos",
+export async function obtenerRemitos( sts: string[], usuario: string): Promise<RemitoAsignado[]> {
+    const response = await fetch("/api/remitos",
         {
-            sts,
-            usuario
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({sts, usuario})
         }
     );
+    const data = await response.json() as RemitosResponse;
 
-    return response.remitos;
+    if (!response.ok) {
+        throw new Error(data.error ?? `Error HTTP ${response.status}`);
+    }
+
+    if (!data.success || !Array.isArray(data.remitos)) {
+        throw new Error( "Respuesta de remitos inválida." );
+    }
+    return data.remitos;
 }
