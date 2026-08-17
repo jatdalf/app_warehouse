@@ -98,7 +98,39 @@ export const PICKING_STYLES = `
         font-size:11px;
         color:#555;
     }
+.manualDataBox {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 
+    gap: 20px;
+
+    margin: 8px 0;
+    padding: 8px 12px;
+
+    border: 1px solid #555;
+    border-radius: 4px;
+}
+
+.manualField {
+    display: flex;
+    align-items: center;
+
+    min-height: 28px;
+}
+
+.manualLabel {
+    font-weight: bold;
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+.manualWrite {
+    flex: 1;
+
+    height: 22px;
+
+    border-bottom: 1px solid #555;
+}   
     /* ===========================
     SECTORES
     =========================== */
