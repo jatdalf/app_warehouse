@@ -3,9 +3,10 @@ import LogoOcasa from "../LogoOcasa/LogoOcasa";
 import styles from "./Inventarios.module.css";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useCountUp } from "../../components/Inventarios/hooks/useCountUp";
-import { loadUbicaciones, getResumenInventarios } from "../../services/excelService";
+import { loadUbicaciones, getResumenInventarios, loadFeriados} from "../../services/excelService";
 import UbicacionesGrid from "./UbicacionesGrid";
 import InventariosGrid from "./InventariosGrid";
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -14,7 +15,6 @@ const Inventario: React.FC = () => {
     "Enero","Febrero","Marzo","Abril","Mayo","Junio",
     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
   ];
-
   const [mesesSeleccionados, setMesesSeleccionados] = useState<string[]>([meses[new Date().getMonth()]]);
 
   // ✅ Estado inicial ahora incluye listaSinInventariar
@@ -30,10 +30,9 @@ const Inventario: React.FC = () => {
     inventariosDiferencia: 0,
     inventariosOk: 0,
   });
-
   const [registrosFiltrados, setRegistrosFiltrados] = useState<any[]>([]);
   const [ultimaFecha, setUltimaFecha] = useState<string>("");
-
+  const [feriados, setFeriados] = useState<Date[]>([]);
   const [ubicacionesUnicas, setUbicacionesUnicas] = useState<{ tipoAlmacen: string; ubicacion: string }[]>([]);
 
   useEffect(() => {
@@ -51,12 +50,10 @@ const Inventario: React.FC = () => {
   useEffect(() => {
     const fetchInventarios = async () => {
       if (ubicacionesUnicas.length === 0) return;
-
       const { resumenInventarios, resumenUbicaciones } = await getResumenInventarios(
         mesesSeleccionados,
         ubicacionesUnicas
       );
-
       setResumenInventarios({
         cantidadPosiciones: resumenInventarios.cantidadPosiciones,
         inventariosDiferencia: resumenInventarios.inventariosDiferencia,
@@ -64,13 +61,20 @@ const Inventario: React.FC = () => {
       });
       setRegistrosFiltrados(resumenInventarios.registrosFiltrados);
       setUltimaFecha(resumenInventarios.ultimaFecha);
-
       setResumenUbicaciones(resumenUbicaciones);
     };
     fetchInventarios();
   }, [mesesSeleccionados, ubicacionesUnicas]);
-
-  const countUbicaciones = useCountUp(resumenUbicaciones.cantidadUbicaciones);
+  useEffect(() => {
+    const fetchFeriados = async () => {
+      try {
+        const data = await loadFeriados();
+        setFeriados(data);
+      } catch (error) {console.error("Error cargando feriados:", error);}
+    };
+    void fetchFeriados();
+  }, []);
+    const countUbicaciones = useCountUp(resumenUbicaciones.cantidadUbicaciones);
   const countInventariadas = useCountUp(resumenUbicaciones.posicionesInventariadas);
   const countSinInventariar = useCountUp(resumenUbicaciones.posicionesSinInventariar);
 
@@ -82,10 +86,7 @@ const Inventario: React.FC = () => {
     labels: ["Con inventario", "Sin inventariar"],
     datasets: [
       {
-        data: [
-          resumenUbicaciones.posicionesInventariadas,
-          resumenUbicaciones.posicionesSinInventariar,
-        ],
+        data: [resumenUbicaciones.posicionesInventariadas, resumenUbicaciones.posicionesSinInventariar,],
         backgroundColor: ["rgb(35, 200, 183)", "rgb(241, 232, 132)"],
         borderColor: ["#fff", "#fff"],
         borderWidth: 2,
@@ -97,10 +98,7 @@ const Inventario: React.FC = () => {
     labels: ["Ok", "Con diferencia"],
     datasets: [
       {
-        data: [
-          resumenInventarios.inventariosOk,
-          resumenInventarios.inventariosDiferencia,
-        ],
+        data: [resumenInventarios.inventariosOk, resumenInventarios.inventariosDiferencia,],
         backgroundColor: ["#28a745", "#dc3545"],
         borderColor: ["#fff", "#fff"],
         borderWidth: 2,
@@ -134,6 +132,7 @@ const Inventario: React.FC = () => {
         setMesesSeleccionados={setMesesSeleccionados}
         registrosFiltrados={registrosFiltrados}
         ultimaFecha={ultimaFecha}
+        feriados={feriados}
       />
     </div>
   );
