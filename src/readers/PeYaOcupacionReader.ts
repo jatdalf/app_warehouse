@@ -3,12 +3,25 @@ import type { OcupacionItem } from "../components/PeYa/PeYaInformes/ocupacion/Oc
 
 export class PeYaOcupacionReader {
     static async read(): Promise<OcupacionItem[]> {
-        const response = await fetch("/data/seguimiento PeYa.xlsx");
+        // const response = await fetch("/data/seguimiento PeYa.xlsx");
+    const response = await fetch("/api/drive-file",
+        {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({fileId: "1A2G9QqzbjET4zjAeHWHoeO3LEpNtOlIB"})
+        });
         if (!response.ok) {
             throw new Error("No fue posible cargar seguimiento PeYa.xlsx");
         }
-        const buffer = await response.arrayBuffer();
-        const workbook = XLSX.read(buffer, {cellDates: true});
+        const data = await response.json();
+        const binary = atob(data.base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        const workbook = XLSX.read(bytes,{type: "array", cellDates: true});
+        // const buffer = await response.arrayBuffer();
+        // const workbook = XLSX.read(buffer, {cellDates: true});
         const sheet = workbook.Sheets["2026"];
         if (!sheet) {
             throw new Error('No existe la hoja "2026"');
