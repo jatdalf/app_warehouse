@@ -15,7 +15,7 @@ const Inventario: React.FC = () => {
     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
   ];
 
-  const [mesesSeleccionados, setMesesSeleccionados] = useState<string[]>(["Enero"]);
+  const [mesesSeleccionados, setMesesSeleccionados] = useState<string[]>([meses[new Date().getMonth()]]);
 
   // ✅ Estado inicial ahora incluye listaSinInventariar
   const [resumenUbicaciones, setResumenUbicaciones] = useState({
