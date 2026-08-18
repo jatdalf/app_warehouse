@@ -1,6 +1,6 @@
 // src/services/excelService.ts
 import * as XLSX from "xlsx";
-import { safeFormatFecha, excelDateToJSDate } from "../utils/dateUtils";
+import { excelDateToJSDate } from "../utils/dateUtils";
 
 export interface ResumenUbicaciones {
   cantidadUbicaciones: number;
@@ -60,6 +60,9 @@ export const getResumenInventarios = async (
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+  const rawModified = workbook.Props?.ModifiedDate;
+  const ultimaFecha = rawModified ? new Date(rawModified).toLocaleDateString( "es-AR",
+        {day: "2-digit", month: "2-digit", year: "numeric"}) : "";
 
   const registros = jsonData.slice(1).map((row) => ({
     fecha: row[0],
@@ -87,9 +90,6 @@ export const getResumenInventarios = async (
   const cantidadPosiciones = filtrados.filter((r) => r.almacen).length;
   const inventariosDiferencia = filtrados.filter((r) => r.resultado !== 0).length;
   const inventariosOk = filtrados.filter((r) => r.resultado === 0).length;
-
-  const ultimaFecha =
-    registros.length > 0 ? safeFormatFecha(registros[registros.length - 2].fecha) : "";
 
   // ✅ Cruce consistente con detalle
   const ubicacionesInventariadasSet = new Set(
