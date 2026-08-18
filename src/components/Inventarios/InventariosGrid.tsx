@@ -1,8 +1,8 @@
 // src/components/Inventarios/InventariosGrid.tsx
-import React from "react";
 import { Pie } from "react-chartjs-2";
 import styles from "./Inventarios.module.css";
 import { useNavigate } from "react-router-dom";
+import InventariosWeeklyChart from "./InventariosWeeklyChart";
 
 interface InventariosGridProps {
   countPosiciones: number;
@@ -19,6 +19,7 @@ interface InventariosGridProps {
   setMesesSeleccionados: (meses: string[]) => void;
   registrosFiltrados: any[];
   ultimaFecha: string;
+  feriados: Date[];
 }
 
 const InventariosGrid: React.FC<InventariosGridProps> = ({
@@ -31,7 +32,8 @@ const InventariosGrid: React.FC<InventariosGridProps> = ({
   mesesSeleccionados,
   setMesesSeleccionados,
   registrosFiltrados,
-  ultimaFecha,
+  ultimaFecha,  
+  feriados
 }) => {
   const navigate = useNavigate();
 
@@ -115,6 +117,10 @@ const InventariosGrid: React.FC<InventariosGridProps> = ({
       <div className={styles.InventoryLabel}>
         ( Última actualización {ultimaFecha} )
       </div>
+      <div className={styles.weeklyChart}>
+        <InventariosWeeklyChart registros={registrosFiltrados} feriados={feriados} 
+        fechaCorte={ultimaFecha} mesesSeleccionados={mesesSeleccionados}/>
+    </div>
     </div>
   );
 };

@@ -102,7 +102,7 @@ export const getResumenInventarios = async (
 
   const posicionesInventariadas = ubicacionesInventariadasSet.size;
   const posicionesSinInventariar = listaSinInventariar.length;
-
+  
   return {
     resumenInventarios: {
       cantidadPosiciones,
@@ -118,4 +118,18 @@ export const getResumenInventarios = async (
       listaSinInventariar,
     },
   };
+};
+export const loadFeriados = async (): Promise<Date[]> => {
+    const response = await fetch("/data/Feriados2026.xlsx");
+    const buffer = await response.arrayBuffer();
+    const workbook = XLSX.read(buffer, {type: "array", cellDates: true});
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows: any[] = XLSX.utils.sheet_to_json(sheet,{header: 1});
+    return rows.slice(1).map(row => {
+        const value = row[0];
+        if (value instanceof Date) {
+            return value;
+        }
+        return excelDateToJSDate(value);
+    }).filter(fecha => !Number.isNaN(fecha.getTime()));
 };
