@@ -39,39 +39,36 @@ const InventariosGrid: React.FC<InventariosGridProps> = ({
 
   return (
     <div className={styles.layout}>
-      <div className={styles.grid}>
-        <p>
-          Inventarios Realizados:{" "}
-          <span className={styles.numero}>{countPosiciones}</span>
-        </p>
-        <p>
-          Inventarios Ok:{" "}
-          <span className={styles.numero}>
-            {countOk} (
-            {(
-              (resumenInventarios.inventariosOk /
-                resumenInventarios.cantidadPosiciones) *
-              100
-            ).toFixed(2)}
-            %)
-          </span>
-        </p>
-        <p>
-          Inventarios con diferencia:{" "}
-          <span className={styles.numero}>
-            {countDiferencia} (
-            {(
-              (resumenInventarios.inventariosDiferencia /
-                resumenInventarios.cantidadPosiciones) *
-              100
-            ).toFixed(2)}
-            %)
-          </span>
-        </p>
+    <div className={styles.inventoryKpis}>
+      <div className={`${styles.inventoryKpi} ${styles.inventoryKpiMain}`}>
+        <strong>{countPosiciones.toLocaleString("es-AR")}</strong>
+        <span>Inventarios realizados</span>
+        <small>Total del período</small>
       </div>
 
+      <div className={styles.inventoryKpi}>
+        <strong>{countOk.toLocaleString("es-AR")}</strong>
+        <span>Inventarios OK</span>
+        <small>{resumenInventarios.cantidadPosiciones > 0 ? (
+                resumenInventarios.inventariosOk / resumenInventarios.cantidadPosiciones * 100
+              ).toLocaleString("es-AR",{ minimumFractionDigits: 2, maximumFractionDigits: 2})
+            : "0,00"}%
+        </small>
+      </div>
+
+      <div className={styles.inventoryKpi}>
+        <strong>{countDiferencia.toLocaleString("es-AR")}</strong>
+        <span>Con diferencia</span>
+        <small>{resumenInventarios.cantidadPosiciones > 0 ? (
+                resumenInventarios.inventariosDiferencia / resumenInventarios.cantidadPosiciones * 100
+              ).toLocaleString("es-AR",{minimumFractionDigits: 2, maximumFractionDigits: 2})
+            : "0,00"} %
+        </small>
+      </div>
+
+    </div>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ width: "250px", height: "250px" }}>
+        <div style={{ width: "250px", height: "250px" , marginLeft:"-50px"}}>
           <Pie data={pieInventarios} />
         </div>
         <div style={{ marginLeft: "20px" }}>
