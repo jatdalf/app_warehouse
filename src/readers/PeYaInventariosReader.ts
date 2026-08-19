@@ -8,76 +8,82 @@ export interface PeYaInventariosData {
 
 export class PeYaInventariosReader {
     static async read(): Promise<PeYaInventariosData> {
-        const response = await fetch("/data/PeYaInventarios.xlsx");
-        if (!response.ok) {
-            throw new Error("No fue posible cargar PeYaInventarios.xlsx");
+        const response = await fetch("/api/drive-file",
+            {method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({fileId: "1gWp_GbSmR3T5gbziVUtiF9aXFyb9-Dmh"})
+            }
+        );
+        if (!response.ok) {throw new Error("No fue posible cargar el informe de inventarios.");}
+        const data = await response.json();
+        if (!data.success || !data.base64) {
+            throw new Error(data.error ?? "Respuesta inválida al cargar el informe de inventarios.");
         }
-        const buffer = await response.arrayBuffer();
-        const workbook = XLSX.read(buffer);
-        const rawCreated = workbook.Props?.CreatedDate;
-        const createdAt = rawCreated ? new Date(rawCreated) : null;
-        const sheet = workbook.Sheets["Sheet1"];
-        if (!sheet) {
-            throw new Error('No existe la hoja "Sheet1" en PeYaInventarios.xlsx');
+        const binary = atob(data.base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
         }
+        const workbook = XLSX.read(bytes, {type: "array", cellDates: true});
+        const sheet = workbook.Sheets["Results"];
+        if (!sheet) {throw new Error('No existe la hoja "Results".');}
         const rows = XLSX.utils.sheet_to_json<any[]>(sheet,{header: 1, raw: true});
-
-        const items = rows.slice(1).map(row => ({
-                propietario: String(row[0] ?? "").trim(),
-                articulo: String(row[1] ?? "").trim(),
-                ubicacion: String(row[2] ?? "").trim(),
-                fecha: this.parseDate(row[3]),
-                usuario: String(row[4] ?? "").trim(),
-                estatus: String(row[5] ?? "").trim(),
-                resultado: String(row[6] ?? "").trim(),
-                numeroTarea: String(row[7] ?? "").trim()
-            }))
-            .filter(item => !Number.isNaN(item.fecha.getTime()) &&
-                item.estatus.toLowerCase() === "contabilizado");
+        const rawModified = workbook.Props?.ModifiedDate;
+        const createdAt = rawModified ? new Date(rawModified) : null;
+        const items: InventarioItem[] = [];
+        let fechaActual: Date | null = null;
+        /* Los datos útiles comienzan a partir de la fila 11/12. Podemos recorrer desde índice 10. */
+        for (const row of rows.slice(10)) {
+            /* Columna A En las filas cabecera contiene: Aug 01, 2026 */
+            const columnaA = row[0];
+            const posibleFecha = this.parseDateHeader(columnaA);
+            /* Si encontramos una fecha, comienza un nuevo bloque. */
+            if (posibleFecha) {
+                fechaActual = posibleFecha;
+                continue;
+            }
+            const ubicacion = String(row[15] ?? "").trim();
+            /* Si no tiene ubicación, NO es una fila de inventario. */
+            if (!ubicacion) {
+                continue;
+            }
+            if (!fechaActual) {
+                continue;
+            }
+            const quantityAdjusted = this.parseNumber(row[19]);
+            items.push({fecha: new Date(fechaActual), ubicacion, quantityAdjusted});
+        }
         return {items, createdAt};
     }
 
-    private static parseDate(value: unknown): Date {
+    private static parseNumber(value: unknown): number {
+        if (value === null || value === undefined || value === "") {
+            return 0;
+        }
+        if (typeof value === "number") {
+            return value;
+        }
+        const numero = Number(String(value).replace(",", ".").trim());
+        return Number.isNaN(numero) ? 0 : numero;
+    }
+
+    private static parseDateHeader(value: unknown): Date | null {
         if (value instanceof Date) {
             return value;
         }
-        if (typeof value === "number") {
-            const parsed = XLSX.SSF.parse_date_code(value);
-            if (!parsed) {
-                return new Date(NaN);
-            }
-            return new Date(
-                parsed.y,
-                parsed.m - 1,
-                parsed.d,
-                parsed.H ?? 0,
-                parsed.M ?? 0
-            );
+        if (typeof value !== "string") {
+            return null;
         }
-        /*
-         * Formato observado:
-         *
-         * 2/7/26, 11:25
-         */
-        const texto = String(value ?? "").trim();
-        if (!texto) {
-            return new Date(NaN);
+        const match = value.trim().match(/^([A-Za-z]{3})\s+(\d{1,2}),\s+(\d{4})$/);
+        if (!match) {
+            return null;
         }
+        const meses: Record<string, number> = {Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+            Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11};
 
-        const partes = texto.split(",");
-        const fechaTexto = partes[0]?.trim();
-        const horaTexto = partes[1]?.trim() ?? "00:00";
-        const fechaPartes = fechaTexto.split("/");
-        if (fechaPartes.length !== 3) {
-            return new Date(NaN);
+        const month = meses[match[1]];
+        if (month === undefined) {
+            return null;
         }
-        const dia = Number(fechaPartes[0]);
-        const mes = Number(fechaPartes[1]);
-        let anio = Number(fechaPartes[2]);
-        if (anio < 100) {
-            anio += 2000;
-        }
-        const horaPartes = horaTexto.split(":");
-        return new Date(anio, mes - 1, dia, Number(horaPartes[0] ?? 0), Number(horaPartes[1] ?? 0));
+        return new Date(Number(match[3]), month, Number(match[2]));
     }
 }

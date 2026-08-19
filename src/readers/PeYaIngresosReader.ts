@@ -3,38 +3,49 @@ import type { IngresoItem } from "../components/PeYa/PeYaInformes/ingresos/Ingre
 
 export class PeYaIngresosReader {
     static async read(): Promise<IngresoItem[]> {
-        const response = await fetch("/data/PeYaIngresos.xlsx");
-        if (!response.ok) {
-            throw new Error("No fue posible cargar PeYaIngresos.xlsx");
+    const response = await fetch("/api/drive-file",
+        {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({fileId: "1ZOPSovfCDf3287QLNOGZJu9iGfgPvzon"})
         }
-        const buffer = await response.arrayBuffer();
-        const workbook = XLSX.read(buffer, { cellDates: true});
-        const sheet = workbook.Sheets["Detail"];
-        if (!sheet) {
-            throw new Error('No existe la hoja "Detail" en PeYaIngresos.xlsx');
-        }
-        const rows = XLSX.utils.sheet_to_json<any[]>(sheet,{header: 1, raw: true});
+    );
+    if (!response.ok) {
+        throw new Error("No fue posible cargar PeYaingresos.xlsx desde Google Drive.");
+    }
+    const data = await response.json();
+    if (!data.success || !data.base64) {
+        throw new Error(data.error ?? "Respuesta inválida al cargar PeYaingresos.xlsx.");
+    }
+    const binary = atob(data.base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
 
-        return rows.slice(2).map(row => {
-                // D
-                const sku = String(row[3] ?? "").trim();
-                // H
-                const qtyReceived = this.parseCantidad(row[7]);
-                // L
-                const toLoc = String(row[11] ?? "").trim();
-                // AH
-                const dateReceived = this.parseDate(row[33]);
+    const workbook = XLSX.read(bytes,{type: "array", cellDates: true});
+    const sheet = workbook.Sheets["Detail"];
+    if (!sheet) {
+        throw new Error('No existe la hoja "Detail" en PeYaIngresos.xlsx');
+    }
+    const rows = XLSX.utils.sheet_to_json<any[]>(sheet,{header: 1, raw: true});
 
-                return {
-                    sku,
-                    qtyReceived,
-                    toLoc,
-                    dateReceived
-                };
-            })
-
-            .filter(item => item.sku !== ""
-);
+    return rows.slice(2).map(row => {
+            // D
+            const sku = String(row[3] ?? "").trim();
+            // H
+            const qtyReceived = this.parseCantidad(row[7]);
+            // L
+            const toLoc = String(row[11] ?? "").trim();
+            // AH
+            const dateReceived = this.parseDate(row[33]);
+            return {
+                sku,
+                qtyReceived,
+                toLoc,
+                dateReceived
+            };
+        }).filter(item => item.sku !== "");
     }
 
 

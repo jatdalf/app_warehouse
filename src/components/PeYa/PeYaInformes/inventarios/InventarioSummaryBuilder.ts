@@ -6,54 +6,47 @@ export interface InventarioSummary {
     realizados: number;
     sinDiferencias: number;
     conDiferencias: number;
+    diasLaborables: number;
     esperados: number;
     cumplimiento: number;
-    diasLaborables: number;
 }
 
 export class InventarioSummaryBuilder {
-    static build(
-        inventarios: InventarioItem[],
-        feriados: FeriadoItem[],
-        desde: Date,
-        hasta: Date,
-        fechaCorte?: Date | null
+    static build(inventarios: InventarioItem[], feriados: FeriadoItem[], desde: Date, hasta: Date, fechaCorte?: Date | null
     ): InventarioSummary {
-        /*No permitimos exigir fechas futuras.*/
-        const limite = fechaCorte ?? hasta;
-        const finReal = hasta.getTime() > limite.getTime() ? limite : hasta;
-        /*
-         * Los realizados se cuentan por fecha
-         * independientemente de si fueron hechos
-         * sábado, domingo o feriado.
-         */
-        const realizadosPeriodo = inventarios.filter(item =>
-            item.fecha >= desde && item.fecha <= this.finDelDia(finReal)
-        );
+        const limite = fechaCorte && fechaCorte.getTime() < hasta.getTime() ? this.finDelDia(fechaCorte) : this.finDelDia(hasta);
+        const inicio = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate());
+        const inventariosPeriodo = inventarios.filter(item => {
+            const fecha = item.fecha;
+            return (fecha.getTime() >= inicio.getTime() && fecha.getTime() <= limite.getTime());
+        });
 
-        const realizados = realizadosPeriodo.length;
-        /*
-         * Por ahora conocemos como "sin diferencia"
-         * este resultado.
-         */
-        const sinDiferencias = realizadosPeriodo.filter( item => item.resultado
-            .toLowerCase().includes("recuento igual")).length;
-
-        const conDiferencias = realizados - sinDiferencias;
-        const diasLaborables = CalendarioLaboral.diasLaborables(desde, finReal, feriados);
+        const realizados = inventariosPeriodo.length;
+        const sinDiferencias = inventariosPeriodo.filter(item => item.quantityAdjusted === 0).length;
+        const conDiferencias = inventariosPeriodo.filter(item => item.quantityAdjusted !== 0).length;
+        let diasLaborables = 0;
+        const cursor = new Date(inicio);
+        while (cursor.getTime() <= limite.getTime()) {
+            const diaSemana = cursor.getDay();
+            const esFinDeSemana = diaSemana === 0 || diaSemana === 6;
+            const esFeriado = CalendarioLaboral.esFeriado(cursor, feriados);
+            if (!esFinDeSemana && !esFeriado) {
+                diasLaborables++;
+            }
+            cursor.setDate(cursor.getDate() + 1);
+        }
+        /* PeYa = 10 inventarios por día laborable. */
         const esperados = diasLaborables * 10;
         const cumplimiento = esperados > 0 ? (realizados / esperados) * 100 : 0;
-
         return {
             realizados,
             sinDiferencias,
             conDiferencias,
+            diasLaborables,
             esperados,
-            cumplimiento: Math.round(cumplimiento * 10) / 10,
-            diasLaborables
+            cumplimiento
         };
     }
-
     private static finDelDia(fecha: Date): Date {
         return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59, 999);
     }

@@ -8,13 +8,26 @@ export interface PeYaEgresosData {
 
 export class PeYaEgresosReader {
     static async read(): Promise<PeYaEgresosData> {
-        const response = await fetch("/data/SalidasPeYa.xlsx");
+        const response = await fetch("/api/drive-file",
+            {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({fileId: "1VDoNzHfOKDmf1r827uaekcEvnQ1qfdJR"})
+            }
+        );
         if (!response.ok) {
-            throw new Error("No fue posible cargar SalidasPeYa.xlsx");
+            throw new Error("No fue posible cargar SalidasPeYa.xlsx desde Google Drive.");
         }
-        const buffer = await response.arrayBuffer();
-        const workbook = XLSX.read(buffer, {cellDates: true});
-
+        const data = await response.json();
+        if (!data.success || !data.base64) {
+            throw new Error( data.error ?? "Respuesta inválida al cargar SalidasPeYa.xlsx.");
+        }
+        const binary = atob(data.base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        const workbook = XLSX.read( bytes, {type: "array", cellDates: true});
         /* Nuevo archivo final de expedición. */
         console.log("Hojas disponibles:", workbook.SheetNames);
         const sheet = workbook.Sheets["Sheet1"];
