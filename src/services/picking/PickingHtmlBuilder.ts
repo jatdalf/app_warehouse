@@ -33,15 +33,7 @@ export function buildPickingHtml(picking: PickingItem[]): string {
         </style>
         </head>
         <body>
-            ${grupos
-                .map((grupo, index) =>
-                    buildPickingPage(
-                        grupo,
-                        index + 1,
-                        grupos.length
-                    )
-                )
-                .join("")}
+            ${grupos.map((grupo, index) => buildPickingPage(grupo, index + 1, grupos.length)).join("")}
         </body>
         </html>
     `;
