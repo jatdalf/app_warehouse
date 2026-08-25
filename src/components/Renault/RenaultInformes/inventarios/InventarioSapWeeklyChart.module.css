@@ -1,0 +1,165 @@
+.card {
+    width: min(1100px, 100%);
+    margin: 25px auto 40px;
+    padding: 22px 25px 25px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d7e1df;
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 7px 24px
+        rgba(0, 0, 0, 0.07);
+}
+
+.header {
+    margin-bottom: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.title {
+    margin: 0;
+
+    color: #444;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin-top: 4px;
+
+    color: #888;
+
+    font-size: 12px;
+}
+
+.targetInfo {
+    padding: 7px 12px;
+
+    border-radius: 8px;
+
+    background: #f2f7f6;
+
+    color: #666;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+.targetInfo strong {
+    color: #2b8179;
+    font-size: 15px;
+}
+
+.chart {
+    width: 100%;
+    height: 330px;
+}
+
+
+/*
+ * TOOLTIP
+ */
+
+.tooltip {
+    min-width: 190px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #d7e1df;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.12);
+
+    font-size: 12px;
+}
+
+.tooltipTitle {
+    margin-bottom: 9px;
+
+    color: #333;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tooltipMain,
+.tooltipRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding: 2px 0;
+}
+
+.tooltipMain {
+    color: #2b8179;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tooltipRow {
+    color: #666;
+}
+
+.tooltipRow strong {
+    color: #333;
+}
+
+.tooltipDivider {
+    height: 1px;
+
+    margin: 8px 0;
+
+    background: #e1e8e6;
+}
+
+.tooltipSectionTitle {
+    margin-bottom: 4px;
+
+    color: #888;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+
+/*
+ * RESPONSIVE
+ */
+
+@media (max-width: 700px) {
+
+    .card {
+        padding: 18px 12px;
+    }
+
+    .header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .chart {
+        height: 300px;
+    }
+}

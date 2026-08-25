@@ -1,0 +1,14 @@
+.headerContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin: 0 auto;
+}
+
+.headerTitle {
+    color: rgb(29, 121, 121);
+    text-align: center;
+    margin: 0;
+}
