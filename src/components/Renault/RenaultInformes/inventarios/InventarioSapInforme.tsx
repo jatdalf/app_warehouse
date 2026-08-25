@@ -10,6 +10,7 @@ import type { FeriadoItem } from "./FeriadoItem";
 import InventarioSapCards from "./cards/InventarioSapCards";
 import InventarioSapWeeklyChart from "./InventarioSapWeeklyChart";
 import styles from "./InventarioSapInforme.module.css";
+import InventarioSapDailySummary from "./Sumary/InventarioSapDailySummary";
 
 const InventarioSapInforme: React.FC = () => {
     const [lineas, setLineas] = useState<InventarioSapLinea[]>([]);
@@ -132,8 +133,11 @@ const InventarioSapInforme: React.FC = () => {
                     <InventarioSapCards lineas={lineasSemana} />
                     {/* CHART */}
                     <InventarioSapWeeklyChart semana={semana} />
+                    <InventarioSapDailySummary semana={semana} lineas={lineasSemana}/>
                 </>
             )}
+
+
         </div>
     );
 };

@@ -28,7 +28,7 @@ const whGral  = () => {
         </Link>
         <Link to="/Renault" className={styles.card}>
           <img src={Renault} alt="Renault" className={styles.icon} />
-          <p className={styles.cardText}>Pedidos Ya</p>
+          <p className={styles.cardText}>Renault</p>
         </Link>
 
         </section>

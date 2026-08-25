@@ -1,0 +1,161 @@
+.container {
+    width: min(1100px, 100%);
+    margin: 25px auto 45px;
+}
+
+.title {
+    margin: 0 0 12px;
+
+    color: #444;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.tableWrapper {
+    width: 100%;
+
+    overflow: hidden;
+
+    border: 1px solid #d7e1df;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.06);
+}
+
+.table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 13px;
+}
+
+
+/* CABECERA */
+
+.table thead {
+    background: #edf7f5;
+}
+
+.table th {
+    padding: 13px 15px;
+
+    color: #3d6662;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-align: right;
+
+    border-bottom: 1px solid #d7e1df;
+}
+
+.table th:first-child {
+    text-align: left;
+}
+
+
+/* FILAS */
+
+.table td {
+    padding: 12px 15px;
+
+    text-align: right;
+
+    color: #555;
+
+    border-bottom: 1px solid #edf1f0;
+}
+
+.table tbody tr:nth-child(even) {
+    background: #f8fbfb;
+}
+
+.table tbody tr:hover {
+    background: #f0f8f6;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* FECHA */
+
+.dateCell {
+    text-align: left !important;
+}
+
+.dateCell strong {
+    display: block;
+
+    color: #444;
+
+    font-size: 13px;
+}
+
+.dateCell span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #888;
+
+    font-size: 11px;
+}
+
+
+/* TOTAL DIARIO */
+
+.totalCell {
+    color: #2b8179 !important;
+    font-weight: 700;
+}
+
+
+/* DIFERENCIA NETA */
+
+.positive {
+    color: #2b8179 !important;
+    font-weight: 600;
+}
+
+.negative {
+    color: #c45d45 !important;
+    font-weight: 600;
+}
+
+
+/* TOTAL SEMANA */
+
+.totalRow {
+    background: #e4f4f0 !important;
+}
+
+.totalRow td {
+    padding-top: 14px;
+    padding-bottom: 14px;
+
+    color: #2b8179;
+
+    font-weight: 700;
+
+    border-top: 2px solid #a8cbc5;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+    .tableWrapper {
+        overflow-x: auto;
+    }
+    .table {
+        min-width: 780px;
+    }
+}
