@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styles from "./WhGral.module.css";
 import logo from "../../assets/OcasaLogoSmall.png";
 import peYa from "../../assets/PeYa.png"
+import Renault from "../../assets/Renault01.png"
 
 const whGral  = () => {
   return (
@@ -15,19 +16,18 @@ const whGral  = () => {
             alt="OCASA Logo"
             className={styles.ocasaLogo}
           />
-        </div>
-      
-       
-
+        </div>    
       </div>
 
       {/* Grid de tarjetas */}
-      <section className={styles.grid}>
-
-   
+      <section className={styles.grid}>   
         
         <Link to="/PeYa" className={styles.card}>
           <img src={peYa} alt="Pedidos Ya" className={styles.icon} />
+          <p className={styles.cardText}>Pedidos Ya</p>
+        </Link>
+        <Link to="/Renault" className={styles.card}>
+          <img src={Renault} alt="Renault" className={styles.icon} />
           <p className={styles.cardText}>Pedidos Ya</p>
         </Link>
 

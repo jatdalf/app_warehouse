@@ -21,6 +21,13 @@ import PeYaOcupacionInforme from "./components/PeYa/PeYaInformes/ocupacion/PeYaO
 import PeYaInventariosInforme from "./components/PeYa/PeYaInformes/inventarios/PeYaInventariosInforme"
 import PeYaEgresosInforme from "./components/PeYa/PeYaInformes/egresos/PeYaEgresosInforme"
 import PeYaClaveControl from "./components/PeYa/PeYaInformes/claveControl/PeYaClaveControl";
+import Renault from "./components/Renault/Renault"
+import RenaultInformes from "./components/Renault/RenaultInformes/RenaultInformes"
+import RenaultIngresos from "./components/Renault/RenaultInformes/ingresos/RenaultIngresos"
+import RenaultOcupacion from "./components/Renault/RenaultInformes/ocupacion/RenaultOcupacion"
+import RenaultInventarios from "./components/Renault/RenaultInformes/inventarios/RenaultInventarios"
+import RenaultEgresos from "./components/Renault/RenaultInformes/egresos/RenaultEgresos"
+import RenaultResumen from "./components/Renault/RenaultInformes/resumenOperativo/resumenOperativo"
 
 function App() {
   return (
@@ -48,6 +55,13 @@ function App() {
         <Route path="/PeYaInformes/inventarios" element={<PeYaInventariosInforme />} />    
         <Route path="/PeYaInformes/egresos" element={<PeYaEgresosInforme />} />  
         <Route path="/PeYaInformes/clave-control" element={<PeYaClaveControl />} />  
+        <Route path="/Renault" element={<Renault />} />  
+        <Route path="/RenaultInformes" element={<RenaultInformes />} />  
+        <Route path="/RenaultInformes/ingresos" element={<RenaultIngresos  />} />
+        <Route path="/RenaultInformes/ocupacion" element={<RenaultOcupacion />} />    
+        <Route path="/RenaultInformes/inventarios" element={<RenaultInventarios />} />    
+        <Route path="/RenaultInformes/egresos" element={<RenaultEgresos />} />  
+        <Route path="/RenaultInformes/resumenOperativo" element={<RenaultResumen />} />  
         
       </Routes>
     </Router>
