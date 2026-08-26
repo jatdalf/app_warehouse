@@ -2,6 +2,7 @@ import * as XLSX from "xlsx";
 
 export interface Lx22InventarioItem {
     documento: string;
+    statusInventario: string;
     fecha: Date;
     referencia: string;
 }
@@ -27,6 +28,7 @@ export class Lx22Reader {
             const referenciaRaw = String(row[4] ?? "").trim().toUpperCase();
             return {documento: this.normalizarDocumento(row[0]),
                 fecha: this.parseDate(row[7]),
+                statusInventario: String(row[1] ?? "").trim().toUpperCase(),
                 /* Sin referencia = CICLICOS */
                 referencia: referenciaRaw || "CICLICOS"
             };

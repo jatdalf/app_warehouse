@@ -14,6 +14,7 @@ export class InventarioSapBuilder {
             return {
                 id: linea.id,
                 documento,
+                statusInventario: metadata.statusInventario,
                 fecha: metadata.fecha,
                 referencia: metadata.referencia,
                 posicion: linea.posicion,
@@ -23,7 +24,7 @@ export class InventarioSapBuilder {
                 stockValor: linea.stockValor,
                 diferenciaCantidad: linea.diferenciaCantidad,
                 diferenciaValor: linea.diferenciaValor,
-                diferenciaValorAbsoluto: linea.diferenciaValorAbsoluto
+                diferenciaValorAbsoluto: linea.diferenciaValorAbsoluto                
             };
         }).filter((item): item is InventarioSapLinea => item !== null);
     }

@@ -11,6 +11,8 @@ import InventarioSapCards from "./cards/InventarioSapCards";
 import InventarioSapWeeklyChart from "./InventarioSapWeeklyChart";
 import styles from "./InventarioSapInforme.module.css";
 import InventarioSapDailySummary from "./Sumary/InventarioSapDailySummary";
+import InventarioSapHallazgos from "./hallazgos/InventarioSapHallazgos";
+import InventarioSapEstado from "./estados/InventarioSapEstado";
 
 const InventarioSapInforme: React.FC = () => {
     const [lineas, setLineas] = useState<InventarioSapLinea[]>([]);
@@ -29,7 +31,6 @@ const InventarioSapInforme: React.FC = () => {
                     Lx22Reader.read(),
                     PeYaFeriadosReader.read()
                 ]);
-
                 const lineasCruzadas = InventarioSapBuilder.build(zsappr110, lx22);
                 setLineas(lineasCruzadas);
                 setFeriados(feriadosData);
@@ -59,11 +60,14 @@ const InventarioSapInforme: React.FC = () => {
         };
     }, [lineas]);
     /* CONSTRUCCIÓN DE SEMANAS */
+    const lineasCerradas = useMemo(() => {
+        return lineas.filter(item => item.statusInventario.trim().toUpperCase() ===  "ELIMINADOS");
+    }, [lineas]);
     const semanas = useMemo<InventarioSemana[]>(() => {
         if (!rango) {
             return [];
         }
-        return InventarioSapWeeklyBuilder.build(lineas, feriados, rango.desde, rango.hasta);
+        return InventarioSapWeeklyBuilder.build(lineasCerradas, feriados, rango.desde, rango.hasta);
     }, [lineas, feriados, rango]);
     /* Al cargar seleccionamos automáticamente la última semana disponible. */
     useEffect(() => {
@@ -86,6 +90,10 @@ const InventarioSapInforme: React.FC = () => {
             const hasta = thisEndOfDay(semana.hasta);
             return lineas.filter(item => item.fecha >= desde && item.fecha <= hasta);
         }, [lineas, semana]);
+    const lineasSemanaCerradas = useMemo(() => {
+    return lineasSemana.filter(item => item.statusInventario.trim().toUpperCase() === "ELIMINADOS");
+    }, [lineasSemana]);
+
     /* ESTADOS DE PANTALLA */
     if (loading) {
         return (
@@ -130,10 +138,12 @@ const InventarioSapInforme: React.FC = () => {
             {semana && (
                 <>
                     {/* CARDS */}
-                    <InventarioSapCards lineas={lineasSemana} />
+                    <InventarioSapCards lineas={lineasSemanaCerradas} />
                     {/* CHART */}
                     <InventarioSapWeeklyChart semana={semana} />
-                    <InventarioSapDailySummary semana={semana} lineas={lineasSemana}/>
+                    <InventarioSapEstado lineas={lineasSemana} />
+                    <InventarioSapDailySummary semana={semana} lineas={lineasSemanaCerradas}/>
+                    <InventarioSapHallazgos lineas={lineasSemanaCerradas}/>
                 </>
             )}
 

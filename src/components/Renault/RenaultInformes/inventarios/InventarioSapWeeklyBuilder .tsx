@@ -59,6 +59,7 @@ export class InventarioSapWeeklyBuilder {
         }
         return resultado;
     }
+    
 
     private static inicioSemana(fecha: Date): Date {
         const result = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());

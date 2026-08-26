@@ -1,6 +1,7 @@
 export interface InventarioSapLinea {
     id: number;
     documento: string;
+    statusInventario: string;
     fecha: Date;
     referencia: string;
     posicion: string;
