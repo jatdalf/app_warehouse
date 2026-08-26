@@ -13,6 +13,7 @@ import styles from "./InventarioSapInforme.module.css";
 import InventarioSapDailySummary from "./Sumary/InventarioSapDailySummary";
 import InventarioSapHallazgos from "./hallazgos/InventarioSapHallazgos";
 import InventarioSapEstado from "./estados/InventarioSapEstado";
+import TestLottie from "../../../Test/TestLottie";
 
 const InventarioSapInforme: React.FC = () => {
     const [lineas, setLineas] = useState<InventarioSapLinea[]>([]);
@@ -98,6 +99,7 @@ const InventarioSapInforme: React.FC = () => {
     if (loading) {
         return (
             <div className={styles.message}>
+                <TestLottie />
                 Cargando informe de inventarios...
             </div>
         );
@@ -112,7 +114,7 @@ const InventarioSapInforme: React.FC = () => {
 
     if (semanas.length === 0) {
         return (
-            <div className={styles.message}>
+            <div className={styles.message}>                
                 No hay inventarios para mostrar.
             </div>
         );

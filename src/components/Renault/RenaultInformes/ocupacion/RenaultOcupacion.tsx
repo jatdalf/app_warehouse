@@ -1,6 +1,11 @@
+import TestLottie from "../../../Test/TestLottie";
+
 const RenaultOcupacion = ()=>{
     return(
-        <div>Ocupacion</div>
+        <div>
+            <div>Ocupacion</div>
+            <TestLottie />
+        </div>
     )
 }
 
