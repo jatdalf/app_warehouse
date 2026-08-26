@@ -1,0 +1,117 @@
+.container {
+    width: min(1200px, 100%);
+    margin: 30px auto 50px;
+}
+
+.block {
+    margin-bottom: 30px;
+}
+
+.title {
+    margin: 0 0 10px;
+
+    color: #444;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.tableWrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.06);
+}
+
+.table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 12px;
+}
+
+.table th,
+.table td {
+    padding: 10px 12px;
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+    text-align: left;
+}
+
+.table th {
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+
+/* SOBRANTES */
+
+.sobrantes {
+    background: #eef9f1;
+}
+
+.sobrantes thead {
+    background: #d8f0df;
+}
+
+.sobrantes th {
+    color: #2f6b45;
+}
+
+
+/* FALTANTES */
+
+.faltantes {
+    background: #fff1f1;
+}
+
+.faltantes thead {
+    background: #f8dddd;
+}
+
+.faltantes th {
+    color: #8a3f3f;
+}
+
+
+/* CELDAS */
+
+.description {
+    min-width: 220px;
+}
+
+.moneyPositive {
+    color: #2b8179;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.moneyNegative {
+    color: #b84d4d;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/* zebra */
+
+.table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.55);
+}
+
+
+/* hover */
+
+.table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
