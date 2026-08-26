@@ -7,12 +7,8 @@ interface Props {
     lineas: InventarioSapLinea[];
 }
 
-const InventarioSapEstado: React.FC<Props> = ({
-    lineas
-}) => {
-
+const InventarioSapEstado: React.FC<Props> = ({lineas}) => {
     const resumen = useMemo(() => {
-
         /*
          * IMPORTANTE:
          * contamos DOCUMENTOS DE INVENTARIO,
@@ -33,7 +29,6 @@ const InventarioSapEstado: React.FC<Props> = ({
             incidentes,
             total
         };
-
     }, [lineas]);
 
 
@@ -63,45 +58,21 @@ const InventarioSapEstado: React.FC<Props> = ({
                 <tbody>
                     {/* INCIDENTES */}
                     <tr className={styles.incidente}>
-                        <td>
-                            🚨 SE CREÓ INCIDENTE
-                        </td>
-                        <td>
-                            {resumen.incidentes}
-                        </td>
-                        <td>
-                            {porcentaje(
-                                resumen.incidentes
-                            )}
-                        </td>
+                        <td>🚨 SE CREÓ INCIDENTE</td>
+                        <td>{resumen.incidentes}</td>
+                        <td>{porcentaje(resumen.incidentes)}</td>
                     </tr>
                     {/* ABIERTOS */}
                     <tr className={styles.abierto}>
-                        <td>
-                            ⏳ PENDIENTE / INVENTARIO ABIERTO
-                        </td>
-                        <td>
-                            {resumen.abiertos}
-                        </td>
-                        <td>
-                            {porcentaje(
-                                resumen.abiertos
-                            )}
-                        </td>
+                        <td>⏳ PENDIENTE / INVENTARIO ABIERTO</td>
+                        <td>{resumen.abiertos}</td>
+                        <td>{porcentaje(resumen.abiertos)}</td>
                     </tr>
                     {/* CERRADOS */}
                     <tr className={styles.cerrado}>
-                        <td>
-                            ☑ INVENTARIOS CERRADOS
-                        </td>
-                        <td>
-                            {resumen.cerrados}
-                        </td>
-                        <td>
-                            {porcentaje(
-                                resumen.cerrados
-                            )}
-                        </td>
+                        <td>☑ INVENTARIOS CERRADOS</td>
+                        <td>{resumen.cerrados}</td>
+                        <td>{porcentaje(resumen.cerrados)}</td>
                     </tr>
                 </tbody>
             </table>
