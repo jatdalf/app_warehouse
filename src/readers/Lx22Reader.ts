@@ -9,7 +9,7 @@ export interface Lx22InventarioItem {
 
 export class Lx22Reader {
     static async read(): Promise<Lx22InventarioItem[]> {
-        const response = await fetch("/data/lx22.xlsx");
+        const response = await fetch("1z-LQgyVkeq68MvpY9yYY4CmwgTRgspmY");
         if (!response.ok) {
             throw new Error("No fue posible cargar lx22.xlsx");
         }
