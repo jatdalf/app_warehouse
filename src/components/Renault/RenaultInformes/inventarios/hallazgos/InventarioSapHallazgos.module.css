@@ -115,3 +115,31 @@
 .table tbody tr:hover {
     background: rgba(255, 255, 255, 0.85);
 }
+.totalRowPositive {
+    background: #d7f0df !important;
+    font-weight: 700;
+}
+
+.totalRowPositive td {
+    border-top: 2px solid #74b98a;
+}
+
+.totalRowPositive td:first-child {
+    text-align: right;
+    color: #2f6b45;
+}
+
+
+.totalRowNegative {
+    background: #f7dada !important;
+    font-weight: 700;
+}
+
+.totalRowNegative td {
+    border-top: 2px solid #cf8686;
+}
+
+.totalRowNegative td:first-child {
+    text-align: right;
+    color: #8a3f3f;
+}

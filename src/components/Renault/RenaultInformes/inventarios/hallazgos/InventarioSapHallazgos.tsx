@@ -9,39 +9,19 @@ interface Props {
 const InventarioSapHallazgos: React.FC<Props> = ({lineas}) => {
     const ciclicos = useMemo(() => lineas.filter(item => item.referencia === "CICLICOS"), [lineas]);
 
-    const sobrantes = useMemo(() => ciclicos.filter(item =>
-                        item.diferenciaCantidad > 0
-                )
-                .sort(
-                    (a, b) =>
-                        b.diferenciaValor -
-                        a.diferenciaValor
-                ),
-        [ciclicos]
-    );
+    const sobrantes = useMemo(() => ciclicos.filter(item => item.diferenciaCantidad > 0)
+                .sort((a, b) => b.diferenciaValor - a.diferenciaValor), [ciclicos]);
 
-
-    const faltantes = useMemo(
-        () =>
-            ciclicos
-                .filter(
-                    item =>
-                        item.diferenciaCantidad < 0
-                )
-                .sort(
-                    (a, b) =>
-                        Math.abs(b.diferenciaValor) -
-                        Math.abs(a.diferenciaValor)
-                ),
-        [ciclicos]
-    );
-
+    const faltantes = useMemo(() => ciclicos.filter(item => item.diferenciaCantidad < 0).sort(
+                    (a, b) => Math.abs(b.diferenciaValor) - Math.abs(a.diferenciaValor)),[ciclicos]);
+    const totalSobrantes = useMemo(() => {
+        return sobrantes.reduce((total, item) => total + item.diferenciaValor, 0);}, [sobrantes]);
+    const totalFaltantes = useMemo(() => {
+        return faltantes.reduce((total, item) => total + item.diferenciaValor, 0);}, [faltantes]);
 
     return (
         <section className={styles.container}>
-
             {/* SOBRANTES */}
-
             {sobrantes.length > 0 && (
                 <div className={styles.block}>
 
@@ -67,49 +47,65 @@ const InventarioSapHallazgos: React.FC<Props> = ({lineas}) => {
                             </thead>
 
                             <tbody>
-                                {sobrantes.map(
-                                    (item, index) => (
 
-                                        <tr key={`${item.documento}-${item.id}`}>
+    {sobrantes.map(
+        (item, index) => (
 
-                                            <td>
-                                                {index + 1}
-                                            </td>
+            <tr key={`${item.documento}-${item.id}`}>
 
-                                            <td>
-                                                {item.documento}
-                                            </td>
+                <td>
+                    {index + 1}
+                </td>
 
-                                            <td>
-                                                {item.material}
-                                            </td>
+                <td>
+                    {item.documento}
+                </td>
 
-                                            <td className={styles.description}>
-                                                {item.descripcion}
-                                            </td>
+                <td>
+                    {item.material}
+                </td>
 
-                                            <td>
-                                                {formatDate(item.fecha)}
-                                            </td>
+                <td className={styles.description}>
+                    {item.descripcion}
+                </td>
 
-                                            <td className={styles.moneyPositive}>
-                                                {formatCurrency(
-                                                    item.diferenciaValor
-                                                )}
-                                            </td>
+                <td>
+                    {formatDate(item.fecha)}
+                </td>
 
-                                            <td>
-                                                EIC
-                                            </td>
+                <td className={styles.moneyPositive}>
+                    {formatCurrency(
+                        item.diferenciaValor
+                    )}
+                </td>
 
-                                            <td>
-                                                Encontrada en inv. Ciclico
-                                            </td>
+                <td>
+                    EIC
+                </td>
 
-                                        </tr>
-                                    )
-                                )}
-                            </tbody>
+                <td>
+                    Encontrada en inv. Ciclico
+                </td>
+
+            </tr>
+        )
+    )}
+
+    <tr className={styles.totalRowPositive}>
+        <td colSpan={5}>
+            TOTAL SOBRANTES
+        </td>
+
+        <td className={styles.moneyPositive}>
+            {formatCurrency(
+                totalSobrantes
+            )}
+        </td>
+
+        <td colSpan={2}></td>
+    </tr>
+
+</tbody>
 
                         </table>
 
@@ -188,6 +184,17 @@ const InventarioSapHallazgos: React.FC<Props> = ({lineas}) => {
                                         </tr>
                                     )
                                 )}
+                                <tr className={styles.totalRowNegative}>
+    <td colSpan={5}>
+        TOTAL FALTANTES
+    </td>
+
+    <td className={styles.moneyNegative}>
+        {formatCurrency(totalFaltantes)}
+    </td>
+
+    <td colSpan={2}></td>
+</tr>
                             </tbody>
 
                         </table>
