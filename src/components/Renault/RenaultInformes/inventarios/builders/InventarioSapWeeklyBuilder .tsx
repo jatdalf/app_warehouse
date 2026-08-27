@@ -1,20 +1,21 @@
-import type { InventarioSapLinea } from "./InventarioSapLinea";
-import type { FeriadoItem } from "./FeriadoItem";
-import { CalendarioLaboral } from "./CalendarioLaboral";
-import type { InventarioDia } from "./InventarioDia";
-import type { InventarioSemana } from "./InventarioSemana";
+import type { InventarioSapLinea } from "../InventarioSapLinea";
+import type { FeriadoItem } from "../FeriadoItem";
+import { CalendarioLaboral } from "../CalendarioLaboral";
+import type { InventarioDia } from "../InventarioDia";
+import type { InventarioSemana } from "../InventarioSemana";
 
 export class InventarioSapWeeklyBuilder {
     static build(
         lineas: InventarioSapLinea[],
         feriados: FeriadoItem[],
         desde: Date,
-        hasta: Date
+        hasta: Date,
+        targetDiario: number
     ): InventarioSemana[] {
         
         const resultado: InventarioSemana[] = [];
         let inicioSemana = this.inicioSemana(desde);
-        while (inicioSemana.getTime() <= hasta.getTime()) {
+        while (inicioSemana.getTime() <= hasta.getTime()) {            
             const finSemana = new Date(inicioSemana);
             finSemana.setDate(finSemana.getDate() + 6);
             const dias: InventarioDia[] = [];
@@ -35,7 +36,7 @@ export class InventarioSapWeeklyBuilder {
                         return acc;
                     }, {}
                 );
-                const target = CalendarioLaboral.esDiaLaborable(fecha, feriados) ? 135 : 0;
+                const target = CalendarioLaboral.esDiaLaborable(fecha, feriados) ? targetDiario : 0;
                 dias.push({
                     fecha,
                     label: this.nombreDia(fecha),
@@ -55,7 +56,7 @@ export class InventarioSapWeeklyBuilder {
                 });
             }
             inicioSemana = new Date(inicioSemana);
-            inicioSemana.setDate(inicioSemana.getDate() + 7);
+            inicioSemana.setDate(inicioSemana.getDate() + 7);            
         }
         return resultado;
     }
@@ -81,5 +82,5 @@ export class InventarioSapWeeklyBuilder {
 
     private static formatKey(fecha: Date): string {
         return [fecha.getFullYear(), fecha.getMonth() + 1, fecha.getDate()].join("-");
-    }
+    }    
 }

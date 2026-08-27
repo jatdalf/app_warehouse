@@ -2,11 +2,12 @@ import * as XLSX from "xlsx";
 
 export interface Lx22InventarioItem {documento: string; statusInventario: string; fecha: Date; referencia: string;}
 
-export class Lx22Reader {static async read(): Promise<Lx22InventarioItem[]> {
+export class Lx22Reader {
+        static async read( fileId: string): Promise<Lx22InventarioItem[]> {
         const response = await fetch("/api/drive-file",
             {
                 method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({fileId: "1z-LQgyVkeq68MvpY9yYY4CmwgTRgspmY"})
+                body: JSON.stringify({fileId})
             }
         );
         if (!response.ok) {

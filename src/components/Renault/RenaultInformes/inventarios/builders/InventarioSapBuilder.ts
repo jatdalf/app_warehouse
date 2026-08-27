@@ -1,6 +1,6 @@
-import type { Zsappr110Item } from "./Zsappr110Item";
-import type { Lx22InventarioItem } from "../../../../readers/Lx22Reader";
-import type { InventarioSapLinea } from "./InventarioSapLinea";
+import type { Zsappr110Item } from "../Zsappr110Item";
+import type { Lx22InventarioItem } from "../../../../../readers/Lx22Reader";
+import type { InventarioSapLinea } from "../InventarioSapLinea";
 
 export class InventarioSapBuilder {
     static build(lineas: Zsappr110Item[], documentos: Lx22InventarioItem[]): InventarioSapLinea[] {

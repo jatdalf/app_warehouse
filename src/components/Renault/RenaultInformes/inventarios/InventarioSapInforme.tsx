@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import { Zsappr110Reader } from "../../../../readers/Zsappr110Reader";
 import { Lx22Reader } from "../../../../readers/Lx22Reader";
 import { PeYaFeriadosReader } from "../../../../readers/PeYaFeriadosReader";
-import { InventarioSapBuilder } from "./InventarioSapBuilder";
-import { InventarioSapWeeklyBuilder } from "./InventarioSapWeeklyBuilder ";
+import { InventarioSapBuilder } from "./builders/InventarioSapBuilder";
+import { InventarioSapWeeklyBuilder } from "./builders/InventarioSapWeeklyBuilder ";
 import type { InventarioSapLinea } from "./InventarioSapLinea";
 import type { InventarioSemana } from "./InventarioSemana";
 import type { FeriadoItem } from "./FeriadoItem";
@@ -13,38 +13,57 @@ import styles from "./InventarioSapInforme.module.css";
 import InventarioSapDailySummary from "./Sumary/InventarioSapDailySummary";
 import InventarioSapHallazgos from "./hallazgos/InventarioSapHallazgos";
 import InventarioSapEstado from "./estados/InventarioSapEstado";
-import TestLottie from "../../../Test/TestLottie";
+import LottieDataAnalisis from "../../../Lotties/LottieDataAnalisis"
+import {InventarioPeriodoBuilder, type InventarioPeriodo, type TipoPeriodo} from "./builders/InventarioPeriodoBuilder";
+import { InventarioSapDailyBuilder } from "./builders/InventarioSapDailyBuilder";
+import {INVENTARIO_WAREHOUSES, type WarehouseInventario} from "./InventarioWarehouseConfig";
+
+type WarehouseCache = Partial<Record<WarehouseInventario, InventarioSapLinea[]>>;
 
 const InventarioSapInforme: React.FC = () => {
     const [lineas, setLineas] = useState<InventarioSapLinea[]>([]);
     const [feriados, setFeriados] = useState<FeriadoItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [semanaSeleccionada, setSemanaSeleccionada] = useState("");
+    const [tipoPeriodo, setTipoPeriodo] = useState<TipoPeriodo>("SEMANA");
+    const [periodoSeleccionado, setPeriodoSeleccionado] = useState("");
+    const [warehouse, setWarehouse] = useState<WarehouseInventario>("W1");
+    const cache = useRef<WarehouseCache>({});
+    const targetDiario = INVENTARIO_WAREHOUSES[warehouse].targetDiario;
+
     /* CARGA DE ARCHIVOS */
-    useEffect(() => {
-        const cargar = async () => {
-            try {
-                setLoading(true);
-                setError("");
-                const [zsappr110, lx22, feriadosData] = await Promise.all([
-                    Zsappr110Reader.read(),
-                    Lx22Reader.read(),
-                    PeYaFeriadosReader.read()
-                ]);
-                const lineasCruzadas = InventarioSapBuilder.build(zsappr110, lx22);
-                setLineas(lineasCruzadas);
-                setFeriados(feriadosData);
-            } catch (err) {
-                console.error("Error cargando informe de inventarios:", err);
-                setError(err instanceof Error
-                        ? err.message : "No fue posible cargar el informe de inventarios.");
-            } finally {
-                setLoading(false);
+    useEffect(() => {const cargarFeriados = async () => {
+        try {
+            const data = await PeYaFeriadosReader.read();
+            setFeriados(data);
+        } catch (err) {
+            console.error("Error cargando feriados:", err);
+        }
+    }; void cargarFeriados();}, []);
+    useEffect(() => {const cargar = async () => {
+        try {
+            setLoading(true);
+            setError("");
+            const cached = cache.current[warehouse];
+            if (cached) {
+                setLineas(cached);
+                return;
             }
-        };
-        void cargar();
-    }, []);
+            const config = INVENTARIO_WAREHOUSES[warehouse];
+            const [zsappr110, lx22] = await Promise.all([Zsappr110Reader.read(config.zsappr110FileId),
+                    Lx22Reader.read(config.lx22FileId)]);
+            const lineasCruzadas = InventarioSapBuilder.build(zsappr110, lx22);
+            // Mostramos los datos
+            setLineas(lineasCruzadas);
+            // Guardamos en memoria
+            cache.current[warehouse] = lineasCruzadas;
+        } catch (err) {
+            console.error("Error cargando informe:", err);
+            setError(err instanceof Error ? err.message : "No fue posible cargar el informe.");
+        } finally {
+            setLoading(false);
+        }
+    };void cargar();}, [warehouse]);
 
     /* RANGO TOTAL DISPONIBLE */
     const rango = useMemo(() => {
@@ -68,38 +87,63 @@ const InventarioSapInforme: React.FC = () => {
         if (!rango) {
             return [];
         }
-        return InventarioSapWeeklyBuilder.build(lineasCerradas, feriados, rango.desde, rango.hasta);
-    }, [lineas, feriados, rango]);
+        return InventarioSapWeeklyBuilder.build(lineasCerradas, feriados, rango.desde, rango.hasta, targetDiario);
+    }, [lineasCerradas, feriados, rango, targetDiario]);
+    const periodos = useMemo<InventarioPeriodo[]>(() => {
+    return InventarioPeriodoBuilder.build(semanas, tipoPeriodo);}, [semanas, tipoPeriodo]);
     /* Al cargar seleccionamos automáticamente la última semana disponible. */
     useEffect(() => {
-        if (semanas.length === 0 || semanaSeleccionada) {
+        if (periodos.length === 0) {
             return;
         }
-        setSemanaSeleccionada(semanas[semanas.length - 1].key);
-    }, [semanas, semanaSeleccionada]);
-    /* SEMANA ACTUAL */
-    const semana = useMemo(() => {
-            return semanas.find(item => item.key === semanaSeleccionada) ?? null;
-        }, [ semanas,  semanaSeleccionada ]);
+        const existe = periodos.some(item => item.key === periodoSeleccionado);
+        if (existe) {
+            return;
+        }
+        /* Seleccionamos el último período disponible. */
+        setPeriodoSeleccionado(periodos[ periodos.length - 1].key);}, [periodos, periodoSeleccionado]);
+    const periodo = useMemo(() => {
+        return periodos.find(item => item.key === periodoSeleccionado) ?? null;
+    }, [periodos, periodoSeleccionado]);
+
     /* Líneas correspondientes exclusivament a la semana seleccionada.
      * Estas alimentarán las cards.*/
-    const lineasSemana = useMemo(() => {
-            if (!semana) {
-                return [];
-            }
-            const desde = thisStartOfDay(semana.desde);
-            const hasta = thisEndOfDay(semana.hasta);
-            return lineas.filter(item => item.fecha >= desde && item.fecha <= hasta);
-        }, [lineas, semana]);
-    const lineasSemanaCerradas = useMemo(() => {
-    return lineasSemana.filter(item => item.statusInventario.trim().toUpperCase() === "ELIMINADOS");
-    }, [lineasSemana]);
+    const lineasPeriodo = useMemo(() => {
+        if (!periodo) {
+            return [];
+        }
+        const desde = thisStartOfDay(periodo.desde);
+        const hasta = thisEndOfDay(periodo.hasta);
+        return lineas.filter(item => item.fecha >= desde && item.fecha <= hasta);
+    }, [lineas, periodo]);
+    const lineasPeriodoCerradas = useMemo(() => {
+        return lineasPeriodo.filter(item => item.statusInventario.trim().toUpperCase() === "ELIMINADOS");
+    }, [lineasPeriodo]);
+
+    const diasPeriodo = useMemo(() => {
+    if (!periodo) {
+        return [];
+    }
+    return InventarioSapDailyBuilder.build(lineasPeriodoCerradas, feriados, periodo.desde, periodo.hasta, targetDiario);
+    }, [lineasPeriodoCerradas, feriados, periodo]);
+
+    const periodoVisual = useMemo(() => {
+        if (!periodo) {
+            return null;
+        }
+        return {
+            key: periodo.key,
+            label: periodo.label,
+            desde: periodo.desde,
+            hasta: periodo.hasta,
+            dias: diasPeriodo
+        };}, [periodo, diasPeriodo]);
 
     /* ESTADOS DE PANTALLA */
     if (loading) {
         return (
             <div className={styles.message}>
-                <TestLottie />
+                <LottieDataAnalisis />
                 Cargando informe de inventarios...
             </div>
         );
@@ -123,33 +167,40 @@ const InventarioSapInforme: React.FC = () => {
     return (
         <div className={styles.container}>
             {/* SELECTOR DE SEMANA */}
-            <div className={styles.controls}>
-                <label htmlFor="semana">
-                    Visualizar
-                </label>
-                <select id="semana" value={semanaSeleccionada} 
-                    onChange={e => setSemanaSeleccionada(e.target.value)}>
-                    {semanas.map((item, index) => (
-                            <option key={item.key} value={item.key}>
-                                {buildComboLabel(item, semanas, index)}
-                            </option>
-                        )
-                    )}
-                </select>
-            </div>
-            {semana && (
-                <>
-                    {/* CARDS */}
-                    <InventarioSapCards lineas={lineasSemanaCerradas} />
-                    {/* CHART */}
-                    <InventarioSapWeeklyChart semana={semana} />
-                    <InventarioSapEstado lineas={lineasSemana} />
-                    <InventarioSapDailySummary semana={semana} lineas={lineasSemanaCerradas}/>
-                    <InventarioSapHallazgos lineas={lineasSemanaCerradas}/>
-                </>
+        <div className={styles.controls}>
+            <label htmlFor="warehouse">Warehouse</label>
+            <select id="warehouse" value={warehouse}
+                onChange={e => setWarehouse(e.target.value as WarehouseInventario)} >
+                <option value="W1">W1 (Rep)</option>
+                <option value="W2"> W2 (BsAs)</option>
+            </select>
+            <label htmlFor="tipoPeriodo">Visualizar por</label>
+            <select id="tipoPeriodo" value={tipoPeriodo}
+                onChange={e => setTipoPeriodo(e.target.value as TipoPeriodo)}>
+                <option value="SEMANA">Semana</option>
+                <option value="DOS_SEMANAS">2 semanas</option>
+                <option value="MES">Mes</option>
+            </select>
+
+            <label htmlFor="periodo">Período</label>
+
+            <select id="periodo" value={periodoSeleccionado}
+                onChange={e => setPeriodoSeleccionado(e.target.value)}>
+                {periodos.map(item => (
+                    <option key={item.key} value={item.key}>{item.label}</option>
+                ))}
+            </select>
+        </div>
+
+           {periodoVisual && (
+            <>
+                <InventarioSapCards lineas={lineasPeriodoCerradas}/>
+                <InventarioSapWeeklyChart semana={periodoVisual}/>
+                <InventarioSapEstado lineas={lineasPeriodo}/>
+                <InventarioSapDailySummary semana={periodoVisual} lineas={lineasPeriodoCerradas}/>
+                <InventarioSapHallazgos lineas={lineasPeriodoCerradas}/>
+            </>
             )}
-
-
         </div>
     );
 };
@@ -161,20 +212,6 @@ function thisStartOfDay(fecha: Date): Date {
 
 function thisEndOfDay(fecha: Date): Date {
     return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59, 999);
-}
-/* Genera:
- * Agosto - Semana 1
- * Agosto - Semana 2
- * Agosto - Semana 3
- * ... */
-function buildComboLabel(semana: InventarioSemana, semanas: InventarioSemana[], index: number): string {
-    const mes = new Intl.DateTimeFormat("es-AR", {month: "long"}).format(semana.desde);
-    const mismoMesHastaAhora = semanas.slice(0, index + 1).filter(item =>
-                item.desde.getMonth() === semana.desde.getMonth() &&
-                item.desde.getFullYear() === semana.desde.getFullYear()).length;
-
-    const mesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
-    return `${mesCapitalizado} - Semana ${mismoMesHastaAhora}`;
 }
 
 export default InventarioSapInforme;
