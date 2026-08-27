@@ -1,12 +1,12 @@
 import type { Zsappr110Item } from "../components/Renault/RenaultInformes/inventarios/Zsappr110Item";
 
 export class Zsappr110Reader {
-    static async read(): Promise<Zsappr110Item[]> {
+    static async read(fileId: string): Promise<Zsappr110Item[]> {
         const response = await fetch("/api/drive-file",
             {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({fileId: "1Izb8KmaJ-GNx4sxZaLImZeD-2Ie4nYYB"})
+                body: JSON.stringify({fileId})
             }
         );
         if (!response.ok) {

@@ -1,4 +1,4 @@
-import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell} from "recharts";
+import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Rectangle} from "recharts";
 import type { InventarioSemana } from "./InventarioSemana";
 import type { InventarioDia } from "./InventarioDia";
 import styles from "./InventarioSapWeeklyChart.module.css";
@@ -7,51 +7,63 @@ interface Props {
     semana: InventarioSemana;
 }
 const InventarioSapWeeklyChart: React.FC<Props> = ({semana}) => {
+    const targetDiario = semana.dias.find(dia => dia.target > 0)?.target ?? 0;
+    const chartData = semana.dias.map(dia => ({
+        ...dia,
+        chartKey: [
+            dia.fecha.getFullYear(),
+            String(
+                dia.fecha.getMonth() + 1
+            ).padStart(2, "0"),
+            String(
+                dia.fecha.getDate()
+            ).padStart(2, "0")
+        ].join("-")
+    }));
     return (
         <div className={styles.card}>
             <div className={styles.header}>
                 <div>
-                    <h2 className={styles.title}>
-                        Inventarios realizados por día
-                    </h2>
+                    <h2 className={styles.title}>Inventarios realizados por día</h2>
                     <div className={styles.subtitle}>
-                        {formatDate(semana.desde)}
-                        {" al "}
-                        {formatDate(semana.hasta)}
+                        {formatDate(semana.desde)} {" al "} {formatDate(semana.hasta)}
                     </div>
                 </div>
                 <div className={styles.targetInfo}>
-                    Target diario:
-                    <strong> 135</strong>
+                    Target diario:<strong>{targetDiario}</strong>
                 </div>
             </div>
 
             <div className={styles.chart}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={semana.dias}
-                        margin={{top: 25, right: 30, left: 10, bottom: 10}}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="label" interval={0} tick={{fontSize: 12}}/>
-                        <YAxis allowDecimals={false}/>
-                        <Tooltip
-                            cursor={{fill: "rgba(43, 129, 121, 0.05)"}}
-                            content={props => {
-                                if (!props.active || !props.payload || props.payload.length === 0) {
-                                    return null;
-                                }
-                                const dia = props.payload[0].payload as InventarioDia;
-                                return (<CustomTooltip dia={dia}/>);
-                            }}
-                        />
-                        <Bar dataKey="realizados" name="Realizados" radius={[6, 6, 0, 0]} maxBarSize={70}>
-                            {semana.dias.map(dia => (
-                                    <Cell key={dia.fecha.toISOString()} fill={getBarColor(dia)}/>
-                                )
-                            )}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
+               <ResponsiveContainer width="100%" height="100%">
+                <BarChart key={semana.key} data={chartData} margin={{top: 25, right: 30, left: 10, bottom: 10}}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="chartKey" interval={0} tick={{fontSize: 12}} tickFormatter={(_, index) =>
+                    chartData[index]?.label ?? ""}/>
+                    <YAxis allowDecimals={false}/>
+                    <Tooltip cursor={{fill: "rgba(43, 129, 121, 0.05)"}}
+                        content={props => {
+                            if (!props.active ||!props.payload || props.payload.length === 0) {
+                                return null;
+                            }
+                            const payload = props.payload.find( item => item.payload);
+                            if (!payload) {
+                                return null;
+                            }
+                            const dia = payload.payload as InventarioDia;
+                            return (<CustomTooltip dia={dia}/>);
+                        }}
+                    />
+                    <Bar dataKey="realizados" name="Realizados" maxBarSize={70} isAnimationActive={false}
+                    shape={(props: any) => {const { x, y, width, height, payload } = props;
+                    const dia = payload as InventarioDia;
+                    const fill = dia.target === 0 ? "#2b8179" : dia.realizados >= dia.target ? "#2b8179" : "#e58a2b";
+                    return (
+                        <Rectangle x={x} y={y} width={width} height={height} fill={fill} radius={[6, 6, 0, 0]}/>);
+                        }}
+                    />
+                </BarChart>
+            </ResponsiveContainer>
             </div>
         </div>
     );
@@ -122,17 +134,7 @@ const CustomTooltip: React.FC<TooltipProps> = ({dia}) => {
         </div>
     );
 };
-/* COLOR DE LA BARRA */
-function getBarColor(dia: InventarioDia): string {
-    /* Día sin target:
-     * si hubo actividad,
-    consideramos trabajo extra.  */
-    if (dia.target === 0) {
-        return dia.realizados > 0 ? "#2b8179" : "#d9dfdf";
-    }
-    /* Día hábil. */
-    return dia.realizados >= dia.target ? "#2b8179" : "#e58a2b";
-}
+
 /* HELPERS */
 function formatDate(fecha: Date): string {
     return fecha.toLocaleDateString("es-AR",{ day: "2-digit", month: "2-digit", year: "numeric" });
