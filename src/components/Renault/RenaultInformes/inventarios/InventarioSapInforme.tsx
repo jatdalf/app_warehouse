@@ -17,6 +17,7 @@ import LottieDataAnalisis from "../../../Lotties/LottieDataAnalisis"
 import {InventarioPeriodoBuilder, type InventarioPeriodo, type TipoPeriodo} from "./builders/InventarioPeriodoBuilder";
 import { InventarioSapDailyBuilder } from "./builders/InventarioSapDailyBuilder";
 import {INVENTARIO_WAREHOUSES, type WarehouseInventario} from "./InventarioWarehouseConfig";
+import InventarioSapResumenCards from "./cards/InventarioSapResumenCards";
 
 type WarehouseCache = Partial<Record<WarehouseInventario, InventarioSapLinea[]>>;
 
@@ -194,10 +195,11 @@ const InventarioSapInforme: React.FC = () => {
 
            {periodoVisual && (
             <>
+                <InventarioSapResumenCards lineas={lineasPeriodoCerradas}/>
                 <InventarioSapCards lineas={lineasPeriodoCerradas}/>
                 <InventarioSapWeeklyChart semana={periodoVisual}/>
-                <InventarioSapEstado lineas={lineasPeriodo}/>
                 <InventarioSapDailySummary semana={periodoVisual} lineas={lineasPeriodoCerradas}/>
+                <InventarioSapEstado lineas={lineasPeriodo}/>
                 <InventarioSapHallazgos lineas={lineasPeriodoCerradas}/>
             </>
             )}
