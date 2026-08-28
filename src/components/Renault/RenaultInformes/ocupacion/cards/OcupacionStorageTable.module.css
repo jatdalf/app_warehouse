@@ -1,0 +1,122 @@
+.container {
+    width: min(1200px, 100%);
+    margin: 30px auto;
+}
+
+.title {
+    margin-bottom: 14px;
+
+    color: #333;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.tableWrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #e1e5e4;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 4px 16px
+        rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    width: 100%;
+    min-width: 950px;
+
+    border-collapse: collapse;
+}
+
+.table th {
+    padding: 12px 14px;
+
+    background: #f4f7f6;
+
+    color: #555;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-align: left;
+
+    border-bottom:
+        1px solid #dfe5e3;
+}
+
+.table td {
+    padding: 11px 14px;
+
+    color: #444;
+
+    font-size: 13px;
+
+    border-bottom:
+        1px solid #edf0ef;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background: #fafcfc;
+}
+
+.storage {
+    font-weight: 700;
+
+    color: #2b8179 !important;
+}
+
+.description {
+    min-width: 220px;
+}
+
+.percent {
+    font-weight: 700;
+}
+
+.capacity {
+    min-width: 190px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.bar {
+    width: 120px;
+    height: 10px;
+
+    overflow: hidden;
+
+    background: #e8eceb;
+
+    border-radius: 999px;
+}
+
+.barOccupied {
+    height: 100%;
+
+    background: #2b8179;
+
+    border-radius: 999px;
+}
+
+.capacityText {
+    min-width: 70px;
+
+    color: #777;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
