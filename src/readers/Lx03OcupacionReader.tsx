@@ -2,6 +2,14 @@ import * as XLSX from "xlsx";
 import type { Lx03OcupacionItem } from "../components/Renault/RenaultInformes/ocupacion/Lx03OcupacionItem";
 
 export class Lx03OcupacionReader {
+    private static parseNumber(value: unknown): number {
+        if (typeof value === "number") {return value;}
+        const text = String(value ?? "").trim();
+        if (!text) {return 0;}
+        const normalized = text.replace(/\./g, "").replace(",", ".");
+        const numero = Number(normalized);
+        return Number.isFinite(numero) ? numero : 0;
+    }
     static async read(fileId: string): Promise<Lx03OcupacionItem[]> {
         const response = await fetch("/api/drive-file",
             {
@@ -24,7 +32,7 @@ export class Lx03OcupacionReader {
         const bytes = new Uint8Array(binary.length);
         for (let i = 0; i < binary.length; i++) {
             bytes[i] = binary.charCodeAt(i);
-        }
+        }        
         /*  LEER EXCEL */
         const workbook = XLSX.read(bytes, {type: "array", cellDates: true});
         const sheet = workbook.Sheets["Sheet1"];
@@ -35,12 +43,13 @@ export class Lx03OcupacionReader {
         /* Fila 1 = encabezados
             A [0] = Tipo almacén
             B [1] = Ubicación
-            D [3] = Material */
+            D [3] = Material */        
         return rows.slice(1).map((row): Lx03OcupacionItem => {
             return {
                 storage: String(row[0] ?? "").trim(),
                 ubicacion: String(row[1] ?? "").trim(),
-                material: String(row[3] ?? "").trim()
+                material: String(row[3] ?? "").trim(),
+                cantidad: this.parseNumber(row[4])
             };
         }).filter(item => item.storage !== "" && item.ubicacion !== "");
     }

@@ -1,0 +1,426 @@
+.container {
+    width: calc(100% - 48px);
+    max-width: 1180px;
+
+    margin: 36px auto 60px;
+}
+
+
+/* =========================
+   CABECERA
+========================= */
+
+.header {
+    width: 100%;
+    max-width: 1020px;
+
+    margin: 0 auto 26px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 40px;
+}
+
+.header h1 {
+    margin: 0;
+
+    color: #333;
+
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.header p {
+    margin: 6px 0 0;
+
+    color: #2b8179;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   RESUMEN
+========================= */
+
+.summary {
+    display: flex;
+    gap: 14px;
+
+    flex-shrink: 0;
+}
+
+.summary > div {
+    width: 190px;
+
+    padding: 14px 18px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #dce5e3;
+    border-radius: 12px;
+
+    background: white;
+
+    text-align: center;
+}
+
+.summary span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #777;
+
+    font-size: 11px;
+}
+
+.summary strong {
+    display: block;
+
+    color: #2b8179;
+
+    font-size: 22px;
+}
+
+
+/* =========================
+   ACLARACIÓN
+========================= */
+
+.notice {
+    width: 100%;
+    max-width: 1020px;
+
+    margin: 0 auto 24px;
+
+    padding: 13px 16px;
+
+    box-sizing: border-box;
+
+    background: #fff8df;
+
+    border-radius: 10px;
+
+    color: #665b35;
+
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+
+/* =========================
+   TABLA
+========================= */
+
+.tableWrapper {
+    width: 100%;
+
+    overflow: hidden;
+
+    border: 1px solid #e1e5e4;
+    border-radius: 12px;
+
+    background: white;
+
+    box-shadow:
+        0 4px 16px
+        rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+}
+
+.table th {
+    padding: 14px 16px;
+
+    background: #f4f7f6;
+
+    color: #555;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    border-bottom: 1px solid #dfe5e3;
+}
+
+.table td {
+    padding: 14px 16px;
+
+    color: #444;
+
+    font-size: 13px;
+
+    vertical-align: middle;
+
+    border-bottom: 1px solid #edf0ef;
+}
+
+
+/* =========================
+   ANCHOS DE COLUMNAS
+========================= */
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 15%;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 11%;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 17%;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    width: 17%;
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 18%;
+}
+
+.table th:nth-child(6),
+.table td:nth-child(6) {
+    width: 18%;
+}
+
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    width: 4%;
+}
+
+
+/* =========================
+   FILA CANDIDATO
+========================= */
+
+.candidateRow {
+    cursor: pointer;
+
+    transition: background 0.15s ease;
+}
+
+.candidateRow:hover {
+    background: #f7faf9;
+}
+
+
+/* =========================
+   MATERIAL
+========================= */
+
+.material {
+    color: #2b8179 !important;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================
+   LIBERABLES
+========================= */
+
+.liberables {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 42px;
+
+    padding: 5px 10px;
+
+    box-sizing: border-box;
+
+    background: #fff6d8;
+
+    border-radius: 15px;
+
+    color: #66551e;
+
+    font-weight: 700;
+}
+
+
+/* =========================
+   EXPANDIR / CONTRAER
+========================= */
+
+.expandCell {
+    padding-left: 4px !important;
+    padding-right: 8px !important;
+
+    text-align: center !important;
+
+    white-space: nowrap;
+}
+
+.expandIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+
+    color: #2b8179;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.candidateRow:hover .expandIcon {
+    background: #eaf4f2;
+}
+
+
+/* =========================
+   FILA DE DETALLE
+========================= */
+
+.detailRow td {
+    padding: 0 !important;
+
+    background: #fafcfc;
+
+    border-bottom: 1px solid #dde6e3;
+}
+
+
+/*
+   Muy importante:
+   el td del detalle usa colSpan={7}.
+
+   Por eso evitamos que las reglas nth-child
+   normales interfieran visualmente con él.
+*/
+
+.detailRow td:first-child {
+    width: auto;
+}
+
+
+/* =========================
+   VACÍO
+========================= */
+
+.empty {
+    padding: 30px;
+
+    text-align: center;
+
+    color: #777;
+}
+
+
+/* =========================
+   MOBILE / TABLET
+========================= */
+
+@media (max-width: 800px) {
+
+    .container {
+        width: calc(100% - 24px);
+
+        margin-top: 22px;
+    }
+
+
+    .header {
+        max-width: none;
+
+        align-items: stretch;
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+
+    .summary {
+        width: 100%;
+    }
+
+    .summary > div {
+        width: auto;
+
+        flex: 1;
+    }
+
+
+    .notice {
+        max-width: none;
+    }
+
+
+    .tableWrapper {
+        overflow-x: auto;
+    }
+
+
+    .table {
+        min-width: 900px;
+
+        table-layout: fixed;
+    }
+}
+
+
+/* =========================
+   MOBILE PEQUEÑO
+========================= */
+
+@media (max-width: 520px) {
+
+    .container {
+        width: calc(100% - 16px);
+    }
+
+
+    .header h1 {
+        font-size: 22px;
+    }
+
+
+    .summary {
+        gap: 8px;
+    }
+
+    .summary > div {
+        padding: 12px 10px;
+    }
+
+    .summary strong {
+        font-size: 20px;
+    }
+
+
+    .notice {
+        font-size: 12px;
+    }
+}

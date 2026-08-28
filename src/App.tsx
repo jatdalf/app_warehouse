@@ -28,6 +28,7 @@ import RenaultOcupacion from "./components/Renault/RenaultInformes/ocupacion/Ren
 import RenaultInventarios from "./components/Renault/RenaultInformes/inventarios/RenaultInventarios"
 import RenaultEgresos from "./components/Renault/RenaultInformes/egresos/RenaultEgresos"
 import RenaultResumen from "./components/Renault/RenaultInformes/resumenOperativo/resumenOperativo"
+import RenaultCompactacionDetalle from "./components/Renault/RenaultInformes/ocupacion/Compactacion/RenaultCompactacionDetalle"
 
 function App() {
   return (
@@ -62,7 +63,8 @@ function App() {
         <Route path="/RenaultInformes/inventarios" element={<RenaultInventarios />} />    
         <Route path="/RenaultInformes/egresos" element={<RenaultEgresos />} />  
         <Route path="/RenaultInformes/resumenOperativo" element={<RenaultResumen />} />  
-        
+        <Route path="/renault/ocupacion/compactacion/:storage" element={ <RenaultCompactacionDetalle />}/>
+
       </Routes>
     </Router>
   );
