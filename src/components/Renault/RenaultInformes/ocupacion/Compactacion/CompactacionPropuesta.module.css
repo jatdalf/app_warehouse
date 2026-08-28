@@ -1,0 +1,299 @@
+.container {
+    padding: 24px 28px 28px;
+
+    background: #fafcfc;
+}
+
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 22px;
+}
+
+
+.header h3 {
+    margin: 0 0 5px;
+
+    color: #333;
+
+    font-size: 16px;
+}
+
+
+.header p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+.header p strong {
+    color: #2b8179;
+}
+
+
+.resultado {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 14px;
+
+    background: #fff6d8;
+
+    border-radius: 18px;
+
+    color: #66551e;
+}
+
+
+.resultado strong {
+    font-size: 18px;
+}
+
+
+.resultado span {
+    font-size: 12px;
+}
+
+
+/* =========================
+   ANTES / PROPUESTA
+========================= */
+
+.comparacion {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        50px
+        minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+.columna {
+    overflow: hidden;
+
+    border: 1px solid #e0e7e5;
+
+    border-radius: 10px;
+
+    background: white;
+}
+
+
+.columnaTitulo {
+    padding: 10px 16px;
+
+    background: #f1f5f4;
+
+    border-bottom: 1px solid #e0e7e5;
+
+    color: #666;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+.ubicacion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    min-height: 42px;
+
+    padding: 0 16px;
+
+    border-bottom: 1px solid #edf1f0;
+
+    font-size: 13px;
+}
+
+
+.ubicacion:last-child {
+    border-bottom: none;
+}
+
+
+.nombreUbicacion {
+    color: #2b8179;
+
+    font-weight: 700;
+}
+
+
+.cantidad {
+    color: #444;
+
+    font-weight: 700;
+}
+
+
+.libre {
+    padding: 4px 10px;
+
+    border-radius: 14px;
+
+    background: #e7f5ef;
+
+    color: #27735f;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.flecha {
+    color: #2b8179;
+
+    text-align: center;
+
+    font-size: 26px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   MOVIMIENTOS
+========================= */
+
+.movimientos {
+    margin-top: 22px;
+    padding-top: 18px;
+
+    border-top: 1px solid #e1e7e5;
+}
+
+
+.movimientos h4 {
+    margin: 0 0 12px;
+
+    color: #555;
+
+    font-size: 13px;
+}
+
+
+.movimientosLista {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.movimiento {
+    display: grid;
+
+    grid-template-columns:
+        minmax(100px, 1fr)
+        30px
+        minmax(100px, 1fr)
+        auto
+        auto;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 9px 14px;
+
+    border: 1px solid #e5eae9;
+
+    border-radius: 8px;
+
+    background: white;
+
+    font-size: 12px;
+}
+
+
+.movimientoUbicacion {
+    color: #2b8179;
+
+    font-weight: 700;
+}
+
+
+.movimientoFlecha {
+    color: #999;
+
+    text-align: center;
+}
+
+
+.movimiento strong {
+    color: #333;
+}
+
+
+.unidades {
+    color: #777;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 700px) {
+
+    .container {
+        padding: 18px;
+    }
+
+
+    .header {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+
+    .comparacion {
+        grid-template-columns: 1fr;
+    }
+
+
+    .flecha {
+        transform: rotate(90deg);
+    }
+
+
+    .movimiento {
+        grid-template-columns:
+            1fr
+            25px
+            1fr;
+
+        gap: 6px;
+    }
+
+
+    .movimiento strong {
+        grid-column: 1 / 3;
+    }
+
+
+    .unidades {
+        grid-column: 3;
+    }
+}

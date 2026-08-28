@@ -29,13 +29,13 @@
 
 .table {
     width: 100%;
-    min-width: 950px;
-
+    min-width: 1050px;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .table th {
-    padding: 12px 14px;
+    padding: 13px 16px;
 
     background: #f4f7f6;
 
@@ -46,73 +46,84 @@
 
     text-align: left;
 
-    border-bottom:
-        1px solid #dfe5e3;
+    border-bottom: 1px solid #dfe5e3;
+
+    white-space: nowrap;
 }
 
 .table td {
-    padding: 11px 14px;
+    padding: 12px 16px;
 
     color: #444;
 
     font-size: 13px;
 
-    border-bottom:
-        1px solid #edf0ef;
-}
+    border-bottom: 1px solid #edf0ef;
 
-.table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.table tbody tr:hover {
-    background: #fafcfc;
+    vertical-align: middle;
 }
 
 .storage {
+    width: 75px;
+
     font-weight: 700;
 
     color: #2b8179 !important;
 }
 
 .description {
+    width: 260px;
     min-width: 220px;
 }
 
-.percent {
-    font-weight: 700;
+.numeric {
+    width: 90px;
+    text-align: right;
 }
 
-.capacity {
-    min-width: 190px;
+.percent {
+    width: 110px;
 
+    font-weight: 700;
+    text-align: right;
+
+    white-space: nowrap;
+}
+
+.capacityCell {
     display: flex;
     align-items: center;
 
-    gap: 10px;
+    gap: 12px;
+
+    min-width: 245px;
 }
 
-.bar {
-    width: 120px;
-    height: 10px;
+.progressBar {
+    width: 145px;
+    height: 12px;
+
+    flex-shrink: 0;
+
+    background: #e4e9e8;
+
+    border-radius: 20px;
 
     overflow: hidden;
-
-    background: #e8eceb;
-
-    border-radius: 999px;
 }
 
-.barOccupied {
+.progressFill {
     height: 100%;
 
     background: #2b8179;
 
-    border-radius: 999px;
+    border-radius: 20px;
+
+    transition: width 0.3s ease;
 }
 
 .capacityText {
-    min-width: 70px;
+    min-width: 95px;
 
     color: #777;
 
@@ -120,3 +131,30 @@
 
     white-space: nowrap;
 }
+
+.oportunidadesCell {
+    width: 120px;
+
+    text-align: center;
+}
+
+.compactacionBadge {
+    border: none;
+    font-family: inherit;
+}
+
+.compactacionBadge:hover {
+    transform: translateY(-1px);
+    filter: brightness(0.98);
+}
+
+.compactacionBadge:active {
+    transform: translateY(0);
+}
+.compactacionBadge strong {
+    color: #555;
+}
+
+.sinOportunidad {
+    color: #bbb;
+}   
