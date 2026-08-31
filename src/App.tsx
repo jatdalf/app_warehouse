@@ -63,7 +63,7 @@ function App() {
         <Route path="/RenaultInformes/inventarios" element={<RenaultInventarios />} />    
         <Route path="/RenaultInformes/egresos" element={<RenaultEgresos />} />  
         <Route path="/RenaultInformes/resumenOperativo" element={<RenaultResumen />} />  
-        <Route path="/renault/ocupacion/compactacion/:storage" element={ <RenaultCompactacionDetalle />}/>
+        <Route path="/renault/ocupacion/compactacion/:warehouse/:storage" element={<RenaultCompactacionDetalle />}/>
 
       </Routes>
     </Router>

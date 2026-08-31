@@ -1,6 +1,6 @@
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
-const TestLottie = () => {
+const LottieDataAnalisis = () => {
   return (
     <div
       style={{
@@ -19,10 +19,10 @@ const TestLottie = () => {
           border: "1px solid #ddd",
         }}
       >
-        <DotLottieReact src= "/lotties/StatsAnalisis.lottie" autoplay loop/>
+        <DotLottieReact src= "/lotties/Compactar.lottie" autoplay loop/>
       </div>
     </div>
   );
 };
 
-export default TestLottie;
+export default LottieDataAnalisis;
