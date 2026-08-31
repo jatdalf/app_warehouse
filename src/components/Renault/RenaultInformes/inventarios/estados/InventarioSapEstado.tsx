@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import type { InventarioSapLinea } from "../InventarioSapLinea";
-
 import styles from "./InventarioSapEstado.module.css";
 
 interface Props {
@@ -9,11 +8,7 @@ interface Props {
 
 const InventarioSapEstado: React.FC<Props> = ({lineas}) => {
     const resumen = useMemo(() => {
-        /*
-         * IMPORTANTE:
-         * contamos DOCUMENTOS DE INVENTARIO,
-         * no líneas.
-         */
+        /* IMPORTANTE: contamos DOCUMENTOS DE INVENTARIO, no líneas. */
         const abiertos = lineas.filter( item => item.statusInventario.trim()
                         .toUpperCase() !== "ELIMINADOS");
         const cerrados = lineas.filter( item => item.statusInventario.trim()
@@ -22,15 +17,20 @@ const InventarioSapEstado: React.FC<Props> = ({lineas}) => {
         const cantidadCerrados = cerrados.length;
         const incidentes = 0;
         const total = cantidadAbiertos + cantidadCerrados;
+        const resumenTiposAbiertos = abiertos.reduce<Record<string, number>>((acc, item) => {
+            const tipo = item.referencia.trim().toUpperCase() || "SIN TIPO";
+            acc[tipo] = (acc[tipo] || 0) + 1;
+            return acc;
+        },{});
 
         return {
             abiertos: cantidadAbiertos,
             cerrados: cantidadCerrados,
             incidentes,
-            total
+            total,
+            tiposAbiertos: resumenTiposAbiertos
         };
     }, [lineas]);
-
 
     const porcentaje = (cantidad: number) => {
         if (resumen.total === 0) {
@@ -64,9 +64,24 @@ const InventarioSapEstado: React.FC<Props> = ({lineas}) => {
                     </tr>
                     {/* ABIERTOS */}
                     <tr className={styles.abierto}>
-                        <td>⏳ PENDIENTE / INVENTARIO ABIERTO</td>
-                        <td>{resumen.abiertos}</td>
-                        <td>{porcentaje(resumen.abiertos)}</td>
+                    <td>⏳ PENDIENTE / INVENTARIO ABIERTO</td>
+                    <td>{resumen.abiertos > 0 ? (
+                        <div className={styles.tooltipContainer}>
+                        <span className={styles.cantidadAbiertos}>{resumen.abiertos}</span>
+                            <div className={styles.tooltip}>
+                                <div className={styles.tooltipTitle}>
+                                    Inventarios pendientes
+                                </div>
+                                {Object.entries(resumen.tiposAbiertos).map(([tipo, cantidad]) => (
+                                <div key={tipo} className={styles.tooltipRow} >
+                                    <span>{tipo}</span>
+                                    <strong>{cantidad}</strong>
+                                </div>))}
+                            </div>
+                        </div>
+                        ) : (0)}
+                    </td>
+                    <td>{porcentaje(resumen.abiertos)}</td>
                     </tr>
                     {/* CERRADOS */}
                     <tr className={styles.cerrado}>

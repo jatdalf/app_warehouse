@@ -63,3 +63,79 @@
 .cerrado td {
     font-weight: 700;
 }
+.tooltipContainer {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cantidadAbiertos {
+    cursor: help;
+    font-weight: 700;
+}
+
+.tooltip {
+    position: absolute;
+
+    left: 50%;
+    bottom: calc(100% + 10px);
+
+    transform: translateX(-50%);
+
+    min-width: 170px;
+
+    padding: 10px 12px;
+
+    background: #333;
+    color: white;
+
+    border-radius: 8px;
+
+    opacity: 0;
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.12s ease,
+        visibility 0.12s ease;
+
+    z-index: 50;
+
+    box-shadow:
+        0 4px 14px
+        rgba(0, 0, 0, 0.18);
+}
+
+.tooltipContainer:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltipTitle {
+    margin-bottom: 8px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    opacity: 0.8;
+}
+
+.tooltipRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 3px 0;
+
+    font-size: 12px;
+}
+
+.tooltipRow strong {
+    font-size: 12px;
+}
