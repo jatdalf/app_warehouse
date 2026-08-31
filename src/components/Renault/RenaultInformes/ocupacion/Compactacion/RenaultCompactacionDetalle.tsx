@@ -5,13 +5,13 @@ import { Fragment, useMemo, useState } from "react";
 import CompactacionPropuesta from "./CompactacionPropuesta";
 
 const RenaultCompactacionDetalle = () => {
-    const { storage } = useParams();
+    const {warehouse, storage} = useParams();
     const [materialExpandido, setMaterialExpandido] = useState<string | null>(null);
     const candidatos = useMemo<CompactacionCandidato[]>(() => {
         if (!storage) {
             return [];
         }
-        const data = sessionStorage.getItem(`compactacion-${storage}`);
+        const data = sessionStorage.getItem(`compactacion-${warehouse}-${storage}`);
         if (!data) {
             return [];
         }
@@ -20,7 +20,7 @@ const RenaultCompactacionDetalle = () => {
         } catch {
             return [];
         }
-    }, [storage]);
+    }, [warehouse, storage]);
     const totalLiberables = candidatos.reduce((total, item) => total + item.ubicacionesLiberables, 0);
 
     return (
@@ -28,7 +28,7 @@ const RenaultCompactacionDetalle = () => {
             <header className={styles.header}>
                 <div>
                     <h1>Oportunidades de compactación</h1>
-                    <p>Storage {storage}</p>
+                    <p>{warehouse === "W1" ? "W1 · REP" : "W2 · BsAs"} {" · "} Storage {storage}</p>
                 </div>
                 <div className={styles.summary}>
                     <div>

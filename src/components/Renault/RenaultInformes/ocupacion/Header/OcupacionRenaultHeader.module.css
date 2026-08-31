@@ -1,0 +1,22 @@
+.headerContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin: 0 auto;
+}
+
+.headerTitle {
+    color: rgb(162, 173, 173);
+    text-align: center;
+    margin: 0 30px 20px 130px;
+}
+.LogoRenault{
+    margin-bottom: -30px;
+    margin-left: 80px;
+}
+.LogoOcasa{
+    margin-bottom: -30px;
+    margin-left: 70px;
+}

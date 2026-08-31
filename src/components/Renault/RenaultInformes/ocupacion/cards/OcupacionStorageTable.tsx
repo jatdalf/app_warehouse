@@ -2,23 +2,25 @@ import styles from "./OcupacionStorageTable.module.css";
 import type { OcupacionStorage } from "../builders/OcupacionBuilder";
 import type { CompactacionStorage, CompactacionCandidato } from "../Compactacion/CompactacionItem";
 
+type Warehouse = "W1" | "W2";
+
 interface Props {
     items: OcupacionStorage[];
     compactacion: CompactacionStorage[];
     candidatos: CompactacionCandidato[];
+    warehouse: Warehouse;
 }
 
-const OcupacionStorageTable: React.FC<Props> = ({items, compactacion, candidatos}) => {
+const OcupacionStorageTable: React.FC<Props> = ({items, compactacion, candidatos, warehouse}) => {
     const compactacionPorStorage = new Map(compactacion.map(item => [item.storage, item]));
-    const abrirDetalleCompactacion = (storage: string) => {
+    const abrirDetalleCompactacion = ( storage: string) => {
         const candidatosStorage = candidatos.filter(candidato => candidato.storage === storage);
-        sessionStorage.setItem(`compactacion-${storage}`, JSON.stringify(candidatosStorage));
-        window.open( `/renault/ocupacion/compactacion/${encodeURIComponent(storage)}`, "_blank");
+        sessionStorage.setItem(`compactacion-${warehouse}-${storage}`, JSON.stringify(candidatosStorage));
+        window.open(`/renault/ocupacion/compactacion/${warehouse}/${encodeURIComponent(storage)}`, "_blank");
     };
     return (
         <section className={styles.container}>
             <h2 className={styles.title}>Ocupación por Storage</h2>
-
             <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                     <thead>

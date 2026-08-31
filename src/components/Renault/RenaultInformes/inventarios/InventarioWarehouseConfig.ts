@@ -12,13 +12,13 @@ export const INVENTARIO_WAREHOUSES:
     W1: {
         label: "W1 (Rep)",
         zsappr110FileId: "1K_YcmQmaz1PDG6-AM5d1_PWrKdv5rTx6",
-        lx22FileId: "1V-G3jMN3G-Y58ZpbN86Ho34BtFVGd31e",
-        targetDiario: 135
+        lx22FileId: "1VyIYWfIcK5eJ4WRK_eQrDz-H8Ine3Hbp",
+        targetDiario: 135        
     },
     W2: {
         label: "W2 (BsAs)",
         zsappr110FileId: "1HTVCA3mmQ1x-sEz6SRJIv4zb1-0fMui1",
-        lx22FileId: "1NHk9EO4maktBRfwUP5phvtLZrr1ajxKO",
+        lx22FileId: "1qPJbDF_r7c4hMihlKMoaUHbr8eaP8SEW",
         targetDiario: 90
     }
 };
