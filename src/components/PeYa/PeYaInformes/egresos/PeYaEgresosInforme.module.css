@@ -16,7 +16,33 @@
     justify-content: center;
 }
 
+.metricTooltip {
+    position: relative;
+    cursor: pointer;
+}
 
+.tooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    background: #333;
+    color: white;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.12s ease, visibility 0.12s ease;
+    z-index: 20;
+}
+
+.metricTooltip:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
 .controls select {
     min-width: 220px;
     padding: 10px 15px;

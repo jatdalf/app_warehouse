@@ -103,27 +103,13 @@ const EgresosDetail: React.FC<Props> = ({egresos, feriados, initialMonth, onClos
             <div className={styles.gridArea}>
 
                 <div className={styles.gridWrapper}>
-                    <DataGrid
-                        rows={rows}
-                        columns={columns}
-                        disableColumnMenu
-                        disableRowSelectionOnClick
-
-                        pageSizeOptions={[
-                            25,
-                            50,
-                            100
-                        ]}
-
-                        initialState={{
-                            pagination: {
-                                paginationModel: {
-                                    pageSize: 25,
-                                    page: 0
-                                }
-                            }
-                        }}
-                    />
+                   <DataGrid rows={rows} columns={columns} disableColumnMenu disableRowSelectionOnClick     
+                    pageSizeOptions={[25, 50, 100]}
+                    initialState={{
+                        pagination: {
+                            paginationModel: {pageSize: 100, page: 0 }
+                        }
+                    }}/>
                 </div>
 
             </div>
