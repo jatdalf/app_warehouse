@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import { PeYaEgresosReader } from "../../../../readers/PeYaEgresosReader";
 import type { EgresoItem } from "../egresos/EgresoItem";
 import { EgresosSummaryBuilder } from "../egresos/EgresosSummaryBuilder";
@@ -29,55 +29,36 @@ const PeYaEgresosInforme = () => {
     /* =========================================
        CARGA
        ========================================= */
-
-useEffect(() => {
-
-    const cargar = async () => {
-
+    useEffect(() => {
+        const cargar = async () => {
         try {
             setLoading(true);
             setError("");
-
-            const [
-                egresosData,
-                feriadosData
-            ] = await Promise.all([
-                PeYaEgresosReader.read(),
-                PeYaFeriadosReader.read()
+            const [egresosData, feriadosData] = await Promise.all([
+                PeYaEgresosReader.read(), PeYaFeriadosReader.read()
             ]);
-
-            setEgresos(
-                egresosData.items
-            );
-
-            setFechaActualizacion(
-                egresosData.modifiedAt
-            );
-
-            setFeriados(
-                feriadosData
-            );
-
+            setEgresos(egresosData.items );
+            setFechaActualizacion(egresosData.modifiedAt);
+            setFeriados(feriadosData);
         } catch (err) {
-
             console.error(err);
-
-            const mensaje =
-                err instanceof Error
-                    ? err.message
-                    : "No fue posible cargar el informe de egresos.";
-
+            const mensaje = err instanceof Error ? err.message : "No fue posible cargar el informe de egresos.";
             setError(mensaje);
-
         } finally {
             setLoading(false);
         }
-    };
+    };void cargar();}, []);
 
-    void cargar();
-
-}, []);
-
+    const detailRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        if (!showDetail) {
+            return;
+        }
+        const timer = window.setTimeout(() => {
+            detailRef.current?.scrollIntoView({behavior: "smooth", block: "start"});
+        }, 100);
+        return () => { window.clearTimeout(timer);
+    };}, [showDetail]);
     /* =========================================
        MESES DISPONIBLES
        ========================================= */
@@ -200,25 +181,27 @@ useEffect(() => {
             {/* METRICAS */}
     <div className={styles.egresosTopRow}>
         <div className={styles.metricsGrid}>
-        <div className={styles.metric} title="Click para ver detalles" onClick={() => setShowDetail(true)}>
+        <div className={styles.metricTooltip} onClick={() => setShowDetail(true)}>
+            <div className={styles.metric}>
             <strong><AnimatedNumber value={resumen.ordenes} /></strong>
-            <span>
-                Órdenes despachadas
-            </span>
+            <span>Órdenes despachadas</span>
+            </div>
+            <span className={styles.tooltip}>Click para ver detalles</span>
         </div>
-
-        <div className={styles.metric} title="Click para ver detalles" onClick={() => setShowDetail(true)}>
+        <div className={styles.metricTooltip} onClick={() => setShowDetail(true)}>
+            <div className={styles.metric}>
             <strong><AnimatedNumber value={resumen.sku} /></strong>
-            <span>
-                SKU despachados
-            </span>
+            <span>SKU despachados</span>
+            </div>
+            <span className={styles.tooltip}>Click para ver detalles</span>
         </div>
 
-        <div className={`${styles.metric} ${styles.metricMain}`} title="Click para ver detalles" onClick={() => setShowDetail(true)}>
+        <div className={styles.metricTooltip} onClick={() => setShowDetail(true)}>
+            <div className={styles.metric}>
             <strong><AnimatedNumber value={resumen.bultos} /></strong>
-            <span>
-                Bultos despachados
-            </span>
+            <span>Bultos despachados</span>
+            </div>
+            <span className={styles.tooltip}>Click para ver detalles</span>
         </div>
 
         </div>
@@ -229,18 +212,20 @@ useEffect(() => {
             </div>
 
             <div className={styles.bultosChildren}>
-                <div className={styles.metricChild} title="Click para ver detalles" onClick={() => setShowDetail(true)}>
+                <div className={styles.metricTooltip} onClick={() => setShowDetail(true)}>
+                    <div className={styles.metric}>
                     <strong><AnimatedNumber value={resumen.bultosNormal} /></strong>
-                    <span>
-                        Días hábiles + sábado
-                    </span>
+                    <span>Días hábiles + sábado</span>
+                    </div>
+                    <span className={styles.tooltip}>Click para ver detalles</span>
                 </div>
 
-                <div className={styles.metricChild} title="Click para ver detalles" onClick={() => setShowDetail(true)}>
+                <div className={styles.metricTooltip} onClick={() => setShowDetail(true)}>
+                    <div className={styles.metric}>
                     <strong><AnimatedNumber value={resumen.bultosEspecial} /></strong>
-                    <span>
-                        Domingos + feriados
-                    </span>
+                    <span>Domingos + feriados</span>
+                    </div>
+                    <span className={styles.tooltip}>Click para ver detalles</span>
                 </div>
             </div>
         </div>
@@ -248,9 +233,12 @@ useEffect(() => {
         <div className={styles.egresosChart}>
             <EgresosMonthlyChart data={datosMensuales}/>
         </div>
-        <div>
-            {showDetail && (<EgresosDetail egresos={egresos} feriados={feriados}
-                initialMonth={selectedMonth} onClose={() => setShowDetail(false)}/>)}    
+        <div ref={detailRef}>{showDetail && (
+        <EgresosDetail
+            egresos={egresos}
+            feriados={feriados}
+            initialMonth={selectedMonth}
+            onClose={() => setShowDetail(false)}/>)}
         </div>
     </div>
     );

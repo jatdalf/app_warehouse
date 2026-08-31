@@ -10,59 +10,41 @@ import AnimatedNumber from "../../../../utils/AnimatedNumber";
 const PeYaIngresosInforme = () => {
     const [ingresos, setIngresos] = useState<IngresoItem[]>([]);
     const [selectedMonth, setSelectedMonth] = useState("");
-
+    const datosMensuales = useMemo(() => IngresosMonthlyBuilder.build(ingresos),[ingresos]);
+    
     useEffect(() => {
         const cargar = async () => {
             const data = await PeYaIngresosReader.read();
             setIngresos(data);
-        };
-        void cargar();
-    }, []);
+        }; void cargar(); }, []);
 
     const mesesDisponibles = useMemo(() => {
-        const meses = new Map<string, {
-                key: string;
-                year: number;
-                month: number;
-                label: string;
-            }>();
-
-        ingresos.forEach(item => {
-            if (Number.isNaN(item.dateReceived.getTime())) {
-                return;
-            }
-            const year = item.dateReceived.getFullYear();
-            const month = item.dateReceived.getMonth();
-            const key = `${year}-${month}`;
-
-            if (!meses.has(key)) {
-                const rawLabel = new Intl.DateTimeFormat("es-AR",
-                        {
-                            month: "long",
-                            year: "numeric"
-                        }
-                    ).format(item.dateReceived);
-
-                const label = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
-
-                meses.set(key, {
-                    key,
-                    year,
-                    month,
-                    label
-                });
-            }
-        });
-        return [...meses.values()].sort((a, b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
-    }, [ingresos]);
+    return datosMensuales.map(item => {
+        const fecha = new Date(item.year, item.month, 1);
+        const rawLabel = new Intl.DateTimeFormat("es-AR", {month: "long", year: "numeric"}).format(fecha);
+        const label = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+        return {
+            key: item.key,
+            year: item.year,
+            month: item.month,
+            label
+        };
+    });}, [datosMensuales]);
 
     useEffect(() => {
-        if (mesesDisponibles.length > 0 && !selectedMonth) {
-            const ultimo = mesesDisponibles[mesesDisponibles.length - 1];
-            setSelectedMonth(ultimo.key);
+        if (mesesDisponibles.length === 0 || selectedMonth) {
+            return;
         }
+        const hoy = new Date();
+        const keyActual = `${hoy.getFullYear()}-${hoy.getMonth()}`;
+        const mesActual = mesesDisponibles.find(mes => mes.key === keyActual);
+        if (mesActual) {
+            setSelectedMonth(mesActual.key);
+            return;
+        }
+        const ultimo = mesesDisponibles[mesesDisponibles.length - 1];
+        setSelectedMonth(ultimo.key);
     }, [mesesDisponibles, selectedMonth]);
-    const datosMensuales = useMemo(() => IngresosMonthlyBuilder.build(ingresos),[ingresos]);
 
     const total = useMemo(() => IngresosSummaryBuilder.build(ingresos), [ingresos]);
 
@@ -71,7 +53,6 @@ const PeYaIngresosInforme = () => {
             if (!mes) {
                 return [];
             }
-
             return ingresos.filter(item => {
                 if (Number.isNaN(item.dateReceived.getTime())) {
                     return false;
@@ -88,7 +69,6 @@ const PeYaIngresosInforme = () => {
         ]);
 
     const resumenMes = useMemo(() => IngresosSummaryBuilder.build( ingresosMes),[ingresosMes]);
-
     const mesSeleccionado = mesesDisponibles.find(item => item.key === selectedMonth);
 
     return (
