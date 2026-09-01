@@ -155,7 +155,7 @@ const PeYaClaveControl = () => {
     return (
         <div className={styles.container}>
             <PeYaHeader />
-            <h2 className={styles.title}>Clave de control</h2>
+            <h2 className={styles.title}>Clave de control AP 40043036</h2>
             <div className={styles.controls}>
                 <select value={selectedMonth} onChange={event => setSelectedMonth(event.target.value)} >
                     {mesesDisponibles.map(mes => (<option key={mes.key} value={mes.key} >

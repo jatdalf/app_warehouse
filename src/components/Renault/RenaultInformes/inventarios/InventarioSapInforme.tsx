@@ -18,8 +18,12 @@ import {InventarioPeriodoBuilder, type InventarioPeriodo, type TipoPeriodo} from
 import { InventarioSapDailyBuilder } from "./builders/InventarioSapDailyBuilder";
 import {INVENTARIO_WAREHOUSES, type WarehouseInventario} from "./InventarioWarehouseConfig";
 import InventarioSapResumenCards from "./cards/InventarioSapResumenCards";
+import { RenaultVaciasReader } from "../../../../readers/RenaultVaciasReader";
+import type { VaciasItem } from "./vacias/VaciasItem";
+import VaciasInforme from "./vacias/VaciasInforme";
 
 type WarehouseCache = Partial<Record<WarehouseInventario, InventarioSapLinea[]>>;
+type VaciasCache = Partial<Record<WarehouseInventario, VaciasItem[]>>;
 
 const InventarioSapInforme: React.FC = () => {
     const [lineas, setLineas] = useState<InventarioSapLinea[]>([]);
@@ -29,8 +33,10 @@ const InventarioSapInforme: React.FC = () => {
     const [tipoPeriodo, setTipoPeriodo] = useState<TipoPeriodo>("SEMANA");
     const [periodoSeleccionado, setPeriodoSeleccionado] = useState("");
     const [warehouse, setWarehouse] = useState<WarehouseInventario>("W1");
-    const cache = useRef<WarehouseCache>({});
+    const [vacias, setVacias] = useState<VaciasItem[]>([]);
     const targetDiario = INVENTARIO_WAREHOUSES[warehouse].targetDiario;
+    const cache = useRef<WarehouseCache>({});
+    const vaciasCache = useRef<VaciasCache>({});
 
     /* CARGA DE ARCHIVOS */
     useEffect(() => {const cargarFeriados = async () => {
@@ -45,26 +51,34 @@ const InventarioSapInforme: React.FC = () => {
         try {
             setLoading(true);
             setError("");
-            const cached = cache.current[warehouse];
-            if (cached) {
-                setLineas(cached);
+            const config = INVENTARIO_WAREHOUSES[warehouse];
+            const lineasCached = cache.current[warehouse];
+            const vaciasCached = vaciasCache.current[warehouse];
+            if (lineasCached && vaciasCached) {
+                setLineas(lineasCached);
+                setVacias(vaciasCached);
                 return;
             }
-            const config = INVENTARIO_WAREHOUSES[warehouse];
-            const [zsappr110, lx22] = await Promise.all([Zsappr110Reader.read(config.zsappr110FileId),
-                    Lx22Reader.read(config.lx22FileId)]);
-            const lineasCruzadas = InventarioSapBuilder.build(zsappr110, lx22);
-            // Mostramos los datos
-            setLineas(lineasCruzadas);
-            // Guardamos en memoria
-            cache.current[warehouse] = lineasCruzadas;
+            const [lineasResult, vaciasResult] = await Promise.all([
+                lineasCached ? Promise.resolve(lineasCached) : Promise.all([
+                        Zsappr110Reader.read(config.zsappr110FileId),
+                        Lx22Reader.read(config.lx22FileId)
+                    ]).then(([zsappr110, lx22]) => InventarioSapBuilder.build(zsappr110, lx22)),
+                vaciasCached ? Promise.resolve(vaciasCached)
+                    : RenaultVaciasReader.read(config.vaciasFileId)
+            ]);
+            setLineas(lineasResult);
+            setVacias(vaciasResult);
+            cache.current[warehouse] = lineasResult;
+            vaciasCache.current[warehouse] = vaciasResult;
         } catch (err) {
             console.error("Error cargando informe:", err);
             setError(err instanceof Error ? err.message : "No fue posible cargar el informe.");
         } finally {
             setLoading(false);
         }
-    };void cargar();}, [warehouse]);
+    };
+    void cargar();}, [warehouse]);
 
     /* RANGO TOTAL DISPONIBLE */
     const rango = useMemo(() => {
@@ -193,13 +207,14 @@ const InventarioSapInforme: React.FC = () => {
             </select>
         </div>
 
-           {periodoVisual && (
+           {periodoVisual && periodo && (
             <>
                 <InventarioSapResumenCards lineas={lineasPeriodoCerradas}/>
                 <InventarioSapCards lineas={lineasPeriodoCerradas}/>
                 <InventarioSapWeeklyChart semana={periodoVisual}/>
                 <InventarioSapDailySummary semana={periodoVisual} lineas={lineasPeriodoCerradas}/>
                 <InventarioSapEstado lineas={lineasPeriodo}/>
+                <VaciasInforme items={vacias} desde={periodo.desde} hasta={periodo.hasta} />
                 <InventarioSapHallazgos lineas={lineasPeriodoCerradas}/>
             </>
             )}
