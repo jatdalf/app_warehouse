@@ -17,6 +17,7 @@ interface MesDisponible {
     month: number;
     label: string;
 }
+type TipoDetalle = | "ingresos" | "egreso-normal" | "egreso-especial" | "pallet-adicional";
 
 const PeYaClaveControl = () => {
     const [ingresos, setIngresos] = useState<IngresoItem[]>([]);
@@ -129,18 +130,36 @@ const PeYaClaveControl = () => {
             </div>
         );
     }
+    const abrirDetalle = (tipo: TipoDetalle) => {
+        if (!mesSeleccionado) {
+            return;
+        }
+        const key = `clave-control-${tipo}-${selectedMonth}`;
+        let data: unknown;
+        switch (tipo) {
+            case "ingresos":
+                data = { ingresos: ingresosMes };
+                break;
+            case "egreso-normal":
+            case "egreso-especial":
+                data = { egresos: egresosMes, feriados };
+                break;
+            case "pallet-adicional":
+                data = { ocupacion: ocupacionMes };
+                break;
+        }
+        sessionStorage.setItem(key, JSON.stringify(data));
+        window.open(`/PeYa/clave-control/detalle/${tipo}/${selectedMonth}`, "_blank");
+    };
 
     return (
         <div className={styles.container}>
             <PeYaHeader />
-            <h2 className={styles.title}>
-                Clave de control
-            </h2>
+            <h2 className={styles.title}>Clave de control</h2>
             <div className={styles.controls}>
                 <select value={selectedMonth} onChange={event => setSelectedMonth(event.target.value)} >
-                    {mesesDisponibles.map(mes => (
-                        <option key={mes.key} value={mes.key} >{mes.label}</option>)
-                    )}
+                    {mesesDisponibles.map(mes => (<option key={mes.key} value={mes.key} >
+                        {mes.label}</option>))}
                 </select>
             </div>
 
@@ -152,41 +171,35 @@ const PeYaClaveControl = () => {
 
             <div className={styles.controlTable}>
                 <div className={styles.row}>
-                    <div className={styles.code}>
-                        ZN22
-                    </div>
-                    <div className={styles.description}>
-                        Ingreso por pallet (IN)
-                    </div>
+                    <div className={styles.code}>ZN22</div>
+                    <div className={styles.description}>Ingreso por pallet (IN)</div>
                     <strong>{resumen.ingresosPallets.toLocaleString("es-AR")}</strong>
+                     <button type="button" className={styles.detailButton} onClick={() =>
+                    abrirDetalle("ingresos")} aria-label="Ver respaldo de ingresos">🔎</button>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={styles.code}>
-                        YZ09
-                    </div>
-                    <div className={styles.description}>
-                        Egreso por bulto (OUT) - Lunes a Sábados
-                    </div>
+                    <div className={styles.code}>YZ09</div>
+                    <div className={styles.description}>Egreso por bulto (OUT) - Lunes a Sábados</div>
                     <strong>{resumen.egresoNormal.toLocaleString("es-AR")}</strong>
+                    <button type="button" className={styles.detailButton} onClick={() =>
+                    abrirDetalle("egreso-normal")} aria-label="Ver respaldo de egresos normales">🔎</button>
                 </div>
+
                 <div className={styles.row}>
-                    <div className={styles.code}>
-                        YZ09
-                    </div>
-                    <div className={styles.description}>
-                        Egreso por bulto (OUT) - Domingos y feriados
-                    </div>
+                    <div className={styles.code}>YZ09</div>
+                    <div className={styles.description}>Egreso por bulto (OUT) - Domingos y feriados</div>
                     <strong>{resumen.egresoEspecial.toLocaleString("es-AR")}</strong>
+                    <button type="button" className={styles.detailButton} onClick={() =>
+                    abrirDetalle("egreso-especial")} aria-label="Ver respaldo de egresos especiales">🔎</button>
                 </div>
+
                 <div className={styles.row}>
-                    <div className={styles.code}>
-                        ZN24
-                    </div>
-                    <div className={styles.description}>
-                        Pallet Adicional
-                    </div>
+                    <div className={styles.code}>ZN24</div>
+                    <div className={styles.description}>Pallet Adicional</div>
                     <strong>{resumen.palletAdicional.toLocaleString("es-AR")}</strong>
+                    <button type="button" className={styles.detailButton} onClick={() =>
+                    abrirDetalle("pallet-adicional")} aria-label="Ver respaldo de pallet adicional">🔎</button>
                 </div>
             </div>
         </div>

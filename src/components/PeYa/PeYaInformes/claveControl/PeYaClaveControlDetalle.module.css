@@ -1,0 +1,330 @@
+.container {
+    width: calc(100% - 48px);
+    max-width: 1180px;
+
+    margin: 36px auto 60px;
+}
+
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 24px;
+}
+
+
+.header h1 {
+    margin: 0;
+
+    color: #333;
+
+    font-size: 26px;
+    font-weight: 700;
+}
+
+
+.header p {
+    margin: 6px 0 0;
+
+    color: #2b8179;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+.resultCard {
+    min-width: 190px;
+
+    padding: 14px 20px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #dce5e3;
+    border-radius: 12px;
+
+    background: white;
+
+    text-align: center;
+}
+
+
+.resultCard span,
+.resultCard small {
+    display: block;
+
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+.resultCard strong {
+    display: block;
+
+    margin: 3px 0;
+
+    color: #2b8179;
+
+    font-size: 28px;
+}
+
+
+.summaryGrid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-bottom: 20px;
+}
+
+
+.summaryCard {
+    padding: 16px;
+
+    border: 1px solid #e0e6e4;
+    border-radius: 12px;
+
+    background: white;
+}
+
+
+.summaryCard span {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+.summaryCard strong {
+    color: #333;
+
+    font-size: 20px;
+}
+
+
+.formula {
+    color: #2b8179 !important;
+
+    font-size: 17px !important;
+}
+
+
+.notice {
+    margin-bottom: 22px;
+
+    padding: 13px 16px;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    background: #f4f8f7;
+
+    color: #59615f;
+
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+
+.tableWrapper {
+    overflow: hidden;
+
+    border: 1px solid #e1e5e4;
+    border-radius: 12px;
+
+    background: white;
+
+    box-shadow:
+        0 4px 16px
+        rgba(0, 0, 0, 0.05);
+}
+
+
+.table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.table th {
+    padding: 13px 16px;
+
+    background: #f4f7f6;
+
+    color: #555;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-align: left;
+
+    border-bottom:
+        1px solid #dfe5e3;
+}
+
+
+.table td {
+    padding: 12px 16px;
+
+    color: #444;
+
+    font-size: 13px;
+
+    border-bottom:
+        1px solid #edf0ef;
+}
+
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.table tbody tr:hover {
+    background: #f9fbfa;
+}
+
+
+.excesoRow {
+    background: #fffaf0;
+}
+
+
+.excesoRow:hover {
+    background: #fff6df !important;
+}
+
+
+.codeCell {
+    color: #2b8179 !important;
+
+    font-weight: 700;
+}
+
+
+.badgeNormal,
+.badgeEspecial {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 72px;
+
+    padding: 4px 9px;
+
+    border-radius: 14px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.badgeNormal {
+    background: #eaf4f2;
+
+    color: #2b8179;
+}
+
+
+.badgeEspecial {
+    background: #fff0d8;
+
+    color: #8a6423;
+}
+
+
+.empty {
+    margin-top: 60px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    color: #777;
+}
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+
+.downloadButton {
+    height: 30px;
+    margin-top:7px;
+    padding: 0 16px;    
+    border: 1px solid #2b8179;
+    border-radius: 9px;
+    background: white;
+    color: #2b8179;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.downloadButton:hover {
+    background: #2b8179;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(43, 129, 121, 0.18);
+}
+
+@media (max-width: 800px) {
+    .headerActions {
+        width: 100%;
+
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .downloadButton {
+        width: 100%;
+    }
+    .container {
+        width: calc(100% - 24px);
+
+        margin-top: 24px;
+    }
+
+
+    .header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+
+    .resultCard {
+        width: 100%;
+    }
+
+
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .tableWrapper {
+        overflow-x: auto;
+    }
+
+
+    .table {
+        min-width: 850px;
+    }
+
+}
