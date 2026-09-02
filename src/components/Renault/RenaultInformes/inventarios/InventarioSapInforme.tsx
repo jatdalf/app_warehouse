@@ -1,10 +1,7 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
-import { Zsappr110Reader } from "../../../../readers/Zsappr110Reader";
-import { Lx22Reader } from "../../../../readers/Lx22Reader";
+import React, {useEffect, useMemo, useState} from "react";
+import { useInventarioSapData } from "./hooks/useInventarioSapData";
 import { PeYaFeriadosReader } from "../../../../readers/PeYaFeriadosReader";
-import { InventarioSapBuilder } from "./builders/InventarioSapBuilder";
 import { InventarioSapWeeklyBuilder } from "./builders/InventarioSapWeeklyBuilder ";
-import type { InventarioSapLinea } from "./InventarioSapLinea";
 import type { InventarioSemana } from "./InventarioSemana";
 import type { FeriadoItem } from "./FeriadoItem";
 import InventarioSapCards from "./cards/InventarioSapCards";
@@ -18,25 +15,15 @@ import {InventarioPeriodoBuilder, type InventarioPeriodo, type TipoPeriodo} from
 import { InventarioSapDailyBuilder } from "./builders/InventarioSapDailyBuilder";
 import {INVENTARIO_WAREHOUSES, type WarehouseInventario} from "./InventarioWarehouseConfig";
 import InventarioSapResumenCards from "./cards/InventarioSapResumenCards";
-import { RenaultVaciasReader } from "../../../../readers/RenaultVaciasReader";
-import type { VaciasItem } from "./vacias/VaciasItem";
 import VaciasInforme from "./vacias/VaciasInforme";
 
-type WarehouseCache = Partial<Record<WarehouseInventario, InventarioSapLinea[]>>;
-type VaciasCache = Partial<Record<WarehouseInventario, VaciasItem[]>>;
-
 const InventarioSapInforme: React.FC = () => {
-    const [lineas, setLineas] = useState<InventarioSapLinea[]>([]);
     const [feriados, setFeriados] = useState<FeriadoItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
     const [tipoPeriodo, setTipoPeriodo] = useState<TipoPeriodo>("SEMANA");
     const [periodoSeleccionado, setPeriodoSeleccionado] = useState("");
     const [warehouse, setWarehouse] = useState<WarehouseInventario>("W1");
-    const [vacias, setVacias] = useState<VaciasItem[]>([]);
     const targetDiario = INVENTARIO_WAREHOUSES[warehouse].targetDiario;
-    const cache = useRef<WarehouseCache>({});
-    const vaciasCache = useRef<VaciasCache>({});
+    const { lineas, vacias, loading, error} = useInventarioSapData(warehouse);
 
     /* CARGA DE ARCHIVOS */
     useEffect(() => {const cargarFeriados = async () => {
@@ -47,39 +34,7 @@ const InventarioSapInforme: React.FC = () => {
             console.error("Error cargando feriados:", err);
         }
     }; void cargarFeriados();}, []);
-    useEffect(() => {const cargar = async () => {
-        try {
-            setLoading(true);
-            setError("");
-            const config = INVENTARIO_WAREHOUSES[warehouse];
-            const lineasCached = cache.current[warehouse];
-            const vaciasCached = vaciasCache.current[warehouse];
-            if (lineasCached && vaciasCached) {
-                setLineas(lineasCached);
-                setVacias(vaciasCached);
-                return;
-            }
-            const [lineasResult, vaciasResult] = await Promise.all([
-                lineasCached ? Promise.resolve(lineasCached) : Promise.all([
-                        Zsappr110Reader.read(config.zsappr110FileId),
-                        Lx22Reader.read(config.lx22FileId)
-                    ]).then(([zsappr110, lx22]) => InventarioSapBuilder.build(zsappr110, lx22)),
-                vaciasCached ? Promise.resolve(vaciasCached)
-                    : RenaultVaciasReader.read(config.vaciasFileId)
-            ]);
-            setLineas(lineasResult);
-            setVacias(vaciasResult);
-            cache.current[warehouse] = lineasResult;
-            vaciasCache.current[warehouse] = vaciasResult;
-        } catch (err) {
-            console.error("Error cargando informe:", err);
-            setError(err instanceof Error ? err.message : "No fue posible cargar el informe.");
-        } finally {
-            setLoading(false);
-        }
-    };
-    void cargar();}, [warehouse]);
-
+   
     /* RANGO TOTAL DISPONIBLE */
     const rango = useMemo(() => {
         if (lineas.length === 0) {
@@ -153,7 +108,6 @@ const InventarioSapInforme: React.FC = () => {
             hasta: periodo.hasta,
             dias: diasPeriodo
         };}, [periodo, diasPeriodo]);
-
     /* ESTADOS DE PANTALLA */
     if (loading) {
         return (
@@ -164,19 +118,7 @@ const InventarioSapInforme: React.FC = () => {
         );
     }
     if (error) {
-        return (
-            <div className={styles.error}>
-                ⚠️ {error}
-            </div>
-        );
-    }
-
-    if (semanas.length === 0) {
-        return (
-            <div className={styles.message}>                
-                No hay inventarios para mostrar.
-            </div>
-        );
+        return (<div className={styles.error}>⚠️ {error}</div>);
     }
 
     return (
@@ -196,9 +138,7 @@ const InventarioSapInforme: React.FC = () => {
                 <option value="DOS_SEMANAS">2 semanas</option>
                 <option value="MES">Mes</option>
             </select>
-
             <label htmlFor="periodo">Período</label>
-
             <select id="periodo" value={periodoSeleccionado}
                 onChange={e => setPeriodoSeleccionado(e.target.value)}>
                 {periodos.map(item => (
@@ -206,7 +146,6 @@ const InventarioSapInforme: React.FC = () => {
                 ))}
             </select>
         </div>
-
            {periodoVisual && periodo && (
             <>
                 <InventarioSapResumenCards lineas={lineasPeriodoCerradas}/>
