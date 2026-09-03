@@ -24,9 +24,7 @@ const ALMACENES_FILE_ID = "1ZRPxkVmnJDQYNuAZp0SVTIVHeSm1Wsmx";
 
 const RenaultOcupacion = () => {
     const { authenticated, login } = useRenaultAuth();
-    if (!authenticated) {
-        return <RenaultOcupacionLogin onLogin={login} />;
-    }
+
     const [warehouse, setWarehouse] = useState<Warehouse>("W1");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -71,6 +69,10 @@ const RenaultOcupacion = () => {
         };
         void cargar();
     }, [warehouse]);
+
+        if (!authenticated) {
+        return <RenaultOcupacionLogin onLogin={login} />;
+    }
 
     return (
         <div>
