@@ -37,12 +37,12 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                         config.zsappr110ArchivoFileId ? Zsappr110Reader.read(config.zsappr110ArchivoFileId)
                             : Promise.resolve([]), config.lx22ArchivoFileId ? Lx22Reader
                             .read(config.lx22ArchivoFileId) : Promise.resolve([])
-                        ]).then(([zsappr110Actual, lx22Actual, zsappr110Archivo, lx22Archivo]) => {
-                            const zsappr110 = [...zsappr110Archivo, ...zsappr110Actual];
-                            const lx22 = [...lx22Archivo, ...lx22Actual];
-                            return InventarioSapBuilder.build(zsappr110, lx22);
-                        }),
-                    vaciasCached ? Promise.resolve(vaciasCached) : RenaultVaciasReader.read(config.vaciasFileId)
+                ]).then(([zsappr110Actual, lx22Actual, zsappr110Archivo, lx22Archivo]) => {
+                const zsappr110 = [...zsappr110Archivo, ...zsappr110Actual];
+                const lx22 = [...lx22Archivo, ...lx22Actual];
+                const resultado = InventarioSapBuilder.build(zsappr110, lx22); 
+            return resultado;}),
+                vaciasCached ? Promise.resolve(vaciasCached) : RenaultVaciasReader.read(config.vaciasFileId)
                 ]);
                 setLineas(lineasResult);
                 setVacias(vaciasResult);
