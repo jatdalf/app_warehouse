@@ -11,6 +11,8 @@ import CompactacionResumenCards from "./cards/CompactacionResumenCards";
 import styles from "./RenaultOcupacion.module.css";
 import type {AlmacenItem} from "./AlmacenItem";
 import OcupacionRenaultHeader from "./Header/OcupacionRenaultHeader";
+import { useRenaultAuth } from "../../../../components/hooks/useRenaultAuth";
+import { RenaultOcupacionLogin } from "../../Loguin/RenaultOcupacionLogin";
 
 type Warehouse = "W1" | "W2";
 const LX03_FILES: Record<Warehouse, string> = {
@@ -19,7 +21,12 @@ const LX03_FILES: Record<Warehouse, string> = {
 };
 const ALMACENES_FILE_ID = "1ZRPxkVmnJDQYNuAZp0SVTIVHeSm1Wsmx";
 
+
 const RenaultOcupacion = () => {
+    const { authenticated, login } = useRenaultAuth();
+    if (!authenticated) {
+        return <RenaultOcupacionLogin onLogin={login} />;
+    }
     const [warehouse, setWarehouse] = useState<Warehouse>("W1");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
