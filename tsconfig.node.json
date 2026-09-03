@@ -23,5 +23,5 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["vite.config.ts",
-    "api/**/*.ts"]
+    "api/**/*.ts", "api/ocupacion-login.js"]
 }

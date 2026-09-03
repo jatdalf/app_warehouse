@@ -1,0 +1,195 @@
+.ocupacion-login-page {
+    width: 100%;
+    min-height: 70vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+.ocupacion-login-card {
+    width: 100%;
+    max-width: 1100px;
+
+    padding: 28px 24px 24px;
+
+    border: 1px solid #dedede;
+    border-radius: 28px;
+
+    background: #ffffff;
+
+    box-sizing: border-box;
+}
+
+
+.ocupacion-login-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+
+.ocupacion-login-lock {
+    font-size: 27px;
+}
+
+
+.ocupacion-login-protected {
+    color: #27887f;
+    font-size: 18px;
+    font-weight: 600;
+
+    margin-bottom: 8px;
+}
+
+
+.ocupacion-login-header h1 {
+    margin: 0;
+
+    color: #27887f;
+
+    font-size: 34px;
+    font-weight: 600;
+}
+
+
+.ocupacion-login-description {
+    margin: 24px 0 18px;
+
+    font-size: 18px;
+    color: #292929;
+}
+
+
+.ocupacion-login-form {
+    padding: 22px 18px 18px;
+
+    border: 1px solid #e2e2e2;
+    border-radius: 18px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.ocupacion-login-form label {
+    font-size: 18px;
+    font-weight: 600;
+
+    color: #5c5c5c;
+}
+
+
+.ocupacion-login-form input {
+    width: 100%;
+    height: 58px;
+
+    padding: 0 18px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #dddddd;
+    border-radius: 12px;
+
+    font-size: 17px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+
+.ocupacion-login-form input:focus {
+    border-color: #2d8981;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(45, 137, 129, 0.12);
+}
+
+
+.ocupacion-login-error {
+    padding: 10px 12px;
+
+    border-radius: 8px;
+
+    background: #fff1f1;
+
+    color: #b42318;
+
+    font-size: 14px;
+}
+
+
+.ocupacion-login-form button {
+    width: 100%;
+    height: 58px;
+
+    margin-top: 4px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #2d8981;
+
+    color: white;
+
+    font-size: 19px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        opacity 0.2s,
+        transform 0.1s;
+}
+
+
+.ocupacion-login-form button:hover:not(:disabled) {
+    opacity: 0.92;
+}
+
+
+.ocupacion-login-form button:active:not(:disabled) {
+    transform: scale(0.995);
+}
+
+
+.ocupacion-login-form button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+
+@media (max-width: 600px) {
+
+    .ocupacion-login-page {
+        padding: 12px;
+        align-items: flex-start;
+    }
+
+    .ocupacion-login-card {
+        padding: 22px 16px;
+        border-radius: 20px;
+    }
+
+    .ocupacion-login-header h1 {
+        font-size: 27px;
+    }
+
+    .ocupacion-login-description {
+        font-size: 16px;
+    }
+
+    .ocupacion-login-form {
+        padding: 18px 14px;
+    }
+}
