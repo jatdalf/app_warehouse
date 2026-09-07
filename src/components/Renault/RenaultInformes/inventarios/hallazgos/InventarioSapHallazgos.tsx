@@ -43,11 +43,13 @@ const InventarioSapHallazgos: React.FC<Props> = ({lineas}) => {
                     <tr key={`${item.documento}-${item.id}`}>
                         <td>{index + 1}</td>
                         <td>{item.documento}</td>
-                        <td>{item.material}</td>
+                        <td className={styles.materialCell}>{item.material}</td>
                         <td className={styles.description}>{item.descripcion}</td>
                         <td>{formatDate(item.fecha)}</td>
                         <td className={styles.moneyPositive}>{formatCurrency(item.diferenciaValor)}</td>
-                        <td>{item.referencia === "CICLICOS" ? "EIC" : item.referencia}</td>
+                        <td className={styles.tipoInventarioCell}>
+                            {item.referencia === "CICLICOS" ? "EIC" : item.referencia}
+                        </td>
                         <td>{item.referencia === "CICLICOS" ? "Encontrada en inv. Ciclico" : ""}</td>
                     </tr>))}
                     <tr className={styles.totalRowPositive}>
@@ -83,11 +85,13 @@ const InventarioSapHallazgos: React.FC<Props> = ({lineas}) => {
                             <tr key={`${item.documento}-${item.id}`}>
                                 <td>{index + 1}</td>
                                 <td>{item.documento}</td>
-                                <td>{item.material}</td>
+                                <td className={styles.materialCell}>{item.material}</td>
                                 <td className={styles.description}>{item.descripcion}</td>
                                 <td>{formatDate(item.fecha)}</td>
                                 <td className={styles.moneyNegative}>{formatCurrency(item.diferenciaValor)}</td>
-                                <td>{item.referencia === "CICLICOS" ? "PIC" : item.referencia}</td>
+                                <td className={styles.tipoInventarioCell}>
+                                    {item.referencia === "CICLICOS" ? "PIC" : item.referencia}
+                                </td>
                                 <td>{item.referencia === "CICLICOS" ? "Perdida en inv. Ciclico" : ""}</td>
                             </tr>))}
                         <tr className={styles.totalRowNegative}>

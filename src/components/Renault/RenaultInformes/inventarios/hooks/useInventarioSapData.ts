@@ -9,7 +9,6 @@ import type { VaciasItem } from "../vacias/VaciasItem";
 import { Lx03OcupacionReader } from "../../../../../readers/Lx03OcupacionReader";
 import type { Lx03OcupacionItem } from "../../ocupacion/Lx03OcupacionItem";
 
-
 type MesCache = Record<string, InventarioSapLinea[]>;
 type VaciasCache = Partial<Record<WarehouseInventario, VaciasItem[]>>;
 type Lx03Cache = Partial<Record<WarehouseInventario, Lx03OcupacionItem[]>>;
@@ -19,6 +18,8 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
     const [vacias, setVacias] = useState<VaciasItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [mesIncorporado, setMesIncorporado] = useState<string | null>(null);
+    const [historicoDesdeCache, setHistoricoDesdeCache] = useState(false);
     /* CACHE POR MES  */
     const cache = useRef<MesCache>({});
     const vaciasCache = useRef<VaciasCache>({});
@@ -45,18 +46,40 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
             cache.current[cacheKey] = resultado;
             return resultado;
         };
-
+        
         const cargar = async () => {
             try {
                 setLoading(true);
                 setError("");
                 setLineas([]);
+                setMesIncorporado(null);  
+                setHistoricoDesdeCache(false);
                 const config = INVENTARIO_WAREHOUSES[warehouse];
                 const meses = Object.keys(config.meses).sort();
                 if (meses.length === 0) {
                     throw new Error("No hay meses configurados para este warehouse.");
                 }
+                const todosLosMesesEnCache = meses.every(mes => {
+                    const cacheKey = `${warehouse}-${mes}`;
+                    return !!cache.current[cacheKey];});
                 const mesActual = meses[meses.length - 1];
+                if (todosLosMesesEnCache) {
+                    const lineasCached = meses.flatMap(mes => {
+                        const cacheKey = `${warehouse}-${mes}`;
+                        return (cache.current[cacheKey] ?? []);});
+                    const vaciasCached = vaciasCache.current[warehouse];
+                    const lx03Cached = lx03Cache.current[warehouse];
+                    setLineas(lineasCached);
+                    if (vaciasCached) {
+                        setVacias(vaciasCached);
+                    }
+                    if (lx03Cached) {
+                        setLx03(lx03Cached);
+                    }
+                    setHistoricoDesdeCache(true);
+                    setLoading(false);
+                    return;
+                }
                 const vaciasCached = vaciasCache.current[warehouse];
                 const lx03Cached = lx03Cache.current[warehouse];
                 const [lineasActuales, vaciasResult, lx03Result] = await Promise.all([
@@ -72,6 +95,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                 setVacias(vaciasResult);
                 setLx03(lx03Result);
                 setLoading(false);
+                setMesIncorporado(mesActual);
                 /* =================================
                  * HISTÓRICO EN SEGUNDO PLANO
                  * =================================
@@ -94,7 +118,8 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                         if (cancelado) {
                             return;
                         }
-                        setLineas(actuales => [...lineasMes, ...actuales]);
+                        setLineas(actuales => [...lineasMes, ...actuales, ]);
+                        setMesIncorporado(mes);
                     } catch (err) {
                         console.error(`Error cargando ${warehouse} ${mes}:`, err);
                     }
@@ -113,5 +138,5 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
             cancelado = true;
         };
     }, [warehouse]);
-    return { lineas, vacias, lx03, loading, error };
+    return { lineas, vacias, lx03, loading, error, mesIncorporado, historicoDesdeCache };
 };

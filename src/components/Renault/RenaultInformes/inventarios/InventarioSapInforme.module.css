@@ -4,7 +4,58 @@
     padding: 30px 5% 50px;
     box-sizing: border-box;
 }
+.coverageButton {
+    margin-left: 35%;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    border: 1px solid #b9d8d5;
+    border-radius: 12px;
+    background: #f4faf9;
+    color: #16847d;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
 
+.coverageButton:hover {
+    background: #eaf6f4;
+    border-color: #16847d;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(22, 132, 125, 0.10);
+}
+
+.coverageButtonIcon {
+    font-size: 22px;
+}
+
+.coverageButtonContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.coverageButtonContent strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: #16847d;
+}
+
+.coverageButtonContent small {
+    font-size: 11px;
+    color: #6f7f7d;
+}
+
+.coverageButtonArrow {
+    margin-left: 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #16847d;
+}
 .controls {
     width: min(1100px, 100%);
     margin: -35px auto 25px;
@@ -23,16 +74,12 @@
 .controls select {
     min-width: 240px;
     padding: 10px 14px;
-
     border: 1px solid #bfcaca;
     border-radius: 9px;
-
     background: #ffffff;
     color: #333;
-
     font-size: 14px;
     font-weight: 500;
-
     cursor: pointer;
     outline: none;
 }
@@ -58,15 +105,11 @@
 .error {
     width: fit-content;
     margin: 40px auto;
-
     padding: 10px 18px;
-
     border: 1px solid #e6bd66;
     border-radius: 8px;
-
     background: #fff3d4;
     color: #8a6215;
-
     font-size: 14px;
     font-weight: 600;
 }
