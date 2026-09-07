@@ -1,13 +1,10 @@
-import {useEffect, useMemo, useState} from "react";
-import { PeYaInventariosReader } from "../../../../readers/PeYaInventariosReader";
-import { PeYaFeriadosReader } from "../../../../readers/PeYaFeriadosReader";
-import type { InventarioItem } from "../inventarios/InventarioItem";
-import type { FeriadoItem } from "../inventarios/FeriadoItem";
+import { useEffect, useMemo, useState } from "react";
 import { InventarioSummaryBuilder } from "../inventarios/InventarioSummaryBuilder";
 import { InventarioWeeklyBuilder } from "../inventarios/InventarioWeeklyBuilder";
 import styles from "./PeYaInventariosInforme.module.css";
 import InventarioWeeklyChart from "./InventarioWeeklyChart";
 import AnimatedNumber from "../../../../utils/AnimatedNumber";
+import { usePeYaInventariosData } from "../inventarios/hooks/usePeYaInventariosData";
 
 interface MesDisponible {
     key: string;
@@ -15,36 +12,11 @@ interface MesDisponible {
     month: number;
     label: string;
 }
+
 const PeYaInventariosInforme = () => {
-    const [inventarios, setInventarios] = useState<InventarioItem[]>([]);
-    const [feriados, setFeriados] = useState<FeriadoItem[]>([]);
+    const {inventarios, feriados, fechaActualizacion, loading, error} = usePeYaInventariosData();
     const [selectedMonth, setSelectedMonth] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-    const [fechaActualizacion, setFechaActualizacion] = useState<Date | null>(null);
-    /* =========================================
-       CARGA DE ARCHIVOS
-       ========================================= */
-    useEffect(() => {
-        const cargar = async () => {
-            try {
-                setLoading(true);
-                const [inventariosData, feriadosData] = await Promise.all([
-                    PeYaInventariosReader.read(),
-                    PeYaFeriadosReader.read()
-                ]);
-                setInventarios(inventariosData.items);
-                setFechaActualizacion(inventariosData.createdAt);
-                setFeriados(feriadosData);
-            } catch (err) {
-                console.error(err);
-                setError("No fue posible cargar los datos de inventarios.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        void cargar();
-    }, []);
+
     /* =========================================
        MESES DISPONIBLES
        ========================================= */

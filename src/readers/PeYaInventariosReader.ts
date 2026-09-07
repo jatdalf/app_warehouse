@@ -7,12 +7,9 @@ export interface PeYaInventariosData {
 }
 
 export class PeYaInventariosReader {
-    static async read(): Promise<PeYaInventariosData> {
+    static async read(fileId: string): Promise<PeYaInventariosData> {
         const response = await fetch("/api/drive-file",
-            {method: "POST", headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({fileId: "1gWp_GbSmR3T5gbziVUtiF9aXFyb9-Dmh"})
-            }
-        );
+            {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ fileId })});
         if (!response.ok) {throw new Error("No fue posible cargar el informe de inventarios.");}
         const data = await response.json();
         if (!data.success || !data.base64) {
