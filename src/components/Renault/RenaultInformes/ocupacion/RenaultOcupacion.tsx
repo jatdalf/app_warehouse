@@ -13,18 +13,14 @@ import type {AlmacenItem} from "./AlmacenItem";
 import OcupacionRenaultHeader from "./Header/OcupacionRenaultHeader";
 import { useRenaultAuth } from "../../../../components/hooks/useRenaultAuth";
 import { RenaultOcupacionLogin } from "../../Loguin/RenaultOcupacionLogin";
+import { INVENTARIO_WAREHOUSES } from "../inventarios/InventarioWarehouseConfig";
 
 type Warehouse = "W1" | "W2";
-const LX03_FILES: Record<Warehouse, string> = {
-    W1: "1CwoTkpCyQRsvk9QaxHciHXnRkn5U_oJY",
-    W2: "1P-w1s_c9oBCJwWR4CRV9pt_1tJFqmsLW"
-};
-const ALMACENES_FILE_ID = "1ZRPxkVmnJDQYNuAZp0SVTIVHeSm1Wsmx";
 
+const ALMACENES_FILE_ID = "1ZRPxkVmnJDQYNuAZp0SVTIVHeSm1Wsmx";
 
 const RenaultOcupacion = () => {
     const { authenticated, login } = useRenaultAuth();
-
     const [warehouse, setWarehouse] = useState<Warehouse>("W1");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -45,7 +41,7 @@ const RenaultOcupacion = () => {
                     setLoading(false);
                     return;
                 }setLoading(true);
-                const lx03 = await Lx03OcupacionReader.read(LX03_FILES[warehouse]);
+                const lx03 = await Lx03OcupacionReader.read(INVENTARIO_WAREHOUSES[warehouse].lx03FileId);
                 let almacenes = almacenesCache.current;
                 if (!almacenes) {
                     almacenes = await AlmacenesReader.read(ALMACENES_FILE_ID);
@@ -69,7 +65,6 @@ const RenaultOcupacion = () => {
         };
         void cargar();
     }, [warehouse]);
-
         if (!authenticated) {
         return <RenaultOcupacionLogin onLogin={login} />;
     }

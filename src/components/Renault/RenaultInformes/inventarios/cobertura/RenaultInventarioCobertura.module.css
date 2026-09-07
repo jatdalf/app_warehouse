@@ -1,0 +1,698 @@
+.page {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 24px 4% 40px;
+    background: #ffffff;
+    color: #454545;
+}
+/* =========================
+   HEADER
+========================= */
+.topBar {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto 22px;
+    display: grid;
+
+    align-items: center;
+}
+
+.title {
+    margin: 0;    
+    text-align: center;
+    font-size: 22px;
+    line-height: 1.15;
+    font-weight: 700;
+    color: #16847d;
+}
+
+.topSpacer {
+    width: 190px;
+}
+
+/* =========================
+   CONTROLES / SELECTORES
+========================= */
+.controls {
+    width: 100%;
+    max-width: 1180px;
+    color: #16847d;
+    margin: 0 auto 30px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 18px;
+    align-items: end;
+}
+
+.controlGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #16847d;
+    font-size: 14px;
+    font-weight: 700;
+
+}
+
+.controlGroup span {
+    white-space: nowrap;
+}
+
+.select {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px solid #cddada;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.select:hover {
+    border-color: #91bdb9;
+}
+.select:focus {
+    border-color: #16847d;
+    box-shadow: 0 0 0 3px rgba(22, 132, 125, 0.10);
+}
+/* =========================
+   CONTENIDO
+========================= */
+.content {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+.sectionHeader {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #454545;
+    margin-top: -20px;
+}
+
+.availableData {
+    margin: -10px;
+    font-size: 13px;
+    color: #7a7a7a;
+}
+/* =========================
+   CARDS
+========================= */
+
+.coberturaCards {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(200px, 1fr));
+
+    gap: 18px;
+}
+
+.coberturaCard {
+    min-height: 165px;
+
+    box-sizing: border-box;
+    padding: 20px;
+
+    display: grid;
+
+    /*
+        Todas las cards comparten exactamente
+        las mismas 4 líneas visuales.
+    */
+    grid-template-rows:
+        24px
+        42px
+        24px
+        22px;
+
+    align-items: center;
+    justify-items: center;
+
+    row-gap: 5px;
+
+    background: #ffffff;
+
+    border: 1px solid #d7e1e1;
+    border-radius: 15px;
+
+    box-shadow:
+        0 8px 20px
+        rgba(0, 0, 0, 0.04);
+}
+
+
+/* FILA 1 */
+
+.coberturaCardTitle {
+    grid-row: 1;
+
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+
+    color: #505050;
+
+    align-self: center;
+}
+
+
+/* FILA 2 */
+
+.coberturaCardValue {
+    grid-row: 2;
+
+    margin: 0;
+
+    font-size: 32px;
+    line-height: 1;
+
+    font-weight: 700;
+
+    color: #16847d;
+
+    align-self: center;
+}
+
+
+/* FILA 3 */
+
+.coberturaCardPercent {
+    grid-row: 3;
+
+    margin: 0;
+
+    font-size: 15px;
+    line-height: 1;
+
+    font-weight: 700;
+
+    color: #555555;
+
+    align-self: center;
+}
+
+
+/* FILA 4 */
+
+.coberturaCardText {
+    grid-row: 4;
+
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.2;
+
+    color: #777777;
+
+    text-align: center;
+
+    align-self: center;
+}
+
+
+/* =========================
+   DONUT
+========================= */
+
+.coberturaDonutWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 28px;
+    margin-bottom: 20px;
+}
+
+.coberturaDonut {
+    position: relative;
+    margin-top: -20px;
+    width: 230px;
+    height: 230px;
+}
+
+.coberturaDonutCenter {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.coberturaDonutCenter strong {
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 700;
+    color: #16847d;
+}
+
+.coberturaDonutCenter span {
+    margin-top: 5px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #777777;
+}
+
+
+/* =========================
+   ESTADOS
+========================= */
+
+.message {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+
+    padding: 40px 20px;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+    color: #16847d;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.error {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 20px auto 0;
+
+    padding: 16px 18px;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+    border: 1px solid #e7cccc;
+    border-radius: 10px;
+
+    background: #fff7f7;
+
+    color: #a34343;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+/* =========================
+   TABLA POR STORAGE
+========================= */
+
+.storageSection {
+    width: 100%;
+    margin-top: 34px;
+}
+
+.storageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    margin-bottom: 12px;
+}
+
+.storageTitle {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #454545;
+}
+
+.storageSubtitle {
+    font-size: 12px;
+
+    color: #888888;
+}
+
+.tableWrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #d7e1e1;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 6px 18px
+        rgba(0, 0, 0, 0.035);
+}
+
+.storageTable {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 13px;
+}
+
+.storageTable thead {
+    background: #f5f9f8;
+}
+
+.storageTable th {
+    padding: 12px 14px;
+
+    text-align: center;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #16847d;
+
+    border-bottom: 1px solid #d7e1e1;
+
+    white-space: nowrap;
+}
+
+.storageTable td {
+    padding: 11px 14px;
+
+    text-align: center;
+
+    color: #555555;
+
+    border-bottom: 1px solid #edf1f1;
+
+    white-space: nowrap;
+}
+
+.storageTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.storageTable tbody tr:hover {
+    background: #fafcfc;
+}
+
+.storageName {
+    font-weight: 700;
+
+    color: #454545 !important;
+}
+
+.coverageCell {
+    min-width: 180px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.progressTrack {
+    flex: 1;
+
+    height: 7px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #dfe7e6;
+}
+
+.progressFill {
+    height: 100%;
+
+    border-radius: 20px;
+
+    background: #16847d;
+
+    transition: width 0.3s ease;
+}
+
+.coverageCell span {
+    min-width: 50px;
+
+    text-align: right;
+
+    font-weight: 700;
+
+    color: #454545;
+}
+.clickableCard {
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.clickableCard:hover {
+    transform: translateY(-2px);
+
+    border-color: #16847d;
+
+    box-shadow:
+        0 10px 24px
+        rgba(22, 132, 125, 0.10);
+}
+
+.detailTopBar {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto 24px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.excelButton {
+    padding: 10px 16px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #16847d;
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.excelButton:hover {
+    background: #126e69;
+}
+
+.excelButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.detailHeader {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto 22px;
+
+    text-align: center;
+}
+
+.detailTitle {
+    margin: 0 0 12px;
+
+    color: #16847d;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.detailFilters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 22px;
+
+    color: #555555;
+
+    font-size: 13px;
+}
+
+.detailTotal {
+    margin-top: 12px;
+
+    color: #454545;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1050px) {
+
+    .page {
+        padding: 22px 4% 35px;
+    }
+
+    .topBar {
+        grid-template-columns:
+            170px 1fr 170px;
+    }
+
+    .topSpacer {
+        width: 170px;
+    }
+
+    .title {
+        font-size: 23px;
+    }
+
+    .controls {
+        gap: 14px;
+    }
+
+    .controlGroup {
+        font-size: 13px;
+    }
+
+    .select {
+        font-size: 13px;
+    }
+
+    .coberturaCardValue {
+        font-size: 31px;
+    }
+}
+
+
+@media (max-width: 850px) {
+
+    .topBar {
+        display: flex;
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+    .topSpacer {
+        display: none;
+    }
+
+    .title {
+        order: -1;
+
+        font-size: 23px;
+    }
+
+    .controls {
+        grid-template-columns: 1fr;
+    }
+
+    .controlGroup {
+        display: grid;
+        grid-template-columns: 95px 1fr;
+
+        width: 100%;
+    }
+
+    .coberturaCards {
+        grid-template-columns: 1fr;
+    }
+
+    .coberturaCard {
+        min-height: 135px;
+    }
+
+    .coberturaDonut {
+        width: 210px;
+        height: 210px;
+    }
+
+    .coberturaDonutCenter strong {
+        font-size: 25px;
+    }
+}
+
+
+@media (max-width: 520px) {
+
+    .page {
+        padding: 16px;
+    }
+
+    .closeButton {
+        width: 100%;
+    }
+
+    .title {
+        font-size: 21px;
+    }
+
+    .sectionTitle {
+        font-size: 19px;
+    }
+
+    .controlGroup {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .select {
+        width: 100%;
+    }
+
+    .coberturaCard {
+        padding: 17px;
+    }
+
+    .coberturaCardTitle {
+        font-size: 12px;
+    }
+
+    .coberturaCardValue {
+        font-size: 29px;
+    }
+
+    .coberturaCardPercent {
+        font-size: 14px;
+    }
+
+    .coberturaDonut {
+        width: 190px;
+        height: 190px;
+    }
+
+    .coberturaDonutCenter strong {
+        font-size: 23px;
+    }
+}
