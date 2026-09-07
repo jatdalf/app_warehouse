@@ -13,7 +13,7 @@ const RenaultInventarioCobertura = () => {
     const [mes, setMes] = useState<number | null>(null);
     const [storage, setStorage] = useState<string | null>(null);
     const [warehouse, setWarehouse] = useState<WarehouseInventario>("W1");
-    const { lineas, lx03, loading, error } = useInventarioSapData(warehouse);
+    const {lineas, lx03, loading, error, mesIncorporado, historicoDesdeCache} = useInventarioSapData(warehouse);
     const [mostrarPendientes, setMostrarPendientes] = useState(false);
 
     const cobertura = useMemo(() => {
@@ -42,13 +42,7 @@ const RenaultInventarioCobertura = () => {
         if (!storage) {
             return;
         }
-
-        const existe =
-            storages.some(
-                item =>
-                    item.storage === storage
-            );
-
+        const existe = storages.some(item => item.storage === storage);
         if (!existe) {
             setStorage(null);
         }
@@ -134,7 +128,7 @@ const RenaultInventarioCobertura = () => {
         </div>
         {loading ? (
             <div className={styles.message}>
-                Analizando cobertura...
+                Analizando posiciones relevadas...
             </div>
         ) : error ? (
             <div className={styles.error}>
@@ -158,8 +152,13 @@ const RenaultInventarioCobertura = () => {
                     inventariadas={cobertura.posicionesInventariadas}
                     pendientes={cobertura.posicionesPendientes}
                     porcentajeCobertura={cobertura.porcentajeCobertura}
+                    mesIncorporado={mesIncorporado}
+                    historicoDesdeCache={historicoDesdeCache}
                     onPendientesClick={() => setMostrarPendientes(true)}/>                    
-                <CoberturaStorageTable items={cobertura.resumenPorStorage}/>
+                <CoberturaStorageTable
+                    items={cobertura.resumenPorStorage} onStorageClick={storageSeleccionado => {
+                    setStorage(storageSeleccionado);
+                    setMostrarPendientes(true);}}/>
             </main>          
         )}
     </div>

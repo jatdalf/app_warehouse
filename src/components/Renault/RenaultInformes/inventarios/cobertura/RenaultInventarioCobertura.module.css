@@ -553,7 +553,116 @@
     font-size: 15px;
     font-weight: 700;
 }
+.mesIncorporado {
+    position: absolute;
 
+    left: 50%;
+    top: 34%;
+
+    z-index: 10;
+
+    transform: translateX(-50%);
+
+    color: #16847d;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    pointer-events: none;
+
+    animation:
+        mesIncorporadoAnimacion
+        1s ease-out forwards;
+}
+
+@keyframes mesIncorporadoAnimacion {
+
+    0% {
+        opacity: 0;
+        transform:
+            translateX(-50%)
+            translateY(5px)
+            scale(0.95);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    60% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(-45px)
+            scale(1.05);
+    }
+}
+.storageRow {
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.storageRow:hover {
+    background: #f1f8f7;
+}
+.storageRow:hover .storageName {
+    color: #16847d !important;
+}
+.historicoCargado {
+    position: absolute;
+
+    left: 50%;
+    top: 34%;
+
+    z-index: 10;
+
+    transform: translateX(-50%);
+
+    color: #16847d;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    pointer-events: none;
+
+    animation:
+        historicoCargadoAnimacion
+        0.8s ease-out forwards;
+}
+
+@keyframes historicoCargadoAnimacion {
+
+    0% {
+        opacity: 0;
+        transform:
+            translateX(-50%)
+            translateY(4px);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    65% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translateX(-50%)
+            translateY(-25px);
+    }
+}
 /* =========================
    RESPONSIVE
 ========================= */

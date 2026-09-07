@@ -13,15 +13,13 @@ import InventarioSapResumenCards from "./cards/InventarioSapResumenCards";
 import VaciasInforme from "./vacias/VaciasInforme";
 import type { TipoPeriodo } from "./builders/InventarioPeriodoBuilder";
 import { useInventarioPeriodos } from "./hooks/useInventarioPeriodos";
-import { useNavigate } from "react-router-dom";
 
 const InventarioSapInforme: React.FC = () => {
-    const navigate = useNavigate();
     const feriados = useFeriados();
     const [tipoPeriodo, setTipoPeriodo] = useState<TipoPeriodo>("SEMANA");
     const [warehouse, setWarehouse] = useState<WarehouseInventario>("W1");
     const targetDiario = INVENTARIO_WAREHOUSES[warehouse].targetDiario;
-    const { lineas, vacias, lx03, loading, error} = useInventarioSapData(warehouse);
+    const { lineas, vacias, loading, error} = useInventarioSapData(warehouse);
     const { periodos, periodoSeleccionado, setPeriodoSeleccionado, periodo,
         periodoVisual, lineasPeriodo, lineasPeriodoCerradas
     } = useInventarioPeriodos({lineas, feriados, tipoPeriodo, targetDiario});
@@ -68,18 +66,16 @@ const InventarioSapInforme: React.FC = () => {
            {periodoVisual && periodo && (
             <>
                 <InventarioSapResumenCards lineas={lineasPeriodoCerradas}/>
-<button
-    type="button"
-    onClick={() =>
-        window.open(
-            "/RenaultInformes/inventarios/cobertura",
-            "_blank"
-        )
-    }
->
-    Ver cobertura de inventario
-</button>
                 <InventarioSapCards lineas={lineasPeriodoCerradas}/>
+<button type="button" className={styles.coverageButton} onClick={() =>
+        window.open("/RenaultInformes/inventarios/cobertura", "_blank") }>
+    <span className={styles.coverageButtonIcon}>📈</span>
+    <span className={styles.coverageButtonContent}>
+        <strong>Ver avance de inventarios</strong>
+        <small>Cobertura anual y por storage</small>
+    </span>
+    <span className={styles.coverageButtonArrow}>↗</span>
+</button>
                 <InventarioSapWeeklyChart semana={periodoVisual}/>
                 <InventarioSapDailySummary semana={periodoVisual} lineas={lineasPeriodoCerradas}/>
                 <InventarioSapEstado lineas={lineasPeriodo}/>

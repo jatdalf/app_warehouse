@@ -19,7 +19,7 @@ const TestLottie = () => {
           border: "1px solid #ddd",
         }}
       >
-        <DotLottieReact src= "/lotties/StatsAnalisis.lottie" autoplay loop/>
+        <DotLottieReact src= "/lotties/barsAndCake.lottie" autoplay loop/>
       </div>
     </div>
   );

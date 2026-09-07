@@ -3,56 +3,53 @@
     margin: 30px auto 50px;
 }
 
+.materialCell {
+    white-space: nowrap;
+    min-width: 125px;
+}
+
+.tipoInventarioCell {
+    white-space: nowrap;
+    min-width: 105px;
+}
+
 .block {
     margin-bottom: 30px;
 }
 
 .title {
     margin: 0 0 10px;
-
     color: #444;
-
     font-size: 18px;
     font-weight: 700;
 }
 
 .tableWrapper {
     width: 100%;
-
     overflow-x: auto;
-
     border-radius: 14px;
-
-    box-shadow:
-        0 5px 18px
-        rgba(0, 0, 0, 0.06);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
 }
 
 .table {
     width: 100%;
-
     border-collapse: collapse;
-
     font-size: 12px;
 }
 
 .table th,
 .table td {
     padding: 10px 12px;
-
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-
     text-align: left;
 }
 
 .table th {
     font-size: 11px;
     font-weight: 700;
-
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
-
 
 /* SOBRANTES */
 
@@ -68,7 +65,6 @@
     color: #2f6b45;
 }
 
-
 /* FALTANTES */
 
 .faltantes {
@@ -83,9 +79,7 @@
     color: #8a3f3f;
 }
 
-
 /* CELDAS */
-
 .description {
     min-width: 220px;
 }
@@ -102,16 +96,12 @@
     white-space: nowrap;
 }
 
-
 /* zebra */
-
 .table tbody tr:nth-child(even) {
     background: rgba(255, 255, 255, 0.55);
 }
 
-
 /* hover */
-
 .table tbody tr:hover {
     background: rgba(255, 255, 255, 0.85);
 }

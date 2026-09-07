@@ -5,6 +5,8 @@ interface CoberturaDonutProps {
     inventariadas: number;
     pendientes: number;
     porcentajeCobertura: number;
+    mesIncorporado?: string | null;
+    historicoDesdeCache?: boolean;
     onPendientesClick?: () => void;
 }
 
@@ -12,6 +14,8 @@ const CoberturaDonut = ({
     inventariadas,
     pendientes,
     porcentajeCobertura,
+    mesIncorporado,
+    historicoDesdeCache,
     onPendientesClick
 }: CoberturaDonutProps) => {
     const data = [
@@ -24,9 +28,26 @@ const CoberturaDonut = ({
         }
     ];
 
+    const nombreMes = (mes: string | null | undefined): string => {
+        if (!mes) {
+            return "";
+        }
+        const numeroMes = Number(mes.split("-")[1]);
+        const nombres = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio",
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre" ];
+        return nombres[numeroMes] ?? "";
+    };
+
     return (
         <div className={styles.coberturaDonutWrapper}>
             <div className={styles.coberturaDonut}>
+                {historicoDesdeCache ? (
+                    <div className={styles.historicoCargado}>✓ histórico cargado</div>
+                ) : mesIncorporado ? (
+                    <div key={mesIncorporado} className={styles.mesIncorporado}>
+                        + {nombreMes(mesIncorporado)}
+                    </div>
+                ) : null}
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
