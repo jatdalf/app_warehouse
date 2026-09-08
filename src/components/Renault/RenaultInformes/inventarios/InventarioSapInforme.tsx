@@ -51,9 +51,9 @@ const InventarioSapInforme: React.FC = () => {
             <label htmlFor="tipoPeriodo">Visualizar por</label>
             <select id="tipoPeriodo" value={tipoPeriodo}
                 onChange={e => setTipoPeriodo(e.target.value as TipoPeriodo)}>
-                <option value="SEMANA">Semana</option>
-                <option value="DOS_SEMANAS">2 semanas</option>
+                <option value="SEMANA">Semana</option>               
                 <option value="MES">Mes</option>
+                <option value="ANIO">Año</option>
             </select>
             <label htmlFor="periodo">Período</label>
             <select id="periodo" value={periodoSeleccionado}
