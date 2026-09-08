@@ -29,9 +29,25 @@ export const obtenerMes = (fechaExcel: number | string): number => {
 
 // ✅ Cargar ubicaciones únicas con Tipo almacén (columna B) y Ubicación (columna C)
 export const loadUbicaciones = async (): Promise<{ tipoAlmacen: string; ubicacion: string }[]> => {
-  const response = await fetch("/data/ubicaciones.xlsx");
-  const arrayBuffer = await response.arrayBuffer();
-  const workbook = XLSX.read(arrayBuffer, { type: "array" });
+  const response = await fetch("/api/drive-file", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({fileId: "1_jf0JnwoG-vtjcnw3bNp_jl1FP2ILj7Y"})});
+  if (!response.ok) {
+      throw new Error("No fue posible cargar el archivo de ubicaciones.");
+  }
+  const data = await response.json();
+  if (!data.success || !data.base64) {
+      throw new Error("No fue posible obtener el archivo de ubicaciones.");
+  }
+  const binary = atob(data.base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+  }
+  const workbook = XLSX.read(bytes, {
+      type: "array"
+  });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
