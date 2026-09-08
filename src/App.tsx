@@ -19,8 +19,10 @@ import PeYaWorkflow from "./components/workflow/PeYaWorkflow";
 import PeYaIngresosInforme from "./components/PeYa/PeYaInformes/ingresos/PeYaIngresosInforme"
 import PeYaOcupacionInforme from "./components/PeYa/PeYaInformes/ocupacion/PeYaOcupacionInforme"
 import PeYaInventariosInforme from "./components/PeYa/PeYaInformes/inventarios/PeYaInventariosInforme"
+import PeYaInventarioCobertura from "./components/PeYa/PeYaInformes/inventarios/cobertura/PeYaInventarioCobertura";
 import PeYaEgresosInforme from "./components/PeYa/PeYaInformes/egresos/PeYaEgresosInforme"
 import PeYaClaveControl from "./components/PeYa/PeYaInformes/claveControl/PeYaClaveControl";
+import PeYaClaveControlDetalle from "./components/PeYa/PeYaInformes/claveControl/PeYaClaveControlDetalle";
 import Renault from "./components/Renault/Renault"
 import RenaultInformes from "./components/Renault/RenaultInformes/RenaultInformes"
 import RenaultIngresos from "./components/Renault/RenaultInformes/ingresos/RenaultIngresos"
@@ -29,8 +31,8 @@ import RenaultInventarios from "./components/Renault/RenaultInformes/inventarios
 import RenaultEgresos from "./components/Renault/RenaultInformes/egresos/RenaultEgresos"
 import RenaultResumen from "./components/Renault/RenaultInformes/resumenOperativo/resumenOperativo"
 import RenaultCompactacionDetalle from "./components/Renault/RenaultInformes/ocupacion/Compactacion/RenaultCompactacionDetalle"
-import PeYaClaveControlDetalle from "./components/PeYa/PeYaInformes/claveControl/PeYaClaveControlDetalle";
 import RenaultInventarioCobertura from "./components/Renault/RenaultInformes/inventarios/cobertura/RenaultInventarioCobertura";
+
 
 function App() {
   return (
@@ -56,6 +58,7 @@ function App() {
         <Route path="/PeYaInformes/ingresos" element={<PeYaIngresosInforme  />} />
         <Route path="/PeYaInformes/ocupacion" element={<PeYaOcupacionInforme />} />    
         <Route path="/PeYaInformes/inventarios" element={<PeYaInventariosInforme />} />    
+        <Route path="/PeYaInformes/inventarios/cobertura" element={<PeYaInventarioCobertura />}/>
         <Route path="/PeYaInformes/egresos" element={<PeYaEgresosInforme />} />  
         <Route path="/PeYaInformes/clave-control" element={<PeYaClaveControl />} />  
         <Route path="/Renault" element={<Renault />} />  
