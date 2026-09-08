@@ -1,0 +1,271 @@
+.page {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 24px 4% 40px;
+    background: #ffffff;
+    color: #454545;
+}
+
+.topBar {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto 22px;
+}
+
+.title {
+    margin: 0;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #16847d;
+}
+
+.controls {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.controlGroup {
+    width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #16847d;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.controlGroup span {
+    white-space: nowrap;
+}
+
+.select {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px solid #cddada;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+}
+
+.select:focus {
+    border-color: #16847d;
+    box-shadow:
+        0 0 0 3px rgba(22, 132, 125, 0.1);
+}
+
+.content {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.sectionHeader {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #454545;
+}
+
+.availableData {
+    margin: 0;
+    font-size: 13px;
+    color: #7a7a7a;
+}
+
+.cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(200px, 1fr));
+    gap: 18px;
+}
+
+.card {
+    min-height: 150px;
+    box-sizing: border-box;
+    padding: 20px;
+    display: grid;
+    grid-template-rows:
+        24px 42px 22px 20px;
+    align-items: center;
+    justify-items: center;
+    row-gap: 8px;
+    background: #ffffff;
+    border: 1px solid #d7e1e1;
+    border-radius: 15px;
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.cardTitle {
+    grid-row: 1;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #505050;
+}
+
+.cardValue {
+    grid-row: 2;
+    font-size: 32px;
+    line-height: 1;
+    font-weight: 700;
+    color: #16847d;
+}
+
+.cardPercent {
+    grid-row: 3;
+    font-size: 15px;
+    font-weight: 700;
+    color: #555555;
+}
+
+.cardText {
+    grid-row: 4;
+    font-size: 12px;
+    color: #777777;
+    text-align: center;
+}
+
+.donutWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+}
+
+.donut {
+    position: relative;
+    width: 230px;
+    height: 230px;
+}
+
+.donutCenter {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.donutCenter strong {
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 700;
+    color: #16847d;
+}
+
+.donutCenter span {
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #777777;
+}
+
+.message,
+.error {
+    padding: 40px;
+    text-align: center;
+}
+
+.error {
+    color: #b42318;
+}
+.pendingDetail {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 20px;
+    padding: 24px;
+
+    background: #ffffff;
+    border: 1px solid #d7e1e1;
+    border-radius: 15px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.pendingHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.pendingHeader h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+    color: #16847d;
+}
+
+.pendingHeader span {
+    font-size: 13px;
+    color: #777777;
+}
+
+.closeButton {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #d7e1e1;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #666666;
+
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.closeButton:hover {
+    border-color: #16847d;
+    color: #16847d;
+    background: #f4faf9;
+}
+
+.pendingGrid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+}
+
+.pendingLocation {
+    padding: 9px 12px;
+
+    border: 1px solid #e0e7e7;
+    border-radius: 7px;
+
+    background: #f8fbfb;
+
+    font-size: 13px;
+    font-weight: 600;
+    color: #454545;
+
+    text-align: center;
+}
+@media (max-width: 750px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .controlGroup {
+        width: 100%;
+    }
+}

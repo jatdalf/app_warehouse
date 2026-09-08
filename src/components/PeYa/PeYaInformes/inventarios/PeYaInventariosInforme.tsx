@@ -103,27 +103,13 @@ const PeYaInventariosInforme = () => {
        ESTADOS
        ========================================= */
     if (loading) {
-        return (
-            <div className={styles.message}>
-                Cargando informe de inventarios...
-            </div>
-        );
+        return (<div className={styles.message}>Cargando informe de inventarios...</div>);
     }
-
     if (error) {
-        return (
-            <div className={styles.error}>
-                {error}
-            </div>
-        );
+        return (<div className={styles.error}>{error}</div>);
     }
-
     if (!resumen || !periodo) {
-        return (
-            <div className={styles.message}>
-                No hay información disponible.
-            </div>
-        );
+        return (<div className={styles.message}>No hay información disponible.</div>);
     }
     let diferencias = 0;
     if (resumen.realizados > 0) {
@@ -137,15 +123,9 @@ const PeYaInventariosInforme = () => {
         <div className={styles.container}>
             {/* SELECTOR */}
             <div className={styles.controls}>
-                <select value={selectedMonth}
-                    onChange={event => setSelectedMonth(event.target.value)}>
-                    {mesesDisponibles.map(mes => (
-                            <option key={mes.key} value={mes.key}>
-                                {mes.label}
-                            </option>
-                        )
-                    )}
-                </select>
+                <select value={selectedMonth} onChange={event => setSelectedMonth(event.target.value)}>
+                    {mesesDisponibles.map(mes => (<option key={mes.key} value={mes.key}>{mes.label}</option>))}
+                </select>                
             </div>
 
             {/* TITULO */}
@@ -199,6 +179,14 @@ const PeYaInventariosInforme = () => {
                     </span>
                 </div>
             </div>
+            <button type="button" className={styles.coverageButton} onClick={() =>
+                    window.open("/PeYaInformes/inventarios/cobertura", "_blank")}>
+                <span className={styles.coverageButtonIcon}>📈</span>
+                <span className={styles.coverageButtonContent}>
+                    <strong>Ver avance de inventarios</strong>
+                    <small>porcentaje inventariado del almacén</small>
+                </span>                
+            </button>
             {/* TEMPORALMENTE PARA VALIDAR
                 EL CALCULO SEMANAL */}
             <InventarioWeeklyChart data={datosSemanales} />

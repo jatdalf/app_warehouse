@@ -33,6 +33,52 @@
     border-color: #2b8179;
     box-shadow: 0 0 0 3px rgba(43, 129, 121, 0.12);
 }
+.coverageButton {
+    margin-left: 35%;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    border: 1px solid #b9d8d5;
+    border-radius: 12px;
+    background: #f4faf9;
+    color: #16847d;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.coverageButton:hover {
+    background: #eaf6f4;
+    border-color: #16847d;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(22, 132, 125, 0.10);
+}
+
+.coverageButtonIcon {
+    font-size: 22px;
+}
+
+.coverageButtonContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.coverageButtonContent strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: #16847d;
+}
+
+.coverageButtonContent small {
+    font-size: 11px;
+    color: #6f7f7d;
+}
+
 /* =========================================
    TITULO
    ========================================= */
@@ -88,7 +134,6 @@
     color: #2b8179;
 }
 /* descripción */
-
 .metric span {
     min-height: 34px;
     display: flex;
