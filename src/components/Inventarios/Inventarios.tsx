@@ -7,7 +7,6 @@ import { loadUbicaciones, getResumenInventarios, loadFeriados} from "../../servi
 import UbicacionesGrid from "./UbicacionesGrid";
 import InventariosGrid from "./InventariosGrid";
 
-
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Inventario: React.FC = () => {

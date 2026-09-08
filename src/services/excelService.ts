@@ -29,7 +29,7 @@ export const obtenerMes = (fechaExcel: number | string): number => {
 
 // ✅ Cargar ubicaciones únicas con Tipo almacén (columna B) y Ubicación (columna C)
 export const loadUbicaciones = async (): Promise<{ tipoAlmacen: string; ubicacion: string }[]> => {
-  const response = await fetch("/data/ubicaciones.xlsx");
+  const response = await fetch("/data/Lx03.xlsx");
   const arrayBuffer = await response.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: "array" });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];

@@ -27,10 +27,7 @@ const UbicacionesGrid: React.FC<UbicacionesGridProps> = ({
         callbacks: {
           label: function (context: any) {
             const dataset = context.dataset;
-            const total = dataset.data.reduce(
-              (acc: number, val: number) => acc + val,
-              0
-            );
+            const total = dataset.data.reduce((acc: number, val: number) => acc + val, 0);
             const value = dataset.data[context.dataIndex];
             const percentage = ((value / total) * 100).toFixed(2);
             return `${context.label}: ${value} (${percentage}%)`;
