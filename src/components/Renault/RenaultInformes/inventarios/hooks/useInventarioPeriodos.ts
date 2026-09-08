@@ -29,6 +29,7 @@ export const useInventarioPeriodos = ({lineas, feriados, tipoPeriodo, targetDiar
             hasta: new Date(Math.max(...fechas))
         };
     }, [lineas]);
+    
     /* INVENTARIOS CERRADOS */
     const lineasCerradas = useMemo(() => {
         return lineas.filter(item => item.statusInventario.trim().toUpperCase() === "ELIMINADOS");
@@ -61,6 +62,7 @@ export const useInventarioPeriodos = ({lineas, feriados, tipoPeriodo, targetDiar
     const periodo = useMemo(() => {
         return (periodos.find(item => item.key === periodoSeleccionado) ?? null);
     }, [periodos, periodoSeleccionado]);
+    
     /* TODAS LAS LÍNEAS DEL PERÍODO */
     const lineasPeriodo = useMemo(() => {
             if (!periodo) {
@@ -81,6 +83,48 @@ export const useInventarioPeriodos = ({lineas, feriados, tipoPeriodo, targetDiar
         }
         return InventarioSapDailyBuilder.build(lineasPeriodoCerradas, feriados, periodo.desde, periodo.hasta, targetDiario);
     }, [lineasPeriodoCerradas, feriados, periodo, targetDiario]);
+    const mesesPeriodo = useMemo(() => {
+        if (!periodo || tipoPeriodo !== "ANIO") {
+            return [];
+        }
+        const meses = new Map<string,
+            {
+                key: string;
+                label: string;
+                fecha: Date;
+                realizados: number;
+                target: number;
+                porReferencia: Record<string, number>;
+            }
+        >();
+
+        diasPeriodo.forEach(dia => {
+            const year = dia.fecha.getFullYear();
+            const month = dia.fecha.getMonth();
+            const key = `${year}-${month}`;
+            if (!meses.has(key)) {
+                meses.set(key, {
+                    key,
+                    label: nombreMesCorto(dia.fecha),
+                    fecha: new Date(year, month, 1),
+                    realizados: 0,
+                    target: 0,
+                    porReferencia: {}
+                });
+            }
+            const mes = meses.get(key)!;
+            mes.realizados += dia.realizados;
+            mes.target += dia.target;
+            Object.entries(dia.porReferencia).forEach(
+                ([referencia, cantidad]) => {
+                    mes.porReferencia[referencia] = (mes.porReferencia[referencia] ?? 0) + cantidad;
+                }
+            );
+        });
+        return [...meses.values()]
+            .filter(mes => mes.realizados > 0 || mes.target > 0)
+            .sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
+    }, [diasPeriodo, periodo, tipoPeriodo]);
     /* OBJETO UTILIZADO POR LOS GRÁFICOS */
     const periodoVisual = useMemo(() => {
         if (!periodo) {
@@ -94,7 +138,6 @@ export const useInventarioPeriodos = ({lineas, feriados, tipoPeriodo, targetDiar
             dias: diasPeriodo
         };
     }, [periodo, diasPeriodo]);
-
     return {
         periodos,
         periodoSeleccionado,
@@ -102,7 +145,8 @@ export const useInventarioPeriodos = ({lineas, feriados, tipoPeriodo, targetDiar
         periodo,
         periodoVisual,
         lineasPeriodo,
-        lineasPeriodoCerradas
+        lineasPeriodoCerradas,
+        mesesPeriodo
     };
 };
 
@@ -113,4 +157,8 @@ function startOfDay(fecha: Date): Date {
 }
 function endOfDay(fecha: Date): Date {
     return new Date( fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59, 999);
+}
+function nombreMesCorto(fecha: Date): string {
+    const texto = new Intl.DateTimeFormat("es-AR", { month: "short" }).format(fecha).replace(".", "");
+    return (texto.charAt(0).toUpperCase() + texto.slice(1));
 }
