@@ -32,7 +32,7 @@ export class Lx22Reader {
         const rows = XLSX.utils.sheet_to_json<any[]>(sheet, {header: 1, raw: true});
         /* Encabezado real en fila 3.
          * Datos desde fila 4. */
-        return rows.slice(3).filter(row => row[0] && row[7])
+        return rows.slice(1).filter(row => row[0] && row[7])
             .map(row => {
                 const referenciaRaw = String(row[4] ?? "").trim().toUpperCase();
                 return {documento: this.normalizarDocumento(row[0]),
@@ -59,11 +59,7 @@ export class Lx22Reader {
             if (!parsed) {
                 return new Date(NaN);
             }
-            return new Date(
-                parsed.y,
-                parsed.m - 1,
-                parsed.d
-            );
+            return new Date(parsed.y, parsed.m - 1, parsed.d);
         }
         return new Date(String(value ?? "")
         );
