@@ -1,36 +1,52 @@
 import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Rectangle} from "recharts";
 import type { InventarioSemana } from "./InventarioSemana";
 import type { InventarioDia } from "./InventarioDia";
+import type { TipoPeriodo } from "./builders/InventarioPeriodoBuilder";
 import styles from "./InventarioSapWeeklyChart.module.css";
 
+interface InventarioMesChart {
+    key: string;
+    label: string;
+    fecha: Date;
+    realizados: number;
+    target: number;
+    porReferencia: Record<string, number>;
+}
 interface Props {
     semana: InventarioSemana;
+    tipoPeriodo: TipoPeriodo;
+    mesesPeriodo: InventarioMesChart[];
 }
-const InventarioSapWeeklyChart: React.FC<Props> = ({semana}) => {
+const InventarioSapWeeklyChart: React.FC<Props> = ({semana, tipoPeriodo, mesesPeriodo}) => {
+    const esAnual = tipoPeriodo === "ANIO";
     const targetDiario = semana.dias.find(dia => dia.target > 0)?.target ?? 0;
-    const chartData = semana.dias.map(dia => ({
-        ...dia,
-        chartKey: [
+    const chartData = esAnual ? mesesPeriodo.map(mes => ({...mes,chartKey: mes.key}))
+    : semana.dias.map(dia => ({
+        ...dia, chartKey: [
             dia.fecha.getFullYear(),
-            String(
-                dia.fecha.getMonth() + 1
-            ).padStart(2, "0"),
-            String(
-                dia.fecha.getDate()
-            ).padStart(2, "0")
+            String(dia.fecha.getMonth() + 1).padStart(2, "0"),
+            String(dia.fecha.getDate()).padStart(2, "0")
         ].join("-")
     }));
     return (
         <div className={styles.card}>
             <div className={styles.header}>
                 <div>
-                    <h2 className={styles.title}>Inventarios realizados por día</h2>
+                    <h2 className={styles.title}>
+                        {esAnual ? "Inventarios realizados por mes" : "Inventarios realizados por día"}
+                    </h2>
                     <div className={styles.subtitle}>
                         {formatDate(semana.desde)} {" al "} {formatDate(semana.hasta)}
                     </div>
                 </div>
                 <div className={styles.targetInfo}>
-                    Target diario:<strong>{targetDiario}</strong>
+                    {esAnual ? (
+                        <span>Vista acumulada anual</span>
+                    ) : (
+                        <>
+                            Target diario:<strong>{targetDiario}</strong>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -41,32 +57,37 @@ const InventarioSapWeeklyChart: React.FC<Props> = ({semana}) => {
                     <XAxis dataKey="chartKey" interval={0} tick={{fontSize: 12}} tickFormatter={(_, index) =>
                     chartData[index]?.label ?? ""}/>
                     <YAxis allowDecimals={false}/>
-                    <Tooltip cursor={{fill: "rgba(43, 129, 121, 0.05)"}}
-                        content={props => {
-                            if (!props.active ||!props.payload || props.payload.length === 0) {
-                                return null;
-                            }
-                            const payload = props.payload.find( item => item.payload);
-                            if (!payload) {
-                                return null;
-                            }
-                            const dia = payload.payload as InventarioDia;
-                            return (<CustomTooltip dia={dia}/>);
-                        }}
-                    />
-                    <Bar dataKey="realizados" name="Realizados" maxBarSize={70} isAnimationActive={false}
-                    shape={(props: any) => {const { x, y, width, height, payload } = props;
-                    const dia = payload as InventarioDia;
-                    const fill = dia.target === 0 ? "#2b8179" : dia.realizados >= dia.target ? "#2b8179" : "#e58a2b";
+                   <Tooltip cursor={{ fill: "rgba(43, 129, 121, 0.05)" }}
+                    content={props => {
+                        if (!props.active || !props.payload || props.payload.length === 0) {
+                            return null;
+                        }
+                    const payload = props.payload.find(item => item.payload);
+                    if (!payload) {
+                        return null;
+                    }
+                    if (esAnual) {
+                        const mes = payload.payload as InventarioMesChart;
+                        return (<CustomMonthTooltip mes={mes} />);
+                    }
+                    const dia = payload.payload as InventarioDia;
+                    return (<CustomTooltip dia={dia} />);}}/>
+                   <Bar
+                    dataKey="realizados"
+                    name="Realizados"
+                    maxBarSize={70}
+                    isAnimationActive={false}
+                    shape={(props: any) => {
+                    const { x, y, width, height, payload } = props;
+                    const item = payload as { realizados: number; target: number; };
+                    const fill = item.target === 0 ? "#2b8179" : item.realizados >= item.target  ? "#2b8179" : "#e58a2b";
                     return (
-                        <Rectangle x={x} y={y} width={width} height={height} fill={fill} radius={[6, 6, 0, 0]}/>);
-                        }}
-                    />
-                </BarChart>
-            </ResponsiveContainer>
-            </div>
+                 <Rectangle x={x} y={y} width={width} height={height} fill={fill} radius={[6, 6, 0, 0]} />);
+            }}/>
+        </BarChart>
+    </ResponsiveContainer>
         </div>
-    );
+    </div>);
 };
 
 /* TOOLTIP */
@@ -134,7 +155,101 @@ const CustomTooltip: React.FC<TooltipProps> = ({dia}) => {
         </div>
     );
 };
+interface MonthTooltipProps {
+    mes: InventarioMesChart;
+}
 
+const CustomMonthTooltip: React.FC<MonthTooltipProps> = ({
+    mes
+}) => {
+
+    const diferencia =
+        mes.realizados - mes.target;
+
+    const referencias =
+        Object.entries(mes.porReferencia)
+            .filter(([, cantidad]) => cantidad > 0)
+            .sort(([a], [b]) => {
+                if (a === "CICLICOS") {
+                    return -1;
+                }
+
+                if (b === "CICLICOS") {
+                    return 1;
+                }
+
+                return a.localeCompare(b);
+            });
+
+    return (
+        <div className={styles.tooltip}>
+
+            <div className={styles.tooltipTitle}>
+                {nombreMesCompleto(mes.fecha)}
+            </div>
+
+            <div className={styles.tooltipMain}>
+                <span>Realizados</span>
+                <strong>{mes.realizados}</strong>
+            </div>
+
+            <div className={styles.tooltipRow}>
+                <span>Target</span>
+                <strong>{mes.target}</strong>
+            </div>
+
+            <div className={styles.tooltipRow}>
+                <span>Diferencia</span>
+
+                <strong>
+                    {diferencia > 0
+                        ? `+${diferencia}`
+                        : diferencia}
+                </strong>
+            </div>
+
+            {referencias.length > 0 && (
+                <>
+                    <div
+                        className={
+                            styles.tooltipDivider
+                        }
+                    />
+
+                    <div
+                        className={
+                            styles.tooltipSectionTitle
+                        }
+                    >
+                        Tipo de inventario
+                    </div>
+
+                    {referencias.map(
+                        ([referencia, cantidad]) => (
+                            <div
+                                key={referencia}
+                                className={
+                                    styles.tooltipRow
+                                }
+                            >
+                                <span>
+                                    {formatReferencia(
+                                        referencia
+                                    )}
+                                </span>
+
+                                <strong>
+                                    {cantidad}
+                                </strong>
+                            </div>
+                        )
+                    )}
+                </>
+            )}
+
+        </div>
+    );
+};
 /* HELPERS */
 function formatDate(fecha: Date): string {
     return fecha.toLocaleDateString("es-AR",{ day: "2-digit", month: "2-digit", year: "numeric" });
@@ -147,6 +262,22 @@ function nombreDiaCompleto(fecha: Date): string {
 function formatReferencia(value: string): string {
     const texto = value.toLowerCase();
     return (texto.charAt(0).toUpperCase() + texto.slice(1));
+}
+function nombreMesCompleto(fecha: Date): string {
+
+    const texto =
+        new Intl.DateTimeFormat(
+            "es-AR",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        ).format(fecha);
+
+    return (
+        texto.charAt(0).toUpperCase() +
+        texto.slice(1)
+    );
 }
 
 export default InventarioSapWeeklyChart;

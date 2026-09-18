@@ -8,6 +8,8 @@ import type { InventarioSapLinea } from "../InventarioSapLinea";
 import type { VaciasItem } from "../vacias/VaciasItem";
 import { Lx03OcupacionReader } from "../../../../../readers/Lx03OcupacionReader";
 import type { Lx03OcupacionItem } from "../../ocupacion/Lx03OcupacionItem";
+import { LinvReader } from "../../../../../readers/LinvReader";
+import {LinvInventarioBuilder} from "../builders/LinvInventarioBuilder";
 
 type MesCache = Record<string, InventarioSapLinea[]>;
 type VaciasCache = Partial<Record<WarehouseInventario, VaciasItem[]>>;
@@ -39,10 +41,20 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
             if (!archivos) {
                 return [];
             }
-            const [zsappr110, lx22] =
-                await Promise.all([Zsappr110Reader.read( archivos.zsappr110FileId ),
-                    Lx22Reader.read( archivos.lx22FileId )]);
-            const resultado = InventarioSapBuilder.build(zsappr110, lx22);
+            const [zsappr110, lx22, linv] = await Promise.all([
+                    Zsappr110Reader.read(archivos.zsappr110FileId),
+                    Lx22Reader.read(archivos.lx22FileId),
+                    LinvReader.read(archivos.linvFileId)
+                ]);
+            const resultadoZsap = InventarioSapBuilder.build(zsappr110, lx22);
+            const lineasLinv = LinvInventarioBuilder.buildLineas(linv, lx22);
+            const clavesZsap = new Set(
+                resultadoZsap.map(
+                    item => `${item.documento}|${item.posicion.trim().toUpperCase()}`)
+            );
+            const lineasLinvNuevas = lineasLinv.filter(item =>
+                !clavesZsap.has(`${item.documento}|${item.posicion.trim().toUpperCase()}`));
+            const resultado: InventarioSapLinea[] = [...resultadoZsap, ...lineasLinvNuevas];
             cache.current[cacheKey] = resultado;
             return resultado;
         };

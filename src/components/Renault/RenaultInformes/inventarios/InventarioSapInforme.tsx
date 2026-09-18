@@ -14,6 +14,7 @@ import VaciasInforme from "./vacias/VaciasInforme";
 import type { TipoPeriodo } from "./builders/InventarioPeriodoBuilder";
 import { useInventarioPeriodos } from "./hooks/useInventarioPeriodos";
 
+
 const InventarioSapInforme: React.FC = () => {
     const feriados = useFeriados();
     const [tipoPeriodo, setTipoPeriodo] = useState<TipoPeriodo>("SEMANA");
@@ -21,9 +22,9 @@ const InventarioSapInforme: React.FC = () => {
     const targetDiario = INVENTARIO_WAREHOUSES[warehouse].targetDiario;
     const { lineas, vacias, loading, error} = useInventarioSapData(warehouse);
     const { periodos, periodoSeleccionado, setPeriodoSeleccionado, periodo,
-        periodoVisual, lineasPeriodo, lineasPeriodoCerradas
+        periodoVisual, lineasPeriodo, lineasPeriodoCerradas, mesesPeriodo
     } = useInventarioPeriodos({lineas, feriados, tipoPeriodo, targetDiario});
-
+  
      /* ESTADOS DE PANTALLA */
     if (loading) {
         return (
@@ -76,7 +77,7 @@ const InventarioSapInforme: React.FC = () => {
     </span>
     <span className={styles.coverageButtonArrow}>↗</span>
 </button>
-                <InventarioSapWeeklyChart semana={periodoVisual}/>
+                <InventarioSapWeeklyChart semana={periodoVisual} tipoPeriodo={tipoPeriodo} mesesPeriodo={mesesPeriodo}/>
                 <InventarioSapDailySummary semana={periodoVisual} lineas={lineasPeriodoCerradas}/>
                 <InventarioSapEstado lineas={lineasPeriodo}/>
                 <VaciasInforme items={vacias} desde={periodo.desde} hasta={periodo.hasta} />

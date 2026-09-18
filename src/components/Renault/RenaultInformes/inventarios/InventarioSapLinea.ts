@@ -12,4 +12,5 @@ export interface InventarioSapLinea {
     diferenciaCantidad: number;
     diferenciaValor: number;
     diferenciaValorAbsoluto: number;
+    origen: "ZSAPPR110" | "LINV_VACIA";
 }
