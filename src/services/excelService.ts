@@ -71,9 +71,24 @@ export const getResumenInventarios = async (
   mesesSeleccionados: string[],
   ubicacionesUnicas: { tipoAlmacen: string; ubicacion: string }[]
 ): Promise<{ resumenInventarios: ResumenInventarios; resumenUbicaciones: ResumenUbicaciones }> => {
-  const response = await fetch("/data/Ylx22.xlsx");
-  const arrayBuffer = await response.arrayBuffer();
-  const workbook = XLSX.read(arrayBuffer, { type: "array" });
+  const response = await fetch("/api/drive-file", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({fileId: "11bC7h5qazfuztuhVGdPQ1DHDVcUi8mQ_"})
+  });
+  if (!response.ok) {
+      throw new Error("No fue posible cargar Ylx22.");
+  }
+  const data = await response.json();
+  if (!data.success || !data.base64) {
+      throw new Error("No fue posible obtener Ylx22.");
+  }
+  const binary = atob(data.base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+  }
+  const workbook = XLSX.read(bytes, {type: "array"});
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
   const rawModified = workbook.Props?.ModifiedDate;

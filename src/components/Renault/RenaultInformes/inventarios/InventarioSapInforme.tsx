@@ -13,6 +13,7 @@ import InventarioSapResumenCards from "./cards/InventarioSapResumenCards";
 import VaciasInforme from "./vacias/VaciasInforme";
 import type { TipoPeriodo } from "./builders/InventarioPeriodoBuilder";
 import { useInventarioPeriodos } from "./hooks/useInventarioPeriodos";
+import InventarioSapDetalleTipo from "./detalle/InventarioSapDetalleTipo";
 
 
 const InventarioSapInforme: React.FC = () => {
@@ -79,6 +80,7 @@ const InventarioSapInforme: React.FC = () => {
 </button>
                 <InventarioSapWeeklyChart semana={periodoVisual} tipoPeriodo={tipoPeriodo} mesesPeriodo={mesesPeriodo}/>
                 <InventarioSapDailySummary semana={periodoVisual} lineas={lineasPeriodoCerradas}/>
+                <InventarioSapDetalleTipo lineas={lineasPeriodoCerradas}/>
                 <InventarioSapEstado lineas={lineasPeriodo}/>
                 <VaciasInforme items={vacias} desde={periodo.desde} hasta={periodo.hasta} />
                 <InventarioSapHallazgos lineas={lineasPeriodoCerradas}/>
