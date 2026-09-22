@@ -1,0 +1,119 @@
+.section {
+    margin-top: 24px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: rgb(221, 236, 235);
+    /* centra título y subtítulo */
+    text-align: center;
+}
+
+.title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;    
+}
+
+.subtitle {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.table tbody td {
+    font-size: 14px;
+    padding: 9px 16px;
+}
+.table th {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: #f9fafb;
+}
+
+/* Primera columna alineada a la izquierda */
+.table th:first-child,
+.table td:first-child {
+    text-align: left;
+}
+
+/* Las demás columnas centradas */
+.table th:not(:first-child),
+.table td:not(:first-child) {
+    text-align: center;
+}
+.table tbody tr:nth-child(even) {
+    background: #f7f8fa;
+}
+
+.table tbody tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+.table tbody tr:hover {
+    background: #d9e9f5;
+}
+
+.tipo {
+    font-weight: 600;
+}
+
+.numero {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.ciclico,
+.operativo {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ciclico {
+    background: #e8f3ff;
+    color: #1d4f91;
+}
+
+.operativo {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.table tfoot td {
+    font-weight: 700;
+    background: #f9fafb;
+    border-bottom: none;
+}
