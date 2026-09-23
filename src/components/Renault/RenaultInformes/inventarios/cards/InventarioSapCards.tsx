@@ -27,18 +27,10 @@ const InventarioSapCards: React.FC<Props> = ({lineas}) => {
         <div className={styles.cards}>
             {/* DIFERENCIAS */}
             <div className={styles.card}>
-                <div className={styles.cardTitle}>
-                    Diferencias en Cíclicos
-                </div>
-                <div className={styles.mainValue}>
-                    {diferencias.length}
-                </div>
-                <div className={styles.mainLabel}>
-                    diferencias encontradas
-                </div>
-                <div className={styles.percentage}>
-                    {formatPercent(porcentajeDiferencias)}
-                </div>
+                <div className={styles.cardTitle}>Diferencias en Cíclicos</div>
+                <div className={styles.mainValue}>{diferencias.length}</div>
+                <div className={styles.mainLabel}>diferencias encontradas</div>
+                <div className={styles.percentage}>{formatPercent(porcentajeDiferencias)}</div>
                 <div className={styles.divider} />
                 <div className={styles.differenceRows}>
                     <div className={styles.differenceRow}>
@@ -56,45 +48,23 @@ const InventarioSapCards: React.FC<Props> = ({lineas}) => {
             </div>
             {/* DIFERENCIA ABSOLUTA */}
             <div className={styles.card}>
-                <div className={styles.cardTitle}>
-                    Diferencia Absoluta
-                </div>
-                <div className={styles.moneyValue}>
-                    {formatCurrency(diferenciaAbsoluta)}
-                </div>
-                <div className={styles.percentage}>
-                    {formatPercent(porcentajeAbsoluto)}
-                </div>
-                <div className={styles.cardDescription}>
-                    Impacto total de las diferencias
-                </div>
+                <div className={styles.cardTitle}>Diferencia Absoluta</div>
+                <div className={styles.moneyValue}>{formatCurrency(diferenciaAbsoluta)}</div>
+                <div className={styles.percentage}>{formatPercent(porcentajeAbsoluto)}</div>
+                <div className={styles.cardDescription}>Impacto total de las diferencias</div>
             </div>
             {/* DIFERENCIA NETA */}
             <div className={styles.card}>
-                <div className={styles.cardTitle}>
-                    Diferencia Neta
-                </div>
-                <div className={styles.moneyValue}>
-                    {formatCurrency(diferenciaNeta)}
-                </div>
-                <div className={styles.percentage}>
-                    {formatPercent(porcentajeNeto)}
-                </div>
-                <div className={styles.cardDescription}>
-                    Balance entre sobrantes y faltantes
-                </div>
+                <div className={styles.cardTitle}>Diferencia Neta</div>
+                <div className={styles.moneyValue}>{formatCurrency(diferenciaNeta)}</div>
+                <div className={styles.percentage}>{formatPercent(porcentajeNeto)}</div>
+                <div className={styles.cardDescription}>Balance entre sobrantes y faltantes</div>
             </div>
             {/* VALOR INVENTARIADO */}
             <div className={styles.card}>
-                <div className={styles.cardTitle}>
-                    Valor Inventariado
-                </div>
-                <div className={styles.moneyValue}>
-                    {formatCurrency(valorInventariado)}
-                </div>
-                <div className={styles.cardDescription}>
-                    Stock valorizado en inventarios cíclicos
-                </div>
+                <div className={styles.cardTitle}>Valor Inventariado</div>
+                <div className={styles.moneyValue}>{formatCurrency(valorInventariado)}</div>
+                <div className={styles.cardDescription}>Stock valorizado en inventarios cíclicos</div>
             </div>
         </div>
     );

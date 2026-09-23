@@ -67,8 +67,11 @@ const InventarioSapInforme: React.FC = () => {
         </div>
            {periodoVisual && periodo && (
             <>
+            
                 <InventarioSapResumenCards lineas={lineasPeriodoCerradas}/>
                 <InventarioSapCards lineas={lineasPeriodoCerradas}/>
+            
+<div className={styles.actionsButtonHolder}>               
 <button type="button" className={styles.coverageButton} onClick={() =>
         window.open("/RenaultInformes/inventarios/cobertura", "_blank") }>
     <span className={styles.coverageButtonIcon}>📈</span>
@@ -78,11 +81,25 @@ const InventarioSapInforme: React.FC = () => {
     </span>
     <span className={styles.coverageButtonArrow}>↗</span>
 </button>
+<button type="button" className={styles.printButton} onClick={() => window.print()}>
+    🖨️ Imprimir Informe en PDF
+</button>
+</div> 
+            <div className={styles.printSection}>
                 <InventarioSapWeeklyChart semana={periodoVisual} tipoPeriodo={tipoPeriodo} mesesPeriodo={mesesPeriodo}/>
+            </div> 
+            <div className={styles.printSection}>
                 <InventarioSapDailySummary semana={periodoVisual} lineas={lineasPeriodoCerradas}/>
+            </div>
+            <div className={styles.printSection}>
                 <InventarioSapDetalleTipo lineas={lineasPeriodoCerradas}/>
+            </div>
+            <div className={styles.printSection}>
                 <InventarioSapEstado lineas={lineasPeriodo}/>
+            </div>
+            <div className={styles.printSection}>
                 <VaciasInforme items={vacias} desde={periodo.desde} hasta={periodo.hasta} />
+            </div>
                 <InventarioSapHallazgos lineas={lineasPeriodoCerradas}/>
             </>
             )}
