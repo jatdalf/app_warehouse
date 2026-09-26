@@ -11,18 +11,12 @@ interface Props{
 const RemitoPage: React.FC<Props> = ({ remito }) => {
     return (
         <div className="remito">
-            <RemitoHeader
-                remito={remito}
-            />
-            <RemitoCustomer
-                remito={remito}
-            />
-            <RemitoProducts
-                remito={remito}
-            />
-            <RemitoFooter
-                remito={remito}
-            />
+            <div className="container">
+                <RemitoHeader remito={remito} />
+                <RemitoCustomer remito={remito} />
+                <RemitoProducts remito={remito} />
+                <RemitoFooter remito={remito} />
+            </div>
         </div>
     );
 };
