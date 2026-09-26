@@ -30,6 +30,29 @@ interface Props {
 
 const regexST = /^ST[A-Z0-9]\d+$/;
 
+const normalizarEAN = (value: string): string => {
+    const texto = value.trim();
+
+    if (!texto) {
+        return "";
+    }
+
+    // Excel puede copiar EAN largos en notación científica:
+    // 7,79807E+12 -> 7798070000000
+    if (/[eE]/.test(texto)) {
+        const numero = Number(texto.replace(",", "."));
+
+        if (Number.isFinite(numero)) {
+            return numero.toLocaleString("fullwide", {
+                useGrouping: false,
+                maximumFractionDigits: 0
+            });
+        }
+    }
+
+    return texto;
+};
+
 const OrdersSection: React.FC<Props> = ({ onLoaded }) => {
     const [info, setInfo] = useState<OrdersInfo>({
         pedidos: 0,
@@ -77,7 +100,7 @@ const OrdersSection: React.FC<Props> = ({ onLoaded }) => {
                 storeName,
                 st,
                 sku: cells[2]?.trim() ?? "",
-                ean: cells[3]?.trim() ?? "",
+                ean: normalizarEAN(cells[3] ?? ""),
                 title: cells[4]?.trim() ?? "",
                 uxb: cells[5]?.trim() ?? "",
                 bultos: parseInt(cells[6] ?? "0", 10) || 0,

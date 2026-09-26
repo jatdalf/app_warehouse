@@ -392,10 +392,11 @@
         overflow:hidden;
     }
 
-    .container{
-        width:190mm;
-        margin:0 auto;
-        padding:0;        
+    .container {
+        width: 190mm !important;
+        max-width: 190mm !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
     }
 
     .topActions,
@@ -407,12 +408,14 @@
         display:none !important;
     }
 
-    .productosTable{
-        page-break-inside:avoid;
+     .productosTable {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
     }
 
-    .footer{
-        page-break-inside:avoid;
+    .footer {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
     }
 
     .pageBreak {
@@ -425,6 +428,11 @@
     break-after: auto;
   }
       .remito {
+        width: 100% !important;
+
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+
         break-after: page;
         page-break-after: always;
     }
