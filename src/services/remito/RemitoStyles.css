@@ -370,10 +370,6 @@
     color:#000;    
 }
 
-.pageBreak {
-  display: block;
-}
-
 /*==================================================
 =            IMPRESION                            =
 ==================================================*/
@@ -387,37 +383,38 @@
 
     html,
     body {
-        width: auto !important;
-        height: auto !important;
         margin: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
     }
 
+    .remito {
+        width: 100%;
+        margin: 0;
+
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .remito:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
     .container {
         width: 190mm !important;
         max-width: 190mm !important;
+
         margin: 0 auto !important;
         padding: 0 !important;
+
+        box-sizing: border-box !important;
     }
 
     .topActions,
     .actionsBox,
     button {
         display: none !important;
-    }
-
-    .remito {
-        break-after: page;
-        page-break-after: always;
-
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-
-    .remito:last-child {
-        break-after: auto;
-        page-break-after: auto;
     }
 
     .productosTable {
@@ -428,15 +425,5 @@
     .footer {
         break-inside: avoid;
         page-break-inside: avoid;
-    }
-
-    .pageBreak {
-        break-after: page;
-        page-break-after: always;
-    }
-
-    .pageBreak:last-child {
-        break-after: auto;
-        page-break-after: auto;
     }
 }
