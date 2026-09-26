@@ -276,13 +276,10 @@ const groupedByST = useMemo(() => {
               {/* Tercera parte */}
                           <div className={styles.terceraParte}>
                 <hr />
-
                 <p className={styles.leyenda}>
                   Remitimos a UD.(es) lo siguiente
                 </p>
-
                 <hr />
-
                 <table className={styles.productosTable}>
                   <thead>
                     <tr>
