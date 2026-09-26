@@ -378,51 +378,65 @@
 =            IMPRESION                            =
 ==================================================*/
 
-@page{
-    size:A4 portrait;
-    margin:8mm;
+@page {
+    size: A4 portrait;
+    margin: 5mm;
 }
 
-@media print{
+@media print {
 
     html,
-    body{
-        width:210mm;
-        margin:0;
-        padding:0;
-        overflow:hidden;
+    body {
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
     }
 
-    .container{
-        width:190mm;
-        margin:0 auto;
-        padding:0;        
+    .container {
+        width: 190mm !important;
+        max-width: 190mm !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
     }
 
     .topActions,
-    .actionsBox{
-        display:none !important;
+    .actionsBox,
+    button {
+        display: none !important;
     }
 
-    button{
-        display:none !important;
+    .remito {
+        break-after: page;
+        page-break-after: always;
+
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
 
-    .productosTable{
-        page-break-inside:avoid;
+    .remito:last-child {
+        break-after: auto;
+        page-break-after: auto;
     }
 
-    .footer{
-        page-break-inside:avoid;
+    .productosTable {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .footer {
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
 
     .pageBreak {
-    page-break-after: always;   /* ✅ fuerza salto de página */
-    break-after: page;          /* ✅ estándar moderno */
-  }
+        break-after: page;
+        page-break-after: always;
+    }
 
-  .pageBreak:last-child {
-    page-break-after: auto;     /* ✅ evita salto extra al final */
-    break-after: auto;
-  }
+    .pageBreak:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
 }
