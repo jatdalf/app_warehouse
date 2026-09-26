@@ -73,7 +73,7 @@
     width:100%;
     border-bottom:1px solid #000;
     padding-bottom:6px;
-    gap:10px;
+    gap:1px;
 }
 
 .leftBox{
@@ -155,7 +155,7 @@
     justify-content:center;
     align-items:center;
     padding:8px;
-    margin-top: -8.5px;
+    margin-top: -9px;
     margin-bottom: 6px;
     margin-left: -12px;
 }
@@ -178,7 +178,7 @@
 ==========================*/
 
 .terceraParte{
-    margin-top:-11px;
+    margin-top:-15px;
     font-size:10px;
 }
 
@@ -285,7 +285,7 @@
 ==================================================*/
 
 .footer{
-    margin-top:10px;
+    margin-top:5px;
 
 }
 
@@ -391,7 +391,6 @@
     .remito {
         width: 100%;
         margin: 0;
-
         break-after: page;
         page-break-after: always;
     }
@@ -404,13 +403,14 @@
     .container {
         width: 190mm !important;
         max-width: 190mm !important;
-
         margin: 0 auto !important;
         padding: 0 !important;
-
         box-sizing: border-box !important;
     }
-
+    .terceraParte{
+        margin-top:-15px;
+    }
+   
     .topActions,
     .actionsBox,
     button {
