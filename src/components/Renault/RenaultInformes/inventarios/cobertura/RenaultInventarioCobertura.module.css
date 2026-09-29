@@ -663,6 +663,66 @@
             translateY(-25px);
     }
 }
+.donutPlanningRow {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.planningButton {
+    position: absolute;
+    left: calc(50% + 190px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 250px;
+    padding: 14px 18px;
+    border: 1px solid #c8dedb;
+    border-radius: 12px;
+    background: #f7fbfa;
+    color: #168b83;
+    cursor: pointer;
+    text-align: left;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.planningButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.planningIcon {
+    font-size: 26px;
+}
+
+.planningButton span:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.planningButton strong {
+    font-size: 14px;
+}
+
+.planningButton small {
+    margin-top: 3px;
+    color: #73807f;
+    font-size: 11px;
+}
+
+@media (max-width: 950px) {
+    .donutPlanningRow {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .planningButton {
+        position: static;
+    }
+}
 /* =========================
    RESPONSIVE
 ========================= */
