@@ -32,7 +32,7 @@ import RenaultEgresos from "./components/Renault/RenaultInformes/egresos/Renault
 import RenaultResumen from "./components/Renault/RenaultInformes/resumenOperativo/resumenOperativo"
 import RenaultCompactacionDetalle from "./components/Renault/RenaultInformes/ocupacion/Compactacion/RenaultCompactacionDetalle"
 import RenaultInventarioCobertura from "./components/Renault/RenaultInformes/inventarios/cobertura/RenaultInventarioCobertura";
-
+import RenaultInventarioPlanificacion from "./components/Renault/RenaultInformes/inventarios/planificacion/RenaultInventarioPlanificacion";
 
 function App() {
   return (
@@ -71,6 +71,7 @@ function App() {
         <Route path="/renault/ocupacion/compactacion/:warehouse/:storage" element={<RenaultCompactacionDetalle />}/>
         <Route path="/PeYa/clave-control/detalle/:tipo/:month" element={<PeYaClaveControlDetalle />}/>
         <Route path="/RenaultInformes/inventarios/cobertura" element={<RenaultInventarioCobertura />}/>
+        <Route path="/RenaultInformes/inventarios/planificacion" element={<RenaultInventarioPlanificacion />}/>
 
       </Routes>
     </Router>

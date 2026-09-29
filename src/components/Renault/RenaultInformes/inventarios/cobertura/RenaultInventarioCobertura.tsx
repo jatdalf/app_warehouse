@@ -148,13 +148,31 @@ const RenaultInventarioCobertura = () => {
                     posicionesPendientes={cobertura.posicionesPendientes}
                     porcentajeCobertura={cobertura.porcentajeCobertura}
                     onPendientesClick={() => setMostrarPendientes(true)}/>
-                <CoberturaDonut
-                    inventariadas={cobertura.posicionesInventariadas}
-                    pendientes={cobertura.posicionesPendientes}
-                    porcentajeCobertura={cobertura.porcentajeCobertura}
-                    mesIncorporado={mesIncorporado}
-                    historicoDesdeCache={historicoDesdeCache}
-                    onPendientesClick={() => setMostrarPendientes(true)}/>                    
+                <div className={styles.donutPlanningRow}>
+                    <CoberturaDonut
+                        inventariadas={cobertura.posicionesInventariadas}
+                        pendientes={cobertura.posicionesPendientes}
+                        porcentajeCobertura={cobertura.porcentajeCobertura}
+                        mesIncorporado={mesIncorporado}
+                        historicoDesdeCache={historicoDesdeCache}
+                        onPendientesClick={() => setMostrarPendientes(true)}
+                    />
+                    <button type="button"
+                        className={styles.planningButton}
+                        onClick={() =>
+                            window.open(
+                                `/RenaultInformes/inventarios/planificacion?warehouse=${warehouse}`,
+                                "_blank"
+                            )
+                        }
+                    >
+                        <span className={styles.planningIcon}>📅</span>
+                        <span>
+                            <strong>Planificación de inventarios</strong>
+                            <small>Preparar próximos inventarios</small>
+                        </span>
+                    </button>
+                </div>                  
                 <CoberturaStorageTable
                     items={cobertura.resumenPorStorage} onStorageClick={storageSeleccionado => {
                     setStorage(storageSeleccionado);
