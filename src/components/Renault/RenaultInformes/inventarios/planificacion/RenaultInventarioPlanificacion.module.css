@@ -453,7 +453,27 @@
     cursor: pointer;
     accent-color: #168c84;
 }
+.saveSuccess {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border: 1px solid #b7dfc2;
+    border-radius: 8px;
+    background: #f1fbf4;
+    color: #176b2c;
+    font-size: 14px;
+    font-weight: 600;
+}
 
+.saveError {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border: 1px solid #efb4b4;
+    border-radius: 8px;
+    background: #fff4f4;
+    color: #a12626;
+    font-size: 14px;
+    font-weight: 600;
+}
 @media (max-width: 900px) {
     .tableInfoRow {
         align-items: flex-start;

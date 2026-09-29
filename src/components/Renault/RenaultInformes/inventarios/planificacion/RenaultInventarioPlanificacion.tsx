@@ -27,6 +27,9 @@ const RenaultInventarioPlanificacion = () => {
     const [mostrarLlenas, setMostrarLlenas] = useState(true);
     const [mostrarVacias, setMostrarVacias] = useState(true);
     const [busqueda, setBusqueda] = useState("");
+    const [guardando, setGuardando] = useState(false);
+    const [mensajeGuardado, setMensajeGuardado] = useState("");
+    const [errorGuardado, setErrorGuardado] = useState("");
     const cantidadPlanificada = ubicacionesSeleccionadas.size;
     const ubicaciones = useMemo(() => {
     const mapa = new Map<string, { key: string; storage: string; ubicacion: string; materiales: string[];}>();
@@ -229,6 +232,103 @@ const completarTarget = () => {
 const limpiarSeleccion = () => {
     setUbicacionesSeleccionadas(new Set());
 };
+const guardarPlanificacion = async () => {
+    if (ubicacionesSeleccionadas.size === 0) {
+        setErrorGuardado(
+            "Seleccioná al menos una ubicación antes de guardar."
+        );
+        return;
+    }
+
+    try {
+        setGuardando(true);
+        setMensajeGuardado("");
+        setErrorGuardado("");
+
+        const posiciones = ubicaciones
+            .filter(item =>
+                ubicacionesSeleccionadas.has(item.key)
+            )
+            .map(item => ({
+                storage: item.storage,
+                ubicacion: item.ubicacion,
+                material:
+                    item.materiales.length > 0
+                        ? item.materiales.join(", ")
+                        : ""
+            }));
+
+        const response = await fetch(
+            "/api/guardar-planificacion-inventario",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    warehouse,
+                    fecha,
+                    targetDiario: target,
+                    tipoPlanificacion: metodo,
+                    posiciones,
+                    usuario: ""
+                })
+            }
+        );
+
+        const textoRespuesta = await response.text();
+
+console.log("STATUS GUARDADO:", response.status);
+console.log("RESPUESTA GUARDADO:", textoRespuesta);
+
+if (!textoRespuesta) {
+    throw new Error(
+        `El servidor respondió ${response.status} pero no devolvió contenido.`
+    );
+}
+
+let data;
+
+try {
+    data = JSON.parse(textoRespuesta);
+} catch {
+    throw new Error(
+        `El servidor no devolvió JSON válido. Status: ${response.status}`
+    );
+}
+
+if (!response.ok || !data.success) {
+    throw new Error(
+        data.error ??
+        "No fue posible guardar la planificación."
+    );
+}
+
+        const accion =
+            data.accion === "actualizada"
+                ? "actualizada"
+                : "guardada";
+
+        setMensajeGuardado(
+            `Planificación ${accion} correctamente: ${data.cantidad} ubicaciones.`
+        );
+
+    } catch (error) {
+        console.error(
+            "Error guardando planificación:",
+            error
+        );
+
+        setErrorGuardado(
+            error instanceof Error
+                ? error.message
+                : "No fue posible guardar la planificación."
+        );
+
+    } finally {
+        setGuardando(false);
+    }
+};
 
     return (
         <div className={styles.page}>
@@ -391,14 +491,30 @@ const limpiarSeleccion = () => {
                 </button>
 
                 <button
-                    type="button"
-                    className={styles.saveButton}
-                    disabled
-                >
-                    💾 Guardar planificación
-                </button>
+    type="button"
+    className={styles.saveButton}
+    onClick={guardarPlanificacion}
+    disabled={
+        guardando ||
+        ubicacionesSeleccionadas.size === 0
+    }
+>
+    {guardando
+        ? "💾 Guardando..."
+        : "💾 Guardar planificación"}
+</button>
             </section>
+{mensajeGuardado && (
+    <div className={styles.saveSuccess}>
+        ✅ {mensajeGuardado}
+    </div>
+)}
 
+{errorGuardado && (
+    <div className={styles.saveError}>
+        ⚠️ {errorGuardado}
+    </div>
+)}
             <section className={styles.locationsSection}>
     <div className={styles.locationsHeader}>
         <div>
