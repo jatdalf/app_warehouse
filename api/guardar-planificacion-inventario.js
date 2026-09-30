@@ -60,14 +60,32 @@ export default async function handler(req, res) {
                 })
             }
         );
+        console.log("Apps Script status:", response.status);
+        console.log("Apps Script url final:", response.url);
+        console.log("Apps Script redirected:", response.redirected);
 
-        if (!response.ok) {
-            throw new Error(
-                `Apps Script respondió ${response.status}`
-            );
-        }
+        const responseText = await response.text();
 
-        const data = await response.json();
+console.log(
+    "Apps Script respuesta:",
+    responseText
+);
+
+if (!response.ok) {
+    throw new Error(
+        `Apps Script respondió ${response.status}`
+    );
+}
+
+let data;
+
+try {
+    data = JSON.parse(responseText);
+} catch {
+    throw new Error(
+        "Apps Script no devolvió JSON válido."
+    );
+}
 
         if (!data.success) {
             throw new Error(
