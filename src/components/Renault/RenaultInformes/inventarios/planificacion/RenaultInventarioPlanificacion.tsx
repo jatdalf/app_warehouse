@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { WarehouseInventario } from "../InventarioWarehouseConfig";
 import styles from "./RenaultInventarioPlanificacion.module.css";
@@ -47,10 +47,46 @@ const RenaultInventarioPlanificacion = () => {
         seleccionarVisibles,
         completarTarget,
         limpiarSeleccion,
-        resetearPorCambioWarehouse
+        resetearPorCambioWarehouse,
+        cargarSeleccion 
     } = usePlanificacionUbicaciones(lx03, target);
 
     const cantidadPlanificada = ubicacionesSeleccionadas.size;
+    const [planificacionExistente, setPlanificacionExistente] = useState(false);
+
+    useEffect(() => {
+        let cancelado = false;
+        const cargarPlanificacion = async () => {
+            try {
+                const resultado = await InventarioPlanificacionService.obtener(warehouse, fecha);
+                if (cancelado) {
+                    return;
+                }
+               if (!resultado.existe) {
+                    cargarSeleccion([]);
+                    setPlanificacionExistente(false);
+                    return;
+                }
+                setPlanificacionExistente(true);
+                cargarSeleccion(resultado.posiciones);
+                if (resultado.targetDiario !== null && resultado.targetDiario > 0) {
+                    setTarget(resultado.targetDiario);
+                }
+                if (resultado.tipoPlanificacion) {
+                    setMetodo(resultado.tipoPlanificacion);
+                }
+            } catch (error) {
+                if (cancelado) {
+                    setPlanificacionExistente(false);
+                    return;
+                }
+                console.error("Error cargando planificación:", error);
+            }
+        };
+
+        void cargarPlanificacion();
+        return () => {cancelado = true; };
+    }, [warehouse, fecha]);
     const [guardando, setGuardando] = useState(false);
     const [mensajeGuardado, setMensajeGuardado] = useState("");
     const [errorGuardado, setErrorGuardado] = useState("");
@@ -120,17 +156,8 @@ const RenaultInventarioPlanificacion = () => {
             setMensajeGuardado(`Planificación ${accion} correctamente: ${data.cantidad} ubicaciones.`);
 
         } catch (error) {
-            console.error(
-                "Error guardando planificación:",
-                error
-            );
-
-            setErrorGuardado(
-                error instanceof Error
-                    ? error.message
-                    : "No fue posible guardar la planificación."
-            );
-
+            console.error("Error guardando planificación:", error);
+            setErrorGuardado(error instanceof Error ? error.message : "No fue posible guardar la planificación.");
         } finally {
             setGuardando(false);
         }
@@ -150,6 +177,13 @@ const RenaultInventarioPlanificacion = () => {
                 onTargetChange={setTarget}
             />
             <PlanificacionMethodSelector metodo={metodo} onMetodoChange={setMetodo} />
+            {planificacionExistente && (
+                <div className={styles.existingPlan}>
+                    📋 Planificación existente cargada ·{" "}
+                    <strong>{cantidadPlanificada}</strong>{" "}
+                    ubicaciones
+                </div>
+            )}
             <PlanificacionProgress
                 cantidadPlanificada={cantidadPlanificada}
                 target={target}

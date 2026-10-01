@@ -523,3 +523,17 @@
         flex-direction: column;
     }
 }
+.existingPlan {
+    max-width: 1050px;
+    margin: 0 auto 1rem;
+    padding: 0.8rem 1rem;
+
+    border: 1px solid #b8ded8;
+    border-radius: 10px;
+
+    background: #f1faf8;
+    color: #176f67;
+
+    font-size: 0.95rem;
+    text-align: center;
+}

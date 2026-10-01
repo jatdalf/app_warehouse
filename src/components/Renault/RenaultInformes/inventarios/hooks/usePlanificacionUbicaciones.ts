@@ -141,6 +141,14 @@ export const usePlanificacionUbicaciones = (
         setStorageFiltro("TODOS");
         setBusqueda("");
     };
+    const cargarSeleccion = (
+        posiciones: {storage: string; ubicacion: string;
+        }[]
+    ) => {
+        const claves = posiciones.map(
+            posicion => `${posicion.storage.trim()}|${posicion.ubicacion.trim().toUpperCase()}`);
+        setUbicacionesSeleccionadas(new Set(claves));
+    };
 
     return {
         ubicaciones,
@@ -162,6 +170,7 @@ export const usePlanificacionUbicaciones = (
         seleccionarVisibles,
         completarTarget,
         limpiarSeleccion,
-        resetearPorCambioWarehouse
+        resetearPorCambioWarehouse,
+        cargarSeleccion 
     };
 };
