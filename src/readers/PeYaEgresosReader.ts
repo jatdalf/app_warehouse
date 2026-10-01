@@ -7,71 +7,149 @@ export interface PeYaEgresosData {
 }
 
 export class PeYaEgresosReader {
-    static async read(): Promise<PeYaEgresosData> {
-        const response = await fetch("/api/drive-file",
-            {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({fileId: "1VDoNzHfOKDmf1r827uaekcEvnQ1qfdJR"})
-            }
+static async read(): Promise<PeYaEgresosData> {
+    const response = await fetch(
+        "/api/drive-file",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                fileId: "1VDoNzHfOKDmf1r827uaekcEvnQ1qfdJR"
+            })
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "No fue posible cargar SalidasPeYa.xlsx desde Google Drive."
         );
-        if (!response.ok) {
-            throw new Error("No fue posible cargar SalidasPeYa.xlsx desde Google Drive.");
-        }
-        const data = await response.json();
-        if (!data.success || !data.base64) {
-            throw new Error( data.error ?? "Respuesta inválida al cargar SalidasPeYa.xlsx.");
-        }
-        const binary = atob(data.base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
-        const workbook = XLSX.read( bytes, {type: "array", cellDates: true});
-        /* Nuevo archivo final de expedición. */
-        console.log("Hojas disponibles:", workbook.SheetNames);
-        const sheet = workbook.Sheets["Sheet1"];
-        if (!sheet) {
-            throw new Error('No existe la hoja "Sheet1" en SalidasPeYa.xlsx');
-        }
-        /* Seguimos usando ModifiedDate, porque el archivo se va actualizando. */
-        const rawModified = workbook.Props?.ModifiedDate;
-        const modifiedAt = rawModified ? new Date(rawModified) : null;
-        const rows = XLSX.utils.sheet_to_json<any[]>(sheet,{header: 1, raw: true});
-        const items = rows.slice(1).map(row => ({
-            // A - N.º orden
-            st: String(row[0] ?? "").trim(),
-            // D - Artículo
-            sku: String(row[3] ?? "").trim(),
-            // G - Expedido
-            bultos: this.parseCantidad(row[6]),
-            // I - Fecha real de expedición
-            fecha: this.parseDate(row[8])
-        })).filter(item => item.st !== "" && item.sku !== "" && item.bultos > 0 &&
-                !Number.isNaN(item.fecha.getTime()));
-        return {items, modifiedAt};
     }
 
+    const data = await response.json();
 
-    private static parseCantidad(
-        value: unknown
+    if (!data.success || !data.base64) {
+        throw new Error(
+            data.error ??
+            "Respuesta inválida al cargar SalidasPeYa.xlsx."
+        );
+    }
+
+    const binary = atob(data.base64);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+
+    const workbook = XLSX.read(
+        bytes,
+        {
+            type: "array",
+            cellDates: true
+        }
+    );
+
+    console.log(
+        "Hojas disponibles:",
+        workbook.SheetNames
+    );
+
+    const sheet = workbook.Sheets["Sheet1"];
+
+    if (!sheet) {
+        throw new Error(
+            'No existe la hoja "Sheet1" en SalidasPeYa.xlsx'
+        );
+    }
+
+    const rawModified =
+        workbook.Props?.ModifiedDate;
+
+    const modifiedAt =
+        rawModified
+            ? new Date(rawModified)
+            : null;
+
+    const rows =
+        XLSX.utils.sheet_to_json<
+            Record<string, unknown>
+        >(sheet, {
+            defval: "",
+            raw: true
+        });
+
+    if (rows.length === 0) {
+        throw new Error(
+            "SalidasPeYa.xlsx no contiene registros."
+        );
+    }
+
+    const columnasRequeridas = [
+        "N.º orden",
+        "Artículo",
+        "Expedido",
+        "Fecha real de expedición"
+    ];
+
+    const columnasDisponibles =
+        Object.keys(rows[0]);
+
+    const columnasFaltantes =
+        columnasRequeridas.filter(
+            columna =>
+                !columnasDisponibles.includes(
+                    columna
+                )
+        );
+
+    if (columnasFaltantes.length > 0) {
+        throw new Error(
+            `SalidasPeYa.xlsx cambió de estructura. Faltan columnas: ${columnasFaltantes.join(", ")}`
+        );
+    }
+
+    const items = rows
+        .map(row => ({
+            st: String(
+                row["N.º orden"] ?? ""
+            ).trim(),
+
+            sku: String(
+                row["Artículo"] ?? ""
+            ).trim(),
+
+            bultos: this.parseCantidad(
+                row["Expedido"]
+            ),
+
+            fecha: this.parseDate(
+                row["Fecha real de expedición"]
+            )
+        }))
+        .filter(item =>
+            item.st !== "" &&
+            item.sku !== "" &&
+            item.bultos > 0 &&
+            !Number.isNaN(
+                item.fecha.getTime()
+            )
+        );
+
+    return {
+        items,
+        modifiedAt
+    };
+}
+    private static parseCantidad(value: unknown
     ): number {
-
         if (typeof value === "number") {
             return value;
         }
-
-        const texto =
-            String(value ?? "")
-                .trim()
-                .replace(",", ".");
-
-        const numero =
-            Number(texto);
-
-        return Number.isNaN(numero)
-            ? 0
-            : numero;
+        const texto = String(value ?? "").trim().replace(",", ".");
+        const numero = Number(texto);
+        return Number.isNaN(numero) ? 0 : numero;
     }
 
 
