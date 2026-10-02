@@ -4,13 +4,14 @@ interface PlanificacionActionsProps {
     cantidadSeleccionada: number;
     onGuardar: () => void;
     onDescargarExcel: () => void;
+    onSugerirUbicaciones: () => void;
 }
 
-export const PlanificacionActions = ({guardando, cantidadSeleccionada, onGuardar, onDescargarExcel
+export const PlanificacionActions = ({guardando, cantidadSeleccionada, onGuardar, onDescargarExcel, onSugerirUbicaciones
 }: PlanificacionActionsProps) => {
     return (
         <section className={styles.actions}>
-            <button type="button" className={styles.suggestButton} disabled >
+            <button type="button" className={styles.suggestButton} onClick={onSugerirUbicaciones}>
                 ✨ Sugerir ubicaciones
             </button>
 

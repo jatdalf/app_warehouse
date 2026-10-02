@@ -5,6 +5,7 @@ interface PlanificacionControlsProps {
     warehouse: WarehouseInventario;
     fecha: string;
     target: number;
+    targetMaximo: number;
     onWarehouseChange: (warehouse: WarehouseInventario) => void;
     onFechaChange: (fecha: string) => void;
     onTargetChange: (target: number) => void;
@@ -14,6 +15,7 @@ export const PlanificacionControls = ({
     warehouse,
     fecha,
     target,
+    targetMaximo,
     onWarehouseChange,
     onFechaChange,
     onTargetChange
@@ -39,9 +41,11 @@ export const PlanificacionControls = ({
                 <span>Target diario</span>
                 <input
                     type="number"
-                    min="1"
+                    min={1}
+                    max={targetMaximo}
                     value={target}
-                    onChange={event => onTargetChange(Math.max(1, Number(event.target.value) || 1))} />
+                    onChange={event => onTargetChange(Math.max(1, Number(event.target.value) || 1))}
+                />
             </label>
         </section>
     );

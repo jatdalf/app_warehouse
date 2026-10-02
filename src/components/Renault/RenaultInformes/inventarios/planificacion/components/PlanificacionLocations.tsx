@@ -1,7 +1,5 @@
 import styles from "../RenaultInventarioPlanificacion.module.css";
-
-export interface PlanificacionUbicacion {
-    key: string; storage: string; ubicacion: string; materiales: string[];}
+import type { PlanificacionUbicacion } from "../../hooks/usePlanificacionUbicaciones";
 
 interface PlanificacionLocationsProps {
     ubicaciones: PlanificacionUbicacion[];
@@ -155,6 +153,7 @@ const PlanificacionLocations = ({
                                 <col className={styles.colStorage} />
                                 <col className={styles.colUbicacion} />
                                 <col className={styles.colMaterial} />
+                                <col className={styles.colUltimoInventario} />
                             </colgroup>
 
                             <thead>
@@ -165,6 +164,7 @@ const PlanificacionLocations = ({
                                     <th>Storage</th>
                                     <th>Ubicación</th>
                                     <th>Material</th>
+                                    <th>Último inventario</th>
                                 </tr>
                             </thead>
 
@@ -188,6 +188,15 @@ const PlanificacionLocations = ({
                                             </td>
                                             <td>
                                                 {item.materiales.length > 0 ? item.materiales.join(", ") : "—"}
+                                            </td>
+                                            <td>
+                                                {item.ultimoInventario ? (
+                                                    item.ultimoInventario.toLocaleDateString("es-AR")
+                                                ) : (
+                                                    <span className={styles.noInventory}>
+                                                        Sin registros
+                                                    </span>
+                                                )}
                                             </td>
                                         </tr>
                                     );
