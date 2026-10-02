@@ -3,9 +3,11 @@ interface PlanificacionActionsProps {
     guardando: boolean;
     cantidadSeleccionada: number;
     onGuardar: () => void;
+    onDescargarExcel: () => void;
 }
 
-export const PlanificacionActions = ({guardando, cantidadSeleccionada, onGuardar}: PlanificacionActionsProps) => {
+export const PlanificacionActions = ({guardando, cantidadSeleccionada, onGuardar, onDescargarExcel
+}: PlanificacionActionsProps) => {
     return (
         <section className={styles.actions}>
             <button type="button" className={styles.suggestButton} disabled >
@@ -15,6 +17,15 @@ export const PlanificacionActions = ({guardando, cantidadSeleccionada, onGuardar
             <button type="button" className={styles.saveButton}
                 onClick={onGuardar} disabled={guardando || cantidadSeleccionada === 0} >
                 {guardando ? "💾 Guardando..." : "💾 Guardar planificación"}
+            </button>
+
+            <button
+                type="button"
+                className={styles.excelButton}
+                onClick={onDescargarExcel}
+                disabled={cantidadSeleccionada === 0}
+            >
+                📥 Descargar Excel
             </button>
         </section>
     );

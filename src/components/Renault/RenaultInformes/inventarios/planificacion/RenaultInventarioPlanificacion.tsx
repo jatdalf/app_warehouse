@@ -10,6 +10,8 @@ import { PlanificacionMethodSelector, type MetodoPlanificacion } from "./compone
 import { PlanificacionActions } from "./components/PlanificacionActions";
 import { usePlanificacionUbicaciones } from "../hooks/usePlanificacionUbicaciones";
 import { InventarioPlanificacionService } from "./services/InventarioPlanificacionService";
+import { PlanificacionSummary } from "./components/PlanificacionSummary";
+import { InventarioPlanificacionExcelService } from "./services/InventarioPlanificacionExcelService";
 
 const TARGET_DEFAULT = 135;
 
@@ -53,6 +55,21 @@ const RenaultInventarioPlanificacion = () => {
 
     const cantidadPlanificada = ubicacionesSeleccionadas.size;
     const [planificacionExistente, setPlanificacionExistente] = useState(false);
+    const descargarExcel = () => {
+        try {
+            InventarioPlanificacionExcelService.exportar({
+                warehouse,
+                fecha,
+                metodo,
+                target,
+                ubicaciones,
+                ubicacionesSeleccionadas
+            });
+        } catch (error) {
+            console.error("Error exportando planificación:", error);
+        }
+    };
+
 
     useEffect(() => {
         let cancelado = false;
@@ -191,12 +208,25 @@ const RenaultInventarioPlanificacion = () => {
                 diferenciaTarget={diferenciaTarget}
                 estado={estado}
             />
-            <PlanificacionActions 
-                guardando={guardando} 
-                cantidadSeleccionada={ubicacionesSeleccionadas.size}
-                onGuardar={guardarPlanificacion} />
+            <PlanificacionActions
+                guardando={guardando}
+                cantidadSeleccionada={
+                    ubicacionesSeleccionadas.size
+                }
+                onGuardar={guardarPlanificacion}
+                onDescargarExcel={descargarExcel}
+            />
             {mensajeGuardado && (<div className={styles.saveSuccess}>✅ {mensajeGuardado}</div>)}
             {errorGuardado && (<div className={styles.saveError}>⚠️ {errorGuardado}</div>)}
+
+            <PlanificacionSummary
+                warehouse={warehouse}
+                fecha={fecha}
+                metodo={metodo}
+                target={target}
+                ubicaciones={ubicaciones}
+                ubicacionesSeleccionadas={ubicacionesSeleccionadas} />
+
             <PlanificacionLocations
                 ubicaciones={ubicaciones}
                 ubicacionesFiltradas={ubicacionesFiltradas}

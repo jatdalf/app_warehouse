@@ -1,16 +1,23 @@
 import * as XLSX from "xlsx";
+import type { WarehouseInventario } from "../../InventarioWarehouseConfig";
+import type { MetodoPlanificacion } from "../components/PlanificacionMethodSelector";
+import type { PlanificacionUbicacion } from "../../hooks/usePlanificacionUbicaciones";
 
-export interface PosicionPlanificadaExcel {
-    storage: string;
-    ubicacion: string;
-    material: string;
-}
 
 interface ExportarPlanificacionParams {
-    warehouse: "W1" | "W2";
+    warehouse: WarehouseInventario;
     fecha: string;
+    metodo: MetodoPlanificacion;
     target: number;
-    posiciones: PosicionPlanificadaExcel[];
+    ubicaciones: PlanificacionUbicacion[];
+    ubicacionesSeleccionadas: Set<string>;
+}
+
+interface ResumenStorage {
+    storage: string;
+    llenas: number;
+    vacias: number;
+    total: number;
 }
 
 export class InventarioPlanificacionExcelService {
@@ -18,87 +25,202 @@ export class InventarioPlanificacionExcelService {
     static exportar({
         warehouse,
         fecha,
+        metodo,
         target,
-        posiciones
-    }: ExportarPlanificacionParams) {
+        ubicaciones,
+        ubicacionesSeleccionadas
+    }: ExportarPlanificacionParams): void {
 
-        if (posiciones.length === 0) {
+        const seleccionadas = ubicaciones.filter(
+            item =>
+                ubicacionesSeleccionadas.has(item.key)
+        );
+
+        if (seleccionadas.length === 0) {
             throw new Error(
-                "No hay ubicaciones seleccionadas para exportar."
+                "No hay ubicaciones planificadas para exportar."
             );
         }
 
-        const warehouseNombre =
-            warehouse === "W1"
-                ? "W1 (Rep)"
-                : "W2 (BsAs)";
+        const esVacia = (
+            materiales: string[]
+        ): boolean => {
+            if (materiales.length === 0) {
+                return true;
+            }
+
+            return materiales.every(
+                material =>
+                    material
+                        .trim()
+                        .toLowerCase() ===
+                    "<< vacías >>"
+            );
+        };
+
+        let llenas = 0;
+        let vacias = 0;
+
+        const mapaStorage =
+            new Map<string, ResumenStorage>();
+
+        seleccionadas.forEach(item => {
+            const vacia =
+                esVacia(item.materiales);
+
+            if (vacia) {
+                vacias++;
+            } else {
+                llenas++;
+            }
+
+            const actual =
+                mapaStorage.get(item.storage) ?? {
+                    storage: item.storage,
+                    llenas: 0,
+                    vacias: 0,
+                    total: 0
+                };
+
+            if (vacia) {
+                actual.vacias++;
+            } else {
+                actual.llenas++;
+            }
+
+            actual.total++;
+
+            mapaStorage.set(
+                item.storage,
+                actual
+            );
+        });
+
+        const storages =
+            [...mapaStorage.values()].sort(
+                (a, b) =>
+                    a.storage.localeCompare(
+                        b.storage,
+                        undefined,
+                        { numeric: true }
+                    )
+            );
+
+        const total =
+            seleccionadas.length;
+
+        const cumplimiento =
+            target > 0
+                ? (total / target) * 100
+                : 0;
 
         const fechaFormateada =
             this.formatearFecha(fecha);
 
-        const porcentaje =
-            target > 0
-                ? (posiciones.length / target) * 100
-                : 0;
+        /*
+         * HOJA 1: RESUMEN
+         */
 
-        const filas: (string | number)[][] = [
+        const resumenRows = [
             ["PLANIFICACIÓN DE INVENTARIOS"],
             [],
-            ["Warehouse", warehouseNombre],
+            ["Warehouse", warehouse],
             ["Fecha", fechaFormateada],
-            ["Target diario", target],
-            ["Posiciones planificadas", posiciones.length],
             [
-                "Cumplimiento planificación",
-                `${porcentaje.toLocaleString("es-AR", {
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1
-                })}%`
+                "Tipo de planificación",
+                metodo === "UBICACION"
+                    ? "Por ubicación"
+                    : "Por material"
             ],
+            ["Target diario", target],
+            ["Total planificado", total],
+            ["Cumplimiento", cumplimiento / 100],
+            ["Ubicaciones llenas", llenas],
+            ["Ubicaciones vacías", vacias],
+            ["Storages involucrados", storages.length],
             [],
             [
-                "N°",
                 "Storage",
-                "Ubicación",
-                "Material"
+                "Llenas",
+                "Vacías",
+                "Total"
+            ],
+            ...storages.map(item => [
+                item.storage,
+                item.llenas,
+                item.vacias,
+                item.total
+            ]),
+            [],
+            [
+                "TOTAL",
+                llenas,
+                vacias,
+                total
             ]
         ];
 
-        posiciones.forEach((posicion, index) => {
-            filas.push([
-                index + 1,
-                posicion.storage,
-                posicion.ubicacion,
-                posicion.material || "—"
-            ]);
-        });
+        const resumenSheet =
+            XLSX.utils.aoa_to_sheet(
+                resumenRows
+            );
 
-        const worksheet =
-            XLSX.utils.aoa_to_sheet(filas);
+        resumenSheet["!cols"] = [
+            { wch: 25 },
+            { wch: 20 },
+            { wch: 15 },
+            { wch: 15 }
+        ];
+
+        // Formato porcentaje.
+        const celdaCumplimiento =
+            resumenSheet["B8"];
+
+        if (celdaCumplimiento) {
+            celdaCumplimiento.z = "0.0%";
+        }
 
         /*
-         * Ancho de columnas
+         * HOJA 2: DETALLE
          */
-        worksheet["!cols"] = [
-            {wch: 7},
-            {wch: 14},
-            {wch: 24},
-            {wch: 45}
+
+        const detalleRows =
+            seleccionadas.map(
+                (item, index) => {
+                    const vacia =
+                        esVacia(item.materiales);
+
+                    return {
+                        "N°": index + 1,
+                        "Storage": item.storage,
+                        "Ubicación": item.ubicacion,
+                        "Material":
+                            item.materiales.length > 0
+                                ? item.materiales.join(", ")
+                                : "",
+                        "Estado":
+                            vacia
+                                ? "Vacía"
+                                : "Llena"
+                    };
+                }
+            );
+
+        const detalleSheet =
+            XLSX.utils.json_to_sheet(
+                detalleRows
+            );
+
+        detalleSheet["!cols"] = [
+            { wch: 8 },
+            { wch: 12 },
+            { wch: 22 },
+            { wch: 35 },
+            { wch: 12 }
         ];
 
         /*
-         * Autofiltro sobre la tabla.
-         *
-         * La tabla comienza en la fila 9.
-         */
-        worksheet["!autofilter"] = {
-            ref: `A9:D${filas.length}`
-        };
-
-        /*
-         * Congelar no está soportado de forma uniforme
-         * por todas las versiones de SheetJS Community,
-         * así que evitamos depender de ello.
+         * WORKBOOK
          */
 
         const workbook =
@@ -106,15 +228,18 @@ export class InventarioPlanificacionExcelService {
 
         XLSX.utils.book_append_sheet(
             workbook,
-            worksheet,
-            "Planificación"
+            resumenSheet,
+            "Resumen"
         );
 
-        const fechaArchivo =
-            fechaFormateada.replace(/\//g, "-");
+        XLSX.utils.book_append_sheet(
+            workbook,
+            detalleSheet,
+            "Detalle"
+        );
 
         const nombreArchivo =
-            `Planificacion_Inventarios_${warehouse}_${fechaArchivo}.xlsx`;
+            `Planificacion_Inventarios_${warehouse}_${fechaFormateada.replaceAll("/", "-")}.xlsx`;
 
         XLSX.writeFile(
             workbook,
@@ -125,13 +250,8 @@ export class InventarioPlanificacionExcelService {
     private static formatearFecha(
         fecha: string
     ): string {
-
         const [year, month, day] =
             fecha.split("-");
-
-        if (!year || !month || !day) {
-            return fecha;
-        }
 
         return `${day}/${month}/${year}`;
     }
