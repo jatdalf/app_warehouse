@@ -364,7 +364,7 @@
 }
 
 .colMaterial {
-    width: 50%;
+    width: 30%;
 }
 .bulkActions {
     display: flex;
@@ -694,4 +694,13 @@
 .excelButton:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+.colUltimoInventario {
+    width: 26%;
+}
+
+.noInventory {
+    font-weight: 700;
+    color: #c62828;
+    white-space: nowrap;
 }

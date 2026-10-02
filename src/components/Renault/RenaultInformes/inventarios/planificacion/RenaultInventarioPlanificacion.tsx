@@ -27,8 +27,20 @@ const RenaultInventarioPlanificacion = () => {
         return `${year}-${month}-${day}`;
     });
     const [target, setTarget] = useState(TARGET_DEFAULT);
+    const targetMaximo = Math.ceil(TARGET_DEFAULT * 1.1);
+    const cambiarTarget = (nuevoTarget: number) => {
+        if (nuevoTarget < 1) {
+            setTarget(1);
+            return;
+        }
+        if (nuevoTarget > targetMaximo) {
+            setTarget(targetMaximo);
+            return;
+        }
+        setTarget(nuevoTarget);
+    };
     const [metodo, setMetodo] = useState<MetodoPlanificacion>("UBICACION");
-    const {lx03, loading, error} = useInventarioSapData(warehouse);
+    const {lx03, loading, error, lineas,} = useInventarioSapData(warehouse);
     const {
         ubicaciones,
         ubicacionesFiltradas,
@@ -48,13 +60,20 @@ const RenaultInventarioPlanificacion = () => {
         agregarUbicaciones,
         seleccionarVisibles,
         completarTarget,
+        sugerirUbicaciones,
         limpiarSeleccion,
         resetearPorCambioWarehouse,
-        cargarSeleccion 
-    } = usePlanificacionUbicaciones(lx03, target);
+        cargarSeleccion,
+    } = usePlanificacionUbicaciones(lx03, lineas, target);
 
     const cantidadPlanificada = ubicacionesSeleccionadas.size;
     const [planificacionExistente, setPlanificacionExistente] = useState(false);
+    const [planificacionesPeriodo, setPlanificacionesPeriodo] = useState<
+        {
+            fecha: string;
+            posiciones: {storage: string; ubicacion: string; material: string; }[];
+        }[]
+    >([]);
     const descargarExcel = () => {
         try {
             InventarioPlanificacionExcelService.exportar({
@@ -69,7 +88,64 @@ const RenaultInventarioPlanificacion = () => {
             console.error("Error exportando planificación:", error);
         }
     };
+    console.log("PLANIFICACIONES PERIODO:", planificacionesPeriodo);
+    useEffect(() => {
+        let cancelado = false;
 
+        const cargarPlanificacionesPeriodo = async () => {
+            try {
+                const fechaBase = new Date(`${fecha}T12:00:00`);
+
+                const desde = new Date(fechaBase);
+                desde.setDate(desde.getDate() - 7);
+
+                const hasta = new Date(fechaBase);
+                hasta.setDate(hasta.getDate() + 7);
+
+                const formatoFecha = (date: Date) => {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const day = String(date.getDate()).padStart(2, "0");
+
+                    return `${year}-${month}-${day}`;
+                };
+
+                const resultado =
+                    await InventarioPlanificacionService.obtenerSemanal(
+                        warehouse,
+                        formatoFecha(desde),
+                        formatoFecha(hasta)
+                    );
+
+                if (cancelado) {
+                    return;
+                }
+
+                setPlanificacionesPeriodo(
+                    resultado.dias.map(dia => ({
+                        fecha: dia.fecha,
+                        posiciones: dia.posiciones
+                    }))
+                );
+
+            } catch (error) {
+                console.error(
+                    "Error cargando planificaciones del período:",
+                    error
+                );
+
+                if (!cancelado) {
+                    setPlanificacionesPeriodo([]);
+                }
+            }
+        };
+
+        void cargarPlanificacionesPeriodo();
+
+        return () => {
+            cancelado = true;
+        };
+    }, [warehouse, fecha]);
 
     useEffect(() => {
         let cancelado = false;
@@ -189,9 +265,13 @@ const RenaultInventarioPlanificacion = () => {
                 warehouse={warehouse}
                 fecha={fecha}
                 target={target}
-                onWarehouseChange={nuevoWarehouse => {setWarehouse(nuevoWarehouse); resetearPorCambioWarehouse();}}
+                targetMaximo={targetMaximo}
+                onWarehouseChange={nuevoWarehouse => {
+                    setWarehouse(nuevoWarehouse);
+                    resetearPorCambioWarehouse();
+                }}
                 onFechaChange={setFecha}
-                onTargetChange={setTarget}
+                onTargetChange={cambiarTarget}
             />
             <PlanificacionMethodSelector metodo={metodo} onMetodoChange={setMetodo} />
             {planificacionExistente && (
@@ -210,9 +290,8 @@ const RenaultInventarioPlanificacion = () => {
             />
             <PlanificacionActions
                 guardando={guardando}
-                cantidadSeleccionada={
-                    ubicacionesSeleccionadas.size
-                }
+                cantidadSeleccionada={ ubicacionesSeleccionadas.size }
+                onSugerirUbicaciones={sugerirUbicaciones}
                 onGuardar={guardarPlanificacion}
                 onDescargarExcel={descargarExcel}
             />

@@ -33,6 +33,25 @@ export interface ObtenerPlanificacionResponse {
     posiciones: PlanificacionPosicion[];
 }
 
+export interface PlanificacionDia {
+    idPlan: string;
+    fecha: string;
+    targetDiario: number;
+    tipoPlanificacion: MetodoPlanificacion;
+    cantidad: number;
+    posiciones: PlanificacionPosicion[];
+}
+
+export interface ObtenerPlanificacionSemanalResponse {
+    success: boolean;
+    warehouse: WarehouseInventario;
+    fechaDesde: string;
+    fechaHasta: string;
+    dias: PlanificacionDia[];
+    totalPlanificado: number;
+    error?: string;
+}
+
 export class InventarioPlanificacionService {
     static async guardar(params: GuardarPlanificacionParams): Promise<GuardarPlanificacionResponse> {
         const response = await fetch("/api/guardar-planificacion-inventario",
@@ -82,6 +101,53 @@ export class InventarioPlanificacionService {
                 "No fue posible obtener la planificación."
             );
         }
+        return data;
+    }
+    static async obtenerSemanal(
+        warehouse: WarehouseInventario,
+        fechaDesde: string,
+        fechaHasta: string
+    ): Promise<ObtenerPlanificacionSemanalResponse> {
+        const response = await fetch(
+            "/api/obtener-planificacion-semanal",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    warehouse,
+                    fechaDesde,
+                    fechaHasta
+                })
+            }
+        );
+
+        const textoRespuesta = await response.text();
+
+        if (!textoRespuesta) {
+            throw new Error(
+                `El servidor respondió ${response.status} pero no devolvió contenido.`
+            );
+        }
+
+        let data: ObtenerPlanificacionSemanalResponse;
+
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch {
+            throw new Error(
+                `El servidor no devolvió JSON válido. Status: ${response.status}`
+            );
+        }
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.error ??
+                "No fue posible obtener las planificaciones."
+            );
+        }
+
         return data;
     }
 }
