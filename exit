@@ -1,0 +1,15 @@
+[33mcommit 86036fb99f592069dbc43916d22abe93324d6b1f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Jatdalf <tu@correo.com>
+Date:   Fri Oct 2 14:44:45 2026 -0300
+
+    implementacion de planificacion semanal
+
+ api/api/obtener-planificacion-semanal.js           | 102 [32m++++++++[m
+ .../hooks/usePlanificacionUbicaciones.ts           | 282 [32m++++++++++++++++++[m[31m---[m
+ .../RenaultInventarioPlanificacion.module.css      |  11 [32m+[m[31m-[m
+ .../RenaultInventarioPlanificacion.tsx             |  95 [32m++++++[m[31m-[m
+ .../components/PlanificacionActions.tsx            |   5 [32m+[m[31m-[m
+ .../components/PlanificacionControls.tsx           |   8 [32m+[m[31m-[m
+ .../components/PlanificacionLocations.tsx          |  15 [32m+[m[31m-[m
+ .../services/InventarioPlanificacionService.ts     |  66 [32m+++++[m
+ 8 files changed, 534 insertions(+), 50 deletions(-)
