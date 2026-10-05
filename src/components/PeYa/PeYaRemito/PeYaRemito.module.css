@@ -72,9 +72,8 @@
     align-items:stretch;
     width:100%;
     border-bottom:1px solid #000;
-    padding-bottom:6px;
-    gap:8px;
-    margin-top: -4px;
+    padding-bottom:2px;
+    gap:1px;
 }
 
 .leftBox{
@@ -156,7 +155,7 @@
     justify-content:center;
     align-items:center;
     padding:8px;
-    margin-top: -8.5px;
+    margin-top: -9px;
     margin-bottom: 6px;
     margin-left: -12px;
 }
@@ -202,7 +201,7 @@
     width:100%;
     border-collapse:collapse;
     table-layout:fixed;
-    margin-top:-5px;
+    margin-top:-6px;
     font-size:10px;
 }
 .productoTexto{
@@ -285,7 +284,7 @@
 ==================================================*/
 
 .footer{
-    margin-top:8px;
+    margin-top:4px;
 
 }
 
@@ -293,7 +292,7 @@
     text-align:center;
     font-size:11px;
     font-weight:bold;
-    margin-bottom:6px;
+    margin-bottom:3px;
 }
 
 .footerContent{
@@ -315,7 +314,7 @@
 .footerHeading{
     text-align:center;
     font-weight:bold;
-    margin-bottom:18px;
+    margin-bottom:8px;
 }
 
 .footerSpacer{
@@ -331,7 +330,7 @@
 }
 
 .footerBottom{
-    margin-top:6px;
+    margin-top:3px;
     display:flex;
     justify-content:space-between;
     font-size:9px;
@@ -378,62 +377,23 @@
 =            IMPRESION                            =
 ==================================================*/
 
-@page{
-    size:A4 portrait;
-    margin:5mm;
+@page {
+    size: A4 portrait;
+    margin: 2mm 5mm 5mm 5mm;
 }
 
-@media print{
+@media print {
 
     html,
-    body{
-        width:210mm;
-        margin:0;
-        padding:0;
-        overflow:hidden;
-    }
-
-    .container {
-        width: 190mm !important;
-        max-width: 190mm !important;
-        margin: 0 auto !important;
+    body {
+        margin: 0 !important;
         padding: 0 !important;
+        overflow: visible !important;
     }
 
-    .topActions,
-    .actionsBox{
-        display:none !important;
-    }
-
-    button{
-        display:none !important;
-    }
-
-     .productosTable {
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-    }
-
-    .footer {
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-    }
-
-    .pageBreak {
-    page-break-after: always;   /* ✅ fuerza salto de página */
-    break-after: page;          /* ✅ estándar moderno */
-  }
-
-  .pageBreak:last-child {
-    page-break-after: auto;     /* ✅ evita salto extra al final */
-    break-after: auto;
-  }
-      .remito {
-        width: 100% !important;
-
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-
+    .remito {
+        width: 100%;
+        margin: 0;
         break-after: page;
         page-break-after: always;
     }
@@ -441,5 +401,33 @@
     .remito:last-child {
         break-after: auto;
         page-break-after: auto;
+    }
+
+    .container {
+        width: 190mm !important;
+        max-width: 190mm !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .terceraParte {
+        margin-top: -11px;
+    }
+
+    .topActions,
+    .actionsBox,
+    button {
+        display: none !important;
+    }
+
+    .productosTable {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .footer {
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
 }

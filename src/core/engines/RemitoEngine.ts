@@ -3,6 +3,7 @@ import { WarehouseSession } from "../warehouse/WarehouseSession";
 import type { EngineResult } from "../shared/EngineResult";
 import { RemitoFactory } from "../remitos/RemitoFactory";
 import { obtenerRemitos } from "../../services/remitos";
+import { loadPeyaDestinos } from "../../services/peya/PeyaDestinosService";
 
 interface RemitoAsignado {
     st: string;
@@ -33,8 +34,10 @@ export class RemitoEngine implements PipelineStep {
             const numeroFallback = (99990001 + index).toString().padStart(8, "0");
             numeros.set(st, numeroFallback);
         });
-        session.remitos = RemitoFactory.build(session.picking, numeros);
+        const destinos = await loadPeyaDestinos();
+        session.remitos = RemitoFactory.build(session.picking, numeros, destinos);
         session.remitoNumeracionProvisoria = numeracionProvisoria;
+        
         return {
             success: true,
             message: numeracionProvisoria

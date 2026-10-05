@@ -49,9 +49,9 @@ const RemitoFooter: React.FC<Props> = ({ remito }) => {
             </div>
             <div className="footerBottom">
                 <span className="footerLeft">
-                    CAI Nº 522128217779710
+                    CAI Nº 52388220598334
                     &nbsp;&nbsp;&nbsp;
-                    Fecha de Vto: 21/09/2026
+                    Fecha de Vto: 20/03/2027
                 </span>
                 <span className="footerRightText">
                     Hoja 1 de 1

@@ -1,12 +1,16 @@
 import "./RemitoStyles.css";
 import type { Remito } from "../../core/remitos/Remito";
-import {CUSTOMER, SOURCE_OFFICE} from "../../core/remitos/RemitoConfig";
+import { CUSTOMER, SOURCE_OFFICES} from "../../core/remitos/RemitoConfig";
+
+import { getPeyaBranch } from "../../components/PeYa/utils/peyaBranch";
 
 interface Props{
     remito: Remito;
 }
 
 const RemitoCustomer: React.FC<Props> = ({ remito }) => {
+  const branch = getPeyaBranch();
+  const sourceOffice = SOURCE_OFFICES[branch];
   const {
     name,
     adress,
@@ -21,7 +25,7 @@ const RemitoCustomer: React.FC<Props> = ({ remito }) => {
     adress: officeAdress,
     zipCode: officeZipCode,
     state: officeState
-  } = SOURCE_OFFICE;
+  } = sourceOffice;
 
     return(
       <div className="body">

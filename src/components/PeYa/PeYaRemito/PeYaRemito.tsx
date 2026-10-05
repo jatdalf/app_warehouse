@@ -1,8 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import type { Destino } from "../../../core/remitos/Destino";
+import { loadPeyaDestinos } from "../../../services/peya/PeyaDestinosService";
 import { useLocation } from "react-router-dom";
 import styles from "../PeYaRemito/PeYaRemito.module.css";
 import type { Remito } from "../../../core/remitos/Remito";
 import RemitoDocument from "../../../services/remito/RemitoDocument";
+import { SOURCE_OFFICES } from "../../../core/remitos/RemitoConfig";
+import { getPeyaBranch } from "../../PeYa/utils/peyaBranch";
 
 
 interface Producto {
@@ -12,12 +16,6 @@ interface Producto {
   uxb: string;
   bultos: number;
   unidades: number;
-}
-
-interface Destino {
-  domicilio: string;
-  localidad: string;
-  cp: string;
 }
 
 interface RemitoData {
@@ -36,28 +34,6 @@ interface RemitoPrintState {
     remitosGenerados?: Remito[];
 }
 
-const destinos: Record<string, Destino> = {
-  "AR_15_25deMayo": {
-    domicilio: "25 de Mayo 1370",
-    localidad: "Córdoba",
-    cp: "5004"
-  },
-  "AR_14_Cordillera": {
-    domicilio: "Cordillera 3591",
-    localidad: "Córdoba",
-    cp: "5009"
-  },
-  "AR_156_Crisol": {
-    domicilio: "L de Gongora 175",
-    localidad: "Córdoba",
-    cp: "5001"
-  },
-    "AR_Ocasa": {
-    domicilio: "Av la voz del interior 6051",
-    localidad: "Córdoba",
-    cp: "5009"
-  }
-};
 
 const COPIAS = [
   "──────── ORIGINAL ────────",
@@ -65,9 +41,29 @@ const COPIAS = [
   "────── TRIPLICADO ──────"
 ] as const;
 
-const MAX_ITEMS = 25;
+const MAX_ITEMS = 24;
 
 const PeYaRemito: React.FC = () => {
+const [destinos, setDestinos] = useState<Record<string, Destino> | null>(null);
+const [destinosError, setDestinosError] = useState<string | null>(null);
+useEffect(() => {
+  const cargarDestinos = async () => {
+    try {
+      const data = await loadPeyaDestinos();
+      setDestinos(data);
+    } catch (error) {
+      console.error("Error cargando destinos PeYa:", error);
+
+      setDestinosError(
+        "No fue posible cargar la base de destinos PeYa."
+      );
+    }
+  };
+
+  cargarDestinos();
+}, []);
+const branch = getPeyaBranch();
+const sourceOffice = SOURCE_OFFICES[branch];
 const location = useLocation();
 const state = location.state as RemitoPrintState | null;
 const storedData = sessionStorage.getItem("peya-remito-print-data");
@@ -142,6 +138,21 @@ const groupedByST = useMemo(() => {
         </>
     );
   }
+  if (destinosError) {
+  return (
+    <div>
+      <strong>{destinosError}</strong>
+    </div>
+  );
+}
+
+if (!destinos) {
+  return (
+    <div>
+      Cargando destinos...
+    </div>
+  );
+}
 
   return (
         <>
@@ -226,10 +237,10 @@ const groupedByST = useMemo(() => {
 
                   <hr />
 
-                  <p>Detalles de Origen - Warehouse Ocasa Córdoba</p>
-                  <p>Domicilio: Avenida La Voz del Interior 6051</p>
-                  <p>Código Postal: 5009</p>
-                  <p>Localidad: Córdoba</p>
+                  <p>Detalles de Origen - {sourceOffice.office}</p>
+                  <p>Domicilio: {sourceOffice.adress}</p>
+                  <p>Código Postal: {sourceOffice.zipCode}</p>
+                  <p>Localidad: {sourceOffice.state}</p>
 
                   <hr />
 
@@ -274,9 +285,8 @@ const groupedByST = useMemo(() => {
               </div>
 
               {/* Tercera parte */}
-                          <div className={styles.terceraParte}>
-                <hr />
-                <p className={styles.leyenda}>
+                <div className={styles.terceraParte}>
+                        <p className={styles.leyenda}>
                   Remitimos a UD.(es) lo siguiente
                 </p>
                 <hr />
@@ -421,8 +431,8 @@ const groupedByST = useMemo(() => {
 
                 <div className={styles.footerBottom}>
                   <span className={styles.footerLeft}>
-                    CAI N° 522128217779710 &nbsp;&nbsp;&nbsp;
-                    Fecha de Vto: 21.09.2026
+                    CAI N° 52388220598334 &nbsp;&nbsp;&nbsp;
+                    Fecha de Vto: 20.03.2027
                   </span>
 
                   <span className={styles.footerRightText}>

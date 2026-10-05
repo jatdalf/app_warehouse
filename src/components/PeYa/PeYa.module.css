@@ -31,7 +31,7 @@
   display: flex;
   justify-content: center;
   gap: 40px;
-  margin-top: 20%;
+  margin-top: 2%;
   width: 100%;
 }
 
@@ -104,4 +104,38 @@
   .fieldsetPeya {
     width: 94%;
   }
+}
+.branchSelector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px auto 28px;
+}
+
+.branchSelector label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #25877f;
+}
+
+.branchSelector select {
+  min-width: 220px;
+  padding: 10px 38px 10px 14px;
+  border: 2px solid #25877f;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #333333;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+.branchSelector select:focus {
+  box-shadow: 0 0 0 3px rgba(37, 135, 127, 0.15);
+}
+
+.fieldsetPeya:disabled {
+  opacity: 0.45;
 }

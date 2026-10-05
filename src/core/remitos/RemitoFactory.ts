@@ -1,6 +1,6 @@
 import type { PickingItem } from "../picking/PickingItem";
 import type { Remito } from "./Remito";
-import { DESTINOS } from "./RemitoConfig";
+import type { Destino } from "./Destino";
 import { formatPrintDate } from "../shared/DateFormatter";
 import { RemitoProductsBuilder } from "./RemitoProductsBuilder";
 
@@ -9,14 +9,15 @@ export class RemitoFactory {
         numero: string,
         pedido: string,
         destinoNombre: string,
-        picking: PickingItem[]
+        picking: PickingItem[],
+        destinos: Record<string, Destino>
     ): Remito {
-        const destino = DESTINOS[destinoNombre];
-        if (!destino) {
-            throw new Error(
-                `Destino no configurado: ${destinoNombre}`
-            );
-        }
+        const destino = destinos[destinoNombre] ?? {
+            domicilio: "",
+            localidad: "",
+            cp: ""
+        };
+
         return {
             numero,
             copia: "ORIGINAL",
@@ -30,7 +31,8 @@ export class RemitoFactory {
         };
     }
 
-    static build(picking: PickingItem[], numeros: Map<string, string>): Remito[] {
+    static build(picking: PickingItem[], numeros: Map<string, string>, destinos: Record<string, Destino>
+    ): Remito[] {
         const grupos = new Map<string, PickingItem[]>();
         for (const item of picking) {
             if (!grupos.has(item.st)) {
@@ -40,7 +42,13 @@ export class RemitoFactory {
         }
         return [...grupos.entries()].map(([st, items]) => {
                 const numeroRemito = numeros.get(st) ?? "99999999";
-                return this.create(numeroRemito, st, items[0].destino, items);
+                return this.create(
+                    numeroRemito,
+                    st,
+                    items[0].destino,
+                    items,
+                    destinos
+                );
             }
         );
     }

@@ -1,6 +1,7 @@
 import type { Customer } from "./Customer";
 import type { OcasaOffice } from "./OcasaOffice";
-import type { Destino } from "./Destino";
+
+export type PeyaBranch = "COR" | "BUE";
 
 export const CUSTOMER: Customer = {
     name: "DELIVERY HERO E-COMMERCE S.A.",
@@ -11,35 +12,19 @@ export const CUSTOMER: Customer = {
     sapAp: "40044001 / 10"
 };
 
-export const SOURCE_OFFICE: OcasaOffice = {
-    office: "Warehouse Ocasa Córdoba",
-    adress: "Avenida La Voz del Interior 6051",
-    zipCode: "5009",
-    state: "Córdoba"
-};
-
-export const DESTINOS: Record<string, Destino> = {
-    AR_15_25deMayo: {
-        domicilio: "25 de Mayo 1370",
-        localidad: "Córdoba",
-        cp: "5004"
+export const SOURCE_OFFICES: Record<PeyaBranch, OcasaOffice> = {
+    COR: {
+        office: "Warehouse Ocasa Córdoba",
+        adress: "Avenida La Voz del Interior 6051",
+        zipCode: "5009",
+        state: "Córdoba"
     },
 
-    AR_14_Cordillera: {
-        domicilio: "Cordillera 3591",
-        localidad: "Córdoba",
-        cp: "5009"
-    },
-
-    AR_156_Crisol: {
-        domicilio: "L. de Góngora 175",
-        localidad: "Córdoba",
-        cp: "5001"
-    },
-
-    AR_Ocasa: {
-        domicilio: "Av. La Voz del Interior 6051",
-        localidad: "Córdoba",
-        cp: "5009"
+    BUE: {
+        office: "DELIVERY HERO E-COMMERCE S.A.",
+        adress: "AV JUAN B JUSTO 637 piso 5",
+        zipCode: "1425",
+        state: "CABA"
     }
 };
+
