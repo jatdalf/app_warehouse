@@ -22,6 +22,25 @@ export const nombreMeses = [
   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
 ];
 
+interface RegistroInventarioSalud {
+  fecha: number | string;
+  almacen: any;
+  ubicacion: any;
+  material: any;
+  nombre: any;
+  totalTeorico: number;
+  contado: number;
+  resultado: number;
+}
+
+interface InventariosSaludCache {
+  registros: RegistroInventarioSalud[];
+  ultimaFecha: string;
+}
+
+let inventariosSaludCache: InventariosSaludCache | null = null;
+let inventariosSaludPromise: Promise<InventariosSaludCache> | null = null;
+
 export const obtenerMes = (fechaExcel: number | string): number => {
   const fecha = excelDateToJSDate(fechaExcel);
   return fecha.getMonth();
@@ -66,71 +85,118 @@ export const loadUbicaciones = async (): Promise<{ tipoAlmacen: string; ubicacio
   return Array.from(uniqueUbicaciones.values());
 };
 
+const loadInventariosSalud = async (): Promise<InventariosSaludCache> => {
+  if (inventariosSaludCache) {
+    return inventariosSaludCache;
+  }
+
+  if (inventariosSaludPromise) {
+    return inventariosSaludPromise;
+  }
+
+  inventariosSaludPromise = (async () => {
+    const response = await fetch("/api/drive-file", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fileId: "11bC7h5qazfuztuhVGdPQ1DHDVcUi8mQ_"
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("No fue posible cargar Ylx22.");
+    }
+
+    const data = await response.json();
+
+    if (!data.success || !data.base64) {
+      throw new Error("No fue posible obtener Ylx22.");
+    }
+
+    const binary = atob(data.base64);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+
+    const workbook = XLSX.read(bytes, {
+      type: "array"
+    });
+
+    const sheet =
+      workbook.Sheets[workbook.SheetNames[0]];
+
+    const jsonData: any[] =
+      XLSX.utils.sheet_to_json(sheet, {
+        header: 1
+      });
+
+    const rawModified =
+      workbook.Props?.ModifiedDate;
+
+    const ultimaFecha = rawModified
+      ? new Date(rawModified).toLocaleDateString(
+          "es-AR",
+          {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+          }
+        )
+      : "";
+
+    const registros: RegistroInventarioSalud[] =
+      jsonData.slice(1).map((row) => ({
+        fecha: row[0],
+        almacen: row[6],
+        ubicacion: row[8],
+        material: row[9],
+        nombre: row[10],
+        totalTeorico: Number(row[12]) || 0,
+        contado: Number(row[13]) || 0,
+        resultado: parseFloat(row[14]) || 0,
+      }));
+
+    const resultado = {
+      registros,
+      ultimaFecha
+    };
+
+    inventariosSaludCache = resultado;
+
+    return resultado;
+  })();
+
+  try {
+    return await inventariosSaludPromise;
+  } finally {
+    inventariosSaludPromise = null;
+  }
+};
+
 // ✅ Procesar inventarios y calcular posiciones inventariadas vs sin inventariar
 export const getResumenInventarios = async (
   mesesSeleccionados: string[],
-  ubicacionesUnicas: { tipoAlmacen: string; ubicacion: string }[]
-): Promise<{ resumenInventarios: ResumenInventarios; resumenUbicaciones: ResumenUbicaciones }> => {
-  const response = await fetch("/api/drive-file", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({fileId: "11bC7h5qazfuztuhVGdPQ1DHDVcUi8mQ_"})
-  });
-  if (!response.ok) {
-      throw new Error("No fue posible cargar Ylx22.");
-  }
-  const data = await response.json();
-  if (!data.success || !data.base64) {
-      throw new Error("No fue posible obtener Ylx22.");
-  }
-  const binary = atob(data.base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-  }
-  const workbook = XLSX.read(bytes, {type: "array"});
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const jsonData: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-  const rawModified = workbook.Props?.ModifiedDate;
-  const ultimaFecha = rawModified ? new Date(rawModified).toLocaleDateString( "es-AR",
-        {day: "2-digit", month: "2-digit", year: "numeric"}) : "";
-
-  const registros = jsonData.slice(1).map((row) => ({
-    fecha: row[0],
-    almacen: row[6],
-    ubicacion: row[8],
-    material: row[9],
-    nombre: row[10],
-    totalTeorico: Number(row[12]) || 0,
-    contado: Number(row[13]) || 0,
-    resultado: parseFloat(row[14]) || 0,
-  }));
-
-  registros.forEach((r) => {
-    if (!r.resultado) r.resultado = 0;
-  });
-
+  ubicacionesUnicas: { tipoAlmacen: string; ubicacion: string }[]): Promise<{ 
+    resumenInventarios: ResumenInventarios; resumenUbicaciones: ResumenUbicaciones }> => {
+  const { registros, ultimaFecha } = await loadInventariosSalud();
   // ✅ Filtrar por meses seleccionados
   const filtrados = registros.filter((r) =>
-    mesesSeleccionados.some(
-      (mes) => obtenerMes(r.fecha) === nombreMeses.indexOf(mes)
-    )
-  );
-
+    mesesSeleccionados.some((mes) => obtenerMes(r.fecha) === nombreMeses.indexOf(mes)));
   // Calcular inventarios
   const cantidadPosiciones = filtrados.filter((r) => r.almacen).length;
   const inventariosDiferencia = filtrados.filter((r) => r.resultado !== 0).length;
   const inventariosOk = filtrados.filter((r) => r.resultado === 0).length;
-
   // ✅ Cruce consistente con detalle
   const ubicacionesInventariadasSet = new Set(
     filtrados.map((r) => r.ubicacion).filter((u) => u)
   );
-
   const listaSinInventariar = ubicacionesUnicas.filter(
     (u) => !ubicacionesInventariadasSet.has(u.ubicacion)
   );
-
   const posicionesInventariadas = ubicacionesInventariadasSet.size;
   const posicionesSinInventariar = listaSinInventariar.length;
   

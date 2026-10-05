@@ -6,6 +6,7 @@ import { useCountUp } from "../../components/Inventarios/hooks/useCountUp";
 import { loadUbicaciones, getResumenInventarios, loadFeriados} from "../../services/excelService";
 import UbicacionesGrid from "./UbicacionesGrid";
 import InventariosGrid from "./InventariosGrid";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -15,7 +16,7 @@ const Inventario: React.FC = () => {
     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
   ];
   const [mesesSeleccionados, setMesesSeleccionados] = useState<string[]>([meses[new Date().getMonth()]]);
-
+  const [loadingInicial, setLoadingInicial] = useState(true);
   // ✅ Estado inicial ahora incluye listaSinInventariar
   const [resumenUbicaciones, setResumenUbicaciones] = useState({
     cantidadUbicaciones: 0,
@@ -49,21 +50,29 @@ const Inventario: React.FC = () => {
   useEffect(() => {
     const fetchInventarios = async () => {
       if (ubicacionesUnicas.length === 0) return;
-      const { resumenInventarios, resumenUbicaciones } = await getResumenInventarios(
-        mesesSeleccionados,
-        ubicacionesUnicas
-      );
-      setResumenInventarios({
-        cantidadPosiciones: resumenInventarios.cantidadPosiciones,
-        inventariosDiferencia: resumenInventarios.inventariosDiferencia,
-        inventariosOk: resumenInventarios.inventariosOk,
-      });
-      setRegistrosFiltrados(resumenInventarios.registrosFiltrados);
-      setUltimaFecha(resumenInventarios.ultimaFecha);
-      setResumenUbicaciones(resumenUbicaciones);
+      try {
+        const { resumenInventarios, resumenUbicaciones } = await getResumenInventarios(
+          mesesSeleccionados, ubicacionesUnicas);
+        
+          setResumenInventarios({
+          cantidadPosiciones: resumenInventarios.cantidadPosiciones,
+          inventariosDiferencia: resumenInventarios.inventariosDiferencia,
+          inventariosOk: resumenInventarios.inventariosOk,
+        });
+
+        setRegistrosFiltrados(resumenInventarios.registrosFiltrados);
+        setUltimaFecha(resumenInventarios.ultimaFecha);
+        setResumenUbicaciones(resumenUbicaciones);
+
+      } catch (error) {
+        console.error("Error cargando inventarios:", error);
+      } finally {
+        setLoadingInicial(false);
+      }
     };
-    fetchInventarios();
+    void fetchInventarios();
   }, [mesesSeleccionados, ubicacionesUnicas]);
+
   useEffect(() => {
     const fetchFeriados = async () => {
       try {
@@ -104,8 +113,29 @@ const Inventario: React.FC = () => {
       },
     ],
   };
-
+if (loadingInicial) {
   return (
+    <div className={styles.loadingContainer}>
+      <div className={styles.loadingLottie}>
+        <DotLottieReact
+          src="/lotties/barsAndCake.lottie"
+          autoplay
+          loop
+        />
+      </div>
+
+      <div className={styles.loadingText}>
+        Cargando datos...
+      </div>
+
+      <div className={styles.loadingSubtext}>
+        Preparando información de inventarios
+      </div>
+    </div>
+  );
+}
+  return (
+    
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Reporte de Inventarios</h2>

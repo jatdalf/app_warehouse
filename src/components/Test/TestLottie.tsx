@@ -11,14 +11,7 @@ const TestLottie = () => {
         backgroundColor: "#f5f5f5",
       }}
     >
-      <div
-        style={{
-          width: "500px",
-          maxWidth: "90%",
-          backgroundColor: "white",
-          border: "1px solid #ddd",
-        }}
-      >
+      <div style={{width: "500px", maxWidth: "90%", backgroundColor: "white", border: "1px solid #ddd", }} >
         <DotLottieReact src= "/lotties/barsAndCake.lottie" autoplay loop/>
       </div>
     </div>
