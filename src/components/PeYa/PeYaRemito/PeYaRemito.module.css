@@ -351,7 +351,7 @@
 
 .verticalMark{
     position:absolute;
-    left:-13mm;
+    left: -10mm;
     top:50%;
     transform:translateY(-50%);
     width:15mm;
@@ -379,7 +379,7 @@
 
 @page {
     size: A4 portrait;
-    margin: 2mm 5mm 5mm 5mm;
+    margin: 2mm 5mm 5mm 12mm;
 }
 
 @media print {
@@ -404,8 +404,8 @@
     }
 
     .container {
-        width: 190mm !important;
-        max-width: 190mm !important;
+        width: 186 mm !important;
+        max-width: 186mm !important;
         margin: 0 auto !important;
         padding: 0 !important;
         box-sizing: border-box !important;

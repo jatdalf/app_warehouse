@@ -202,7 +202,6 @@ if (!destinos) {
                   {copia}
                 </div>
               </div>
-
               <div className={styles.header}>
                 <div className={styles.leftBox}>
                   <p>Organización Courier Argentina S.A (OCASA)</p>

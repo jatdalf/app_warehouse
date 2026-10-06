@@ -1,19 +1,34 @@
 import type { Remito } from "../../core/remitos/Remito";
 import RemitoPage from "./RemitoPage";
 
-interface Props{
+interface Props {
     remitos: Remito[];
 }
+
+const COPIAS = [
+    "ORIGINAL",
+    "DUPLICADO",
+    "TRIPLICADO"
+] as const;
 
 const RemitoDocument: React.FC<Props> = ({ remitos }) => {
     return (
         <>
-            {remitos.map((remito) => (
-                <RemitoPage
-                    key={remito.numero}
-                    remito={remito}
-                />
-            ))}
+            {remitos.flatMap((remito) =>
+                COPIAS.map((copia) => {
+                    const remitoCopia: Remito = {
+                        ...remito,
+                        copia
+                    };
+
+                    return (
+                        <RemitoPage
+                            key={`${remito.numero}-${copia}`}
+                            remito={remitoCopia}
+                        />
+                    );
+                })
+            )}
         </>
     );
 };
