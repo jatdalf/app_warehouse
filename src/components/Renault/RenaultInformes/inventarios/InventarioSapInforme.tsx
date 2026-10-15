@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useMemo, useState } from "react";
 import { useFeriados } from "./hooks/useFeriados";
 import { useInventarioSapData } from "./hooks/useInventarioSapData";
 import InventarioSapCards from "./cards/InventarioSapCards";
@@ -14,6 +14,7 @@ import VaciasInforme from "./vacias/VaciasInforme";
 import type { TipoPeriodo } from "./builders/InventarioPeriodoBuilder";
 import { useInventarioPeriodos } from "./hooks/useInventarioPeriodos";
 import InventarioSapDetalleTipo from "./detalle/InventarioSapDetalleTipo";
+import { VaciasSapBuilder } from "./builders/VaciasSapBuilder";
 
 
 const InventarioSapInforme: React.FC = () => {
@@ -26,6 +27,8 @@ const InventarioSapInforme: React.FC = () => {
         periodoVisual, lineasPeriodo, lineasPeriodoCerradas, mesesPeriodo
     } = useInventarioPeriodos({lineas, feriados, tipoPeriodo, targetDiario});
   
+
+const vaciasCombinadas = useMemo(() => [...vacias, ...VaciasSapBuilder.build(lineas),],[vacias, lineas],);
      /* ESTADOS DE PANTALLA */
     if (loading) {
         return (
@@ -98,7 +101,7 @@ const InventarioSapInforme: React.FC = () => {
                 <InventarioSapEstado lineas={lineasPeriodo}/>
             </div>
             <div className={styles.printSection}>
-                <VaciasInforme items={vacias} desde={periodo.desde} hasta={periodo.hasta} />
+                <VaciasInforme items={vaciasCombinadas} desde={periodo.desde} hasta={periodo.hasta}/>
             </div>
                 <InventarioSapHallazgos lineas={lineasPeriodoCerradas}/>
             </>

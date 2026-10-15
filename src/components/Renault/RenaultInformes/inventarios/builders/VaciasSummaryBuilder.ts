@@ -20,7 +20,34 @@ export interface VaciasSummary {
 
 export class VaciasSummaryBuilder {
     static build(items: VaciasItem[]): VaciasSummary {
-        const lineas = [...items].sort((a, b) => a.fecha.getTime() - b.fecha.getTime()).map(item => {
+        const dias = new Map<string, VaciasItem>();
+
+for (const item of items) {
+    const fecha = new Date(
+        item.fecha.getFullYear(),
+        item.fecha.getMonth(),
+        item.fecha.getDate(),
+    );
+
+    const clave = [
+        fecha.getFullYear(),
+        fecha.getMonth(),
+        fecha.getDate(),
+    ].join("-");
+
+    const dia = dias.get(clave) ?? {
+        fecha,
+        relevadas: 0,
+        ocupado: 0,
+    };
+
+    dia.relevadas += item.relevadas;
+    dia.ocupado += item.ocupado;
+
+    dias.set(clave, dia);
+}
+
+const lineas = [...dias.values()].sort((a, b) => a.fecha.getTime() - b.fecha.getTime()).map(item => {
             const ok = item.relevadas - item.ocupado;
             const porcentajeOk = item.relevadas > 0 ? ok / item.relevadas * 100 : 0;
             const porcentajeIntruso = item.relevadas > 0 ? item.ocupado / item.relevadas * 100 : 0;

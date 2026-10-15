@@ -22,24 +22,45 @@ export class LinvReader {
         return this.parse(text);
     }
     private static parse(text: string): LinvVaciaItem[] {
-        const lineas = text.split(/\r?\n/).slice(5);
-        const resultado: LinvVaciaItem[] = [];
-            for (const linea of lineas) {
-            if (!linea.trim()) {
-                continue;
-            }
-            const columnas = linea.split("\t");
-            const documento = this.normalizarDocumento(columnas[3] ?? "");
-            const tipoAlmacen = String(columnas[15] ?? "").trim().toUpperCase();
-            const ubicacion = String(columnas[16] ?? "").trim().toUpperCase();
-            const material = String(columnas[20] ?? "").trim();
-            if (!documento || !ubicacion || material) {
-                continue;
-            }
-            resultado.push({documento, tipoAlmacen, ubicacion});
+    const resultado: LinvVaciaItem[] = [];
+
+    for (const linea of text.split(/\r?\n/)) {
+        if (!linea.trim()) {
+            continue;
         }
-        return this.eliminarDuplicados(resultado);
+
+        const formatoTabla = linea.trimStart().startsWith("|");
+        const columnas = linea.split(formatoTabla ? "|" : "\t");
+
+        const documentoRaw = String(
+            columnas[formatoTabla ? 4 : 3] ?? ""
+        ).trim();
+
+        // Descarta encabezados y separadores.
+        if (!/^\d+$/.test(documentoRaw)) {
+            continue;
+        }
+
+        const documento = this.normalizarDocumento(documentoRaw);
+        const tipoAlmacen = String(
+            columnas[formatoTabla ? 11 : 15] ?? ""
+        ).trim().toUpperCase();
+        const ubicacion = String(
+            columnas[formatoTabla ? 12 : 16] ?? ""
+        ).trim().toUpperCase();
+        const material = String(
+            columnas[formatoTabla ? 14 : 20] ?? ""
+        ).trim();
+
+        if (!documento || !ubicacion || material) {
+            continue;
+        }
+
+        resultado.push({ documento, tipoAlmacen, ubicacion });
     }
+
+    return this.eliminarDuplicados(resultado);
+}
 
     private static normalizarDocumento(value: string): string {
         return String(value).trim().replace(/^0+/, "");
