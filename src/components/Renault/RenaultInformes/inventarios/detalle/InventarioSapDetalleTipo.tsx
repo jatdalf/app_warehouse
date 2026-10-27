@@ -13,17 +13,11 @@ interface DetalleTipo {
 }
 
 const normalizarReferencia = (referencia: string): string => {
-    return String(referencia ?? "")
-        .trim()
-        .toUpperCase();
+    return String(referencia ?? "").trim().toUpperCase();
 };
 
-const clasificarReferencia = (
-    referencia: string
-): "Cíclico" | "Operativo" => {
-    return referencia === "CICLICOS"
-        ? "Cíclico"
-        : "Operativo";
+const clasificarReferencia = (referencia: string): "Cíclico" | "Operativo" => {
+    return referencia === "CICLICOS" ? "Cíclico" : "Operativo";
 };
 
 const InventarioSapDetalleTipo = ({ lineas }: Props) => {
@@ -31,45 +25,27 @@ const InventarioSapDetalleTipo = ({ lineas }: Props) => {
 
     for (const linea of lineas) {
         const tipo = normalizarReferencia(linea.referencia);
-
         if (!tipo) {
             continue;
         }
-
-        cantidades.set(
-            tipo,
-            (cantidades.get(tipo) ?? 0) + 1
-        );
+        cantidades.set(tipo, (cantidades.get(tipo) ?? 0) + 1);
     }
 
-    const total = Array.from(cantidades.values())
-        .reduce((acc, cantidad) => acc + cantidad, 0);
+    const total = Array.from(cantidades.values()).reduce((acc, cantidad) => acc + cantidad, 0);
 
-    const detalle: DetalleTipo[] =
-        Array.from(cantidades.entries())
+    const detalle: DetalleTipo[] = Array.from(cantidades.entries())
             .map(([tipo, cantidad]) => ({
                 tipo,
                 cantidad,
-                porcentaje:
-                    total > 0
-                        ? (cantidad / total) * 100
-                        : 0,
-                clasificacion:
-                    clasificarReferencia(tipo)
-            }))
-            .sort((a, b) => b.cantidad - a.cantidad);
-
+                porcentaje: total > 0 ? (cantidad / total) * 100 : 0,
+                clasificacion: clasificarReferencia(tipo)
+            })).sort((a, b) => b.cantidad - a.cantidad);
     return (
         <section className={styles.section}>
             <div className={styles.header}>
                 <div>
-                    <h3 className={styles.title}>
-                        Detalle de inventarios por tipo
-                    </h3>
-
-                    <p className={styles.subtitle}>
-                        Distribución según referencia de inventario
-                    </p>
+                    <h3 className={styles.title}>Detalle de inventarios por tipo</h3>
+                    <p className={styles.subtitle}>Distribución según referencia de inventario</p>
                 </div>
             </div>
 
@@ -87,17 +63,12 @@ const InventarioSapDetalleTipo = ({ lineas }: Props) => {
                     <tbody>
                         {detalle.map(item => (
                             <tr key={item.tipo}>
-                                <td className={styles.tipo}>
-                                    {item.tipo}
-                                </td>
-
+                                <td className={styles.tipo}>{item.tipo}</td>
                                 <td className={styles.numero}>
                                     {item.cantidad.toLocaleString("es-AR")}
                                 </td>
-
                                 <td className={styles.numero}>
-                                    {item.porcentaje.toLocaleString(
-                                        "es-AR",
+                                    {item.porcentaje.toLocaleString("es-AR",
                                         {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
@@ -105,13 +76,10 @@ const InventarioSapDetalleTipo = ({ lineas }: Props) => {
                                     )}
                                     %
                                 </td>
-
                                 <td>
                                     <span
                                         className={
-                                            item.clasificacion === "Cíclico"
-                                                ? styles.ciclico
-                                                : styles.operativo
+                                            item.clasificacion === "Cíclico" ? styles.ciclico : styles.operativo
                                         }
                                     >
                                         {item.clasificacion}
@@ -124,15 +92,12 @@ const InventarioSapDetalleTipo = ({ lineas }: Props) => {
                     <tfoot>
                         <tr>
                             <td>Total</td>
-
                             <td className={styles.numero}>
                                 {total.toLocaleString("es-AR")}
                             </td>
-
                             <td className={styles.numero}>
                                 {total > 0 ? "100,00%" : "0,00%"}
                             </td>
-
                             <td>—</td>
                         </tr>
                     </tfoot>

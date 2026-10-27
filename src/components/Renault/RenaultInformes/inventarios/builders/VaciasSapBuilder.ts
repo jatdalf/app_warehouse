@@ -12,10 +12,7 @@ export class VaciasSapBuilder {
             const referencia = linea.referencia.trim().toUpperCase();
             const estado = linea.statusInventario.trim().toUpperCase();
 
-            if (
-                !["VACIA", "VACIAS"].includes(referencia) ||
-                estado !== "ELIMINADOS"
-            ) {
+            if (!["VACIA", "VACIAS"].includes(referencia) || estado !== "ELIMINADOS") {
                 continue;
             }
 

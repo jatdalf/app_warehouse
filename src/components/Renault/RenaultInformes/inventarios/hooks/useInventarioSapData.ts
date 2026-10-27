@@ -10,6 +10,7 @@ import { Lx03OcupacionReader } from "../../../../../readers/Lx03OcupacionReader"
 import type { Lx03OcupacionItem } from "../../ocupacion/Lx03OcupacionItem";
 import { LinvReader } from "../../../../../readers/LinvReader";
 import {LinvInventarioBuilder} from "../builders/LinvInventarioBuilder";
+import {RenaultReingenieriaReader, type ReingenieriaData,} from "../../../../../readers/RenaultReingenieriaReader";
 
 type MesCache = Record<string, InventarioSapLinea[]>;
 type VaciasCache = Partial<Record<WarehouseInventario, VaciasItem[]>>;
@@ -22,11 +23,13 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
     const [error, setError] = useState("");
     const [mesIncorporado, setMesIncorporado] = useState<string | null>(null);
     const [historicoDesdeCache, setHistoricoDesdeCache] = useState(false);
+    const [reingenieria, setReingenieria] = useState<ReingenieriaData>({compactacion: [], mapaCalor: [],});
     /* CACHE POR MES  */
     const cache = useRef<MesCache>({});
     const vaciasCache = useRef<VaciasCache>({});
     const [lx03, setLx03] = useState<Lx03OcupacionItem[]>([]);
     const lx03Cache = useRef<Lx03Cache>({});
+    const reingenieriaCache = useRef<Partial<Record<WarehouseInventario, ReingenieriaData>>>({});
 
     useEffect(() => {
         let cancelado = false;
@@ -64,6 +67,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                 setLoading(true);
                 setError("");
                 setLineas([]);
+                setReingenieria({compactacion: [], mapaCalor: [],});
                 setMesIncorporado(null);  
                 setHistoricoDesdeCache(false);
                 const config = INVENTARIO_WAREHOUSES[warehouse];
@@ -75,7 +79,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                     const cacheKey = `${warehouse}-${mes}`;
                     return !!cache.current[cacheKey];});
                 const mesActual = meses[meses.length - 1];
-                if (todosLosMesesEnCache) {
+                if (todosLosMesesEnCache && reingenieriaCache.current[warehouse]) {
                     const lineasCached = meses.flatMap(mes => {
                         const cacheKey = `${warehouse}-${mes}`;
                         return (cache.current[cacheKey] ?? []);});
@@ -94,13 +98,16 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                 }
                 const vaciasCached = vaciasCache.current[warehouse];
                 const lx03Cached = lx03Cache.current[warehouse];
-                const [lineasActuales, vaciasResult, lx03Result] = await Promise.all([
-                cargarMes(mesActual), vaciasCached ? Promise.resolve(vaciasCached) : 
-                RenaultVaciasReader.read(config.vaciasFileId), lx03Cached ? Promise.resolve(
-                lx03Cached) : Lx03OcupacionReader.read(config.lx03FileId)]);
+                const reingenieriaCached = reingenieriaCache.current[warehouse];
+                const [lineasActuales, vaciasResult, lx03Result, reingenieriaResult,] = await Promise.all([
+                cargarMes(mesActual), vaciasCached ? Promise.resolve(vaciasCached) : RenaultVaciasReader.read(config.vaciasFileId),
+                lx03Cached ? Promise.resolve(lx03Cached) : Lx03OcupacionReader.read(config.lx03FileId),
+                reingenieriaCached ? Promise.resolve(reingenieriaCached) : RenaultReingenieriaReader.read(config.vaciasFileId),]);
                 if (cancelado) {
                     return;
                 }
+                reingenieriaCache.current[warehouse] = reingenieriaResult;
+                setReingenieria(reingenieriaResult);
                 vaciasCache.current[warehouse] = vaciasResult;
                 lx03Cache.current[warehouse] = lx03Result;
                 setLineas(lineasActuales);
@@ -142,13 +149,13 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                 }
                 console.error("Error cargando informe:", err);
                 setError(err instanceof Error ? err.message : "No fue posible cargar el informe." );
-                setLoading(false);
+                setReingenieria(reingenieriaCache.current[warehouse]!);
+                setLoading(false);                
             }
-        };
+        };        
         void cargar();
-        return () => {
-            cancelado = true;
-        };
+        return () => {cancelado = true;};
     }, [warehouse]);
-    return { lineas, vacias, lx03, loading, error, mesIncorporado, historicoDesdeCache };
+    
+    return { lineas, vacias, lx03, loading, error, mesIncorporado, reingenieria, historicoDesdeCache };
 };

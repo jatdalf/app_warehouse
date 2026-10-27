@@ -9,10 +9,8 @@ interface Props {
 const InventarioSapEstado: React.FC<Props> = ({lineas}) => {
     const resumen = useMemo(() => {
         /* IMPORTANTE: contamos DOCUMENTOS DE INVENTARIO, no líneas. */
-        const abiertos = lineas.filter( item => item.statusInventario.trim()
-                        .toUpperCase() !== "ELIMINADOS");
-        const cerrados = lineas.filter( item => item.statusInventario.trim()
-                        .toUpperCase() === "ELIMINADOS");
+        const abiertos = lineas.filter( item => item.statusInventario.trim().toUpperCase() !== "ELIMINADOS");
+        const cerrados = lineas.filter( item => item.statusInventario.trim().toUpperCase() === "ELIMINADOS");
         const cantidadAbiertos = abiertos.length;
         const cantidadCerrados = cerrados.length;
         const incidentes = 0;

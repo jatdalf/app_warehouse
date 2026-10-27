@@ -15,6 +15,7 @@ import type { TipoPeriodo } from "./builders/InventarioPeriodoBuilder";
 import { useInventarioPeriodos } from "./hooks/useInventarioPeriodos";
 import InventarioSapDetalleTipo from "./detalle/InventarioSapDetalleTipo";
 import { VaciasSapBuilder } from "./builders/VaciasSapBuilder";
+import ReingenieriaInforme from "./reingenieria/ReingenieriaInforme";
 
 
 const InventarioSapInforme: React.FC = () => {
@@ -22,7 +23,7 @@ const InventarioSapInforme: React.FC = () => {
     const [tipoPeriodo, setTipoPeriodo] = useState<TipoPeriodo>("SEMANA");
     const [warehouse, setWarehouse] = useState<WarehouseInventario>("W1");
     const targetDiario = INVENTARIO_WAREHOUSES[warehouse].targetDiario;
-    const { lineas, vacias, loading, error} = useInventarioSapData(warehouse);
+    const { lineas, vacias, loading, reingenieria, error} = useInventarioSapData(warehouse);
     const { periodos, periodoSeleccionado, setPeriodoSeleccionado, periodo,
         periodoVisual, lineasPeriodo, lineasPeriodoCerradas, mesesPeriodo
     } = useInventarioPeriodos({lineas, feriados, tipoPeriodo, targetDiario});
@@ -102,6 +103,9 @@ const vaciasCombinadas = useMemo(() => [...vacias, ...VaciasSapBuilder.build(lin
             </div>
             <div className={styles.printSection}>
                 <VaciasInforme items={vaciasCombinadas} desde={periodo.desde} hasta={periodo.hasta}/>
+            </div>
+            <div className={styles.printSection}>
+                <ReingenieriaInforme data={reingenieria} desde={periodo.desde} hasta={periodo.hasta}/>
             </div>
                 <InventarioSapHallazgos lineas={lineasPeriodoCerradas}/>
             </>
