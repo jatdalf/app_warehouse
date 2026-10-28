@@ -1,10 +1,23 @@
-import logoRenault from '../../assets/Renault01.png';
 import styles from './LogoRenault.module.css';
+import renaultVideo from "../../assets/renault-claro.mp4";
+import renaultImagen from "../../assets/renault-claro.png";
 
 const LogoRenault = () => {   
     return(
         <div className={styles.logoContainer}>        
-              <img src={logoRenault} alt="Renault Logo" className={styles.RenaultLogo} />          
+           <video
+    className={`${styles.renaultLogo} ${styles.logoAnimado}`}
+    autoPlay
+    muted
+    loop
+    playsInline
+    disablePictureInPicture
+    poster={renaultImagen}
+    aria-label="Renault"
+>
+    <source src={renaultVideo} type="video/mp4" />
+</video>
+            <img src={renaultImagen} alt="Renault" className={`${styles.renaultLogo} ${styles.logoEstatico}`}/>        
         </div>
     )
 }           

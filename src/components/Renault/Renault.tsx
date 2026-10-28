@@ -15,24 +15,8 @@ const Renault = () => {
           <LogoOcasa />
         </div>
       </div>
-
       {/* Fieldsets */}
       <div className={styles.fieldsetContainer}>
-        {/* <fieldset className={styles.fieldsetPeya}>
-          <legend>Utilidades</legend>
-          <Link to="/PeYaIngresos">
-            <button className={styles.peyaButton}>Ingresos <br /> (en desarrollo)</button>
-          </Link>
-          <Link to="/PeYaEgresos">
-            <button className={styles.peyaButton}>Egresos (Simple)</button>
-          </Link>
-
-          <Link to="/PeYaWorkflow">
-            <button className={styles.peyaButton}>Egresos con ubicacion</button>
-          </Link>
-
-        </fieldset> */}
-
         <fieldset className={styles.fieldsetPeya}>
           <legend>Informes</legend>
           <Link to="/RenaultInformes">

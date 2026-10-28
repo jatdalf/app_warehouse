@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styles from "./WhGral.module.css";
 import logo from "../../assets/OcasaLogoSmall.png";
 import peYa from "../../assets/PeYa.png";
-import Renault from "../../assets/Renault01.png";
+import LogoRenault from "../Renault/LogoRenault";
 
 const WhGral = () => {
     return (
@@ -33,10 +33,9 @@ const WhGral = () => {
                 </Link>
 
                 <Link to="/Renault" className={styles.card}>
-                    <div className={styles.iconContainer}>
-                        <img src={Renault} alt="Renault" className={styles.icon} />
+                    <div className={`${styles.iconContainer} ${styles.renaultIcon}`}>
+                        <LogoRenault />
                     </div>
-
                     <div className={styles.cardContent}>
                         <h3>Renault</h3>
                         <p>Informes de warehouse</p>

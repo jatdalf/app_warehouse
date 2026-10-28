@@ -20,3 +20,76 @@
     margin-bottom: -30px;
     margin-left: 70px;
 }
+@media print {
+    .headerContainer {
+        display: grid;
+        grid-template-columns: 35mm minmax(0, 1fr) 45mm;
+        align-items: center;
+        gap: 5mm;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        margin: 0 0 4mm;
+        padding: 0;
+        box-sizing: border-box;
+        overflow: visible;
+        break-inside: avoid;
+    }
+
+    .headerTitle {
+        min-width: 0;
+        margin: 0;
+        color: black;
+        text-align: center;
+        font-size: 17pt;
+        line-height: 1.2;
+    }
+
+    .LogoRenault,
+    .LogoOcasa {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .LogoRenault {
+        justify-content: flex-start;
+    }
+
+    .LogoOcasa {
+        justify-content: flex-end;
+    }
+
+    .LogoRenault img,
+    .LogoOcasa img {
+        position: static;
+        display: block;
+        width: auto;
+        min-width: 0;
+        max-width: 100%;
+        height: auto;
+        max-height: 18mm;
+        margin: 0;
+        object-fit: contain;
+        transform: none;
+    }
+
+    .LogoRenault video,
+    .LogoOcasa video {
+        display: none;
+    }
+}
+@media print {
+    .LogoOcasa img {
+        width: 8mm;
+        height: 8mm;
+        max-width: none;
+        max-height: none;
+        margin: 0;
+        animation: none;
+        transform: none;
+        flex-shrink: 0;
+    }
+}

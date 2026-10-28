@@ -6,166 +6,79 @@ interface Props {
 }
 
 const CompactacionPropuesta = ({ candidato }: Props) => {
-
     return (
         <div className={styles.container}>
-
             <div className={styles.header}>
                 <div>
-                    <h3>
-                        Propuesta de compactación
-                    </h3>
-
-                    <p>
-                        Material{" "}
-                        <strong>
-                            {candidato.material}
-                        </strong>
-                    </p>
+                    <h3>Propuesta de compactación</h3>
+                    <p>Material{" "}<strong>{candidato.material}</strong></p>
                 </div>
 
                 <div className={styles.resultado}>
-                    <strong>
-                        {candidato.ubicacionesLiberables}
-                    </strong>
-
-                    <span>
-                        ubicaciones potencialmente liberables
-                    </span>
+                    <strong>{candidato.ubicacionesLiberables}</strong>
+                    <span>ubicaciones potencialmente liberables</span>
                 </div>
             </div>
-
-
             <div className={styles.comparacion}>
-
                 <div className={styles.columna}>
-
-                    <div className={styles.columnaTitulo}>
-                        ANTES
-                    </div>
-
+                    <div className={styles.columnaTitulo}>ANTES</div>
                     {candidato.propuesta.map(item => (
-
-                        <div
-                            key={item.ubicacion}
-                            className={styles.ubicacion}
-                        >
-                            <span className={styles.nombreUbicacion}>
-                                {item.ubicacion}
-                            </span>
-
-                            <span className={styles.cantidad}>
-                                {formatNumber(
-                                    item.cantidadActual
-                                )}
-                            </span>
+                        <div key={item.ubicacion} className={styles.ubicacion}>
+                            <span className={styles.nombreUbicacion}>{item.ubicacion}</span>
+                            <span className={styles.cantidad}>{formatNumber(item.cantidadActual)}</span>
                         </div>
-
                     ))}
-
                 </div>
-
-
-                <div className={styles.flecha}>
-                    →
-                </div>
-
-
+                <div className={styles.flecha}> →</div>
                 <div className={styles.columna}>
-
-                    <div className={styles.columnaTitulo}>
-                        PROPUESTA
-                    </div>
-
+                    <div className={styles.columnaTitulo}>PROPUESTA</div>
                     {candidato.propuesta.map(item => (
-
-                        <div
-                            key={item.ubicacion}
-                            className={styles.ubicacion}
-                        >
-                            <span className={styles.nombreUbicacion}>
-                                {item.ubicacion}
-                            </span>
-
-                            {item.liberada ? (
-
-                                <span className={styles.libre}>
-                                    ✓ LIBRE
-                                </span>
-
-                            ) : (
-
+                        <div key={item.ubicacion} className={styles.ubicacion}>
+                            <span className={styles.nombreUbicacion}>{item.ubicacion}</span>
+                            {item.liberada ? (<span className={styles.libre}>✓ LIBRE</span>) : (
                                 <span className={styles.cantidad}>
-                                    {formatNumber(
-                                        item.cantidadPropuesta
-                                    )}
+                                {formatNumber(item.cantidadPropuesta)}
                                 </span>
-
                             )}
                         </div>
-
                     ))}
-
                 </div>
-
             </div>
-
-
             {candidato.movimientos.length > 0 && (
-
                 <div className={styles.movimientos}>
-
-                    <h4>
-                        Movimientos sugeridos
-                    </h4>
-
+                    <h4>Movimientos sugeridos</h4>
                     <div className={styles.movimientosLista}>
-
-                        {candidato.movimientos.map(
-                            (movimiento, index) => (
-
-                                <div
-                                    key={`${movimiento.desde}-${movimiento.hacia}-${index}`}
-                                    className={styles.movimiento}
-                                >
-
-                                    <span className={styles.movimientoUbicacion}>
-                                        {movimiento.desde}
-                                    </span>
-
-                                    <span className={styles.movimientoFlecha}>
-                                        →
-                                    </span>
-
-                                    <span className={styles.movimientoUbicacion}>
-                                        {movimiento.hacia}
-                                    </span>
-
-                                    <strong>
-                                        {formatNumber(
-                                            movimiento.cantidad
-                                        )}
-                                    </strong>
-
-                                    <span className={styles.unidades}>
-                                        unidades
-                                    </span>
-
-                                </div>
-
-                            )
-                        )}
-
-                    </div>
-
+                        {candidato.movimientos.map((movimiento, index) => (
+                        <div key={`${movimiento.desde}-${movimiento.hacia}-${index}`} className={styles.movimiento}>
+                            <span className={styles.movimientoUbicacion}>{movimiento.desde}</span>
+                            <span className={styles.movimientoFlecha}> →</span>
+                            <span className={styles.movimientoUbicacion}>{movimiento.hacia}</span>
+                            <strong>{formatNumber(movimiento.cantidad)}</strong>
+                            <span className={styles.unidades}>unidades</span>
+                        </div>
+                    )
+                )}
                 </div>
-
+                <div className={styles.controlImpresion}>
+                    <div className={styles.ubicacionesLiberar}>
+                        <strong>Ubicaciones a liberar:</strong>{" "}
+                        {candidato.propuesta.filter(item => item.liberada).map(item => item.ubicacion).join(" · ") || "Ninguna"}
+                    </div>
+                    <div className={styles.camposOperario}>
+                        <span>Operario: __________________________</span>
+                        <span>Fecha: ____ / ____ / ________</span>
+                    </div>
+                    <div className={styles.observaciones}>
+                        Observaciones:
+                        <div />
+                        <div />
+                    </div>
+                </div>
+            </div>
             )}
-
         </div>
     );
 };
-
 
 function formatNumber(value: number): string {
     return value.toLocaleString("es-AR");

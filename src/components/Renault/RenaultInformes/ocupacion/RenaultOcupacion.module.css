@@ -9,82 +9,195 @@
 .warehouseButton,
 .warehouseActive {
     min-width: 115px;
-
     padding: 9px 18px;
-
     border: 1px solid #d5dfdd;
     border-radius: 20px;
-
     font-family: inherit;
     font-size: 13px;
     font-weight: 700;
-
     cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 
 .warehouseButton {
     background: white;
-
     color: #666;
 }
-
-
 .warehouseButton:hover {
     background: #f4f8f7;
-
     border-color: #b9cfca;
 }
-
-
 .warehouseActive {
     background: #2b8179;
-
     border-color: #2b8179;
-
     color: white;
 }
-
-
 .loading {
     text-align: center;
 }
-
-
 .loading p {
     margin-top: 8px;
-
     color: #777;
-
     font-size: 13px;
 }
 
 
 .error {
     margin: 30px auto;
-
     color: #b44;
-
     text-align: center;
 }
 
 
 @media (max-width: 600px) {
-
     .warehouseSelector {
         margin-top: 18px;
     }
-
-
+    .renaultLogo {
+        width: 45px;
+        height: 55px;
+    }
     .warehouseButton,
     .warehouseActive {
         min-width: 105px;
-
         padding: 8px 14px;
+    }
+}
+.printContext {
+    display: none;
+}
+
+@page {
+    size: A4 landscape;
+    margin: 10mm;
+}
+
+@media print {
+    .container {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        overflow: visible;
+        color: black;
+    }
+
+    .warehouseSelector {
+        display: none;
+    }
+
+    .printContext {
+        display: block;
+        margin: 0 0 5mm;
+        color: black;
+        text-align: center;
+        font-size: 11pt;
+        font-weight: 700;
+    }
+}
+.sourceToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    width: min(1200px, 100%);
+    margin: 24px auto 0;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+
+.sourceInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.sourceInfo strong {
+    color: #2b8179;
+    font-size: 13px;
+}
+
+.sourceInfo span {
+    color: #7b8482;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.sourceActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.uploadButton,
+.restoreButton {
+    padding: 10px 18px;
+    border: 1px solid #2b8179;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.uploadButton {
+    background: #2b8179;
+    color: white;
+}
+
+.uploadButton:hover:not(:disabled) {
+    background: #21675f;
+}
+
+.restoreButton {
+    background: white;
+    color: #2b8179;
+}
+
+.restoreButton:hover:not(:disabled) {
+    background: #eef6f4;
+}
+
+.uploadButton:disabled,
+.restoreButton:disabled,
+.warehouseButton:disabled,
+.warehouseActive:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+@media (max-width: 600px) {
+    .sourceToolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sourceActions {
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+}
+
+@media print {
+    .sourceToolbar {
+        margin: 3mm 0;
+        padding: 0;
+        break-inside: avoid;
+    }
+
+    .sourceInfo strong,
+    .sourceInfo span {
+        color: black;
+        font-size: 8pt;
+    }
+
+    .sourceActions {
+        display: none;
     }
 }

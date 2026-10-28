@@ -5,26 +5,18 @@
 
 .title {
     margin-bottom: 14px;
-
     color: #333;
-
     font-size: 20px;
     font-weight: 700;
 }
 
 .tableWrapper {
     width: 100%;
-
     overflow-x: auto;
-
     border: 1px solid #e1e5e4;
     border-radius: 12px;
-
     background: #ffffff;
-
-    box-shadow:
-        0 4px 16px
-        rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .table {
@@ -36,38 +28,26 @@
 
 .table th {
     padding: 13px 16px;
-
     background: #f4f7f6;
-
     color: #555;
-
     font-size: 12px;
     font-weight: 700;
-
     text-align: left;
-
     border-bottom: 1px solid #dfe5e3;
-
     white-space: nowrap;
 }
 
 .table td {
     padding: 12px 16px;
-
     color: #444;
-
     font-size: 13px;
-
     border-bottom: 1px solid #edf0ef;
-
     vertical-align: middle;
 }
 
 .storage {
     width: 75px;
-
     font-weight: 700;
-
     color: #2b8179 !important;
 }
 
@@ -83,58 +63,43 @@
 
 .percent {
     width: 110px;
-
     font-weight: 700;
     text-align: right;
-
     white-space: nowrap;
 }
 
 .capacityCell {
     display: flex;
     align-items: center;
-
     gap: 12px;
-
     min-width: 245px;
 }
 
 .progressBar {
     width: 145px;
     height: 12px;
-
     flex-shrink: 0;
-
     background: #e4e9e8;
-
     border-radius: 20px;
-
     overflow: hidden;
 }
 
 .progressFill {
     height: 100%;
-
     background: #2b8179;
-
     border-radius: 20px;
-
     transition: width 0.3s ease;
 }
 
 .capacityText {
     min-width: 95px;
-
     color: #777;
-
     font-size: 11px;
-
     white-space: nowrap;
 }
 
 .oportunidadesCell {
     width: 120px;
-
     text-align: center;
 }
 
@@ -158,3 +123,181 @@
 .sinOportunidad {
     color: #bbb;
 }   
+@media print {
+    .container {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        margin: 5mm 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .title {
+        margin: 0 0 3mm;
+        color: black;
+        font-size: 12pt;
+        break-after: avoid;
+    }
+
+    .tableWrapper {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        overflow: visible;
+        box-sizing: border-box;
+        border: 1px solid #aaa;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .table {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+        min-width: 0;
+        padding: 2mm 1.5mm;
+        box-sizing: border-box;
+        color: black;
+        font-size: 8.5pt;
+        line-height: 1.25;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .table th {
+        background: #edf2f1;
+        font-weight: 700;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* Anchos: suman 100% */
+    .table th:nth-child(1),
+    .table td:nth-child(1) {
+        width: 7%;
+    }
+
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+        width: 25%;
+    }
+
+    .table th:nth-child(3),
+    .table td:nth-child(3),
+    .table th:nth-child(4),
+    .table td:nth-child(4),
+    .table th:nth-child(5),
+    .table td:nth-child(5) {
+        width: 9%;
+        text-align: right;
+    }
+
+    .table th:nth-child(6),
+    .table td:nth-child(6) {
+        width: 11%;
+        text-align: right;
+    }
+
+    .table th:nth-child(7),
+    .table td:nth-child(7) {
+        width: 19%;
+    }
+
+    .table th:nth-child(8),
+    .table td:nth-child(8) {
+        width: 11%;
+        text-align: center;
+    }
+
+    .storage {
+        color: black !important;
+        font-weight: 700;
+    }
+
+    .description,
+    .numeric,
+    .percent,
+    .oportunidadesCell {
+        min-width: 0;
+    }
+
+    .percent {
+        white-space: nowrap;
+    }
+
+    /* Barra arriba y cantidades debajo */
+    .capacityCell {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1mm;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .progressBar {
+        width: 100%;
+        height: 2mm;
+        background: #e4e9e8;
+        border-radius: 0;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .progressFill {
+        background: #2b8179;
+        border-radius: 0;
+        transition: none;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .capacityText {
+        min-width: 0;
+        color: black;
+        font-size: 8pt;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /* Imprimir el valor sin apariencia de botón */
+    .compactacionBadge {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        color: black;
+        font-size: 9pt;
+        transform: none;
+        filter: none;
+    }
+
+    .compactacionBadge > span {
+        display: none;
+    }
+
+    .compactacionBadge strong,
+    .sinOportunidad {
+        color: black;
+    }
+
+    .table thead {
+        display: table-header-group;
+    }
+
+    .table tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}

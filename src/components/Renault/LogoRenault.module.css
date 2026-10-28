@@ -1,5 +1,41 @@
-.RenaultLogo{
-    height: 60px;
+.logoContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.renaultLogo {
+    display: block;
     width: 60px;
-    margin-left: -20%;
-}   
+    height: 70px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.logoEstatico {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logoAnimado {
+        display: none;
+    }
+
+    .logoEstatico {
+        display: block;
+    }
+}
+
+@media print {
+    .logoAnimado {
+        display: none;
+    }
+
+    .logoEstatico {
+        display: block;
+    }
+}
+.logoAnimado {
+    pointer-events: none;
+}

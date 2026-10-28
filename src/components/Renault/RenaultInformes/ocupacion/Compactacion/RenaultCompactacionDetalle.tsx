@@ -3,6 +3,9 @@ import type {CompactacionCandidato } from "./CompactacionItem";
 import styles from "./RenaultCompactacionDetalle.module.css";
 import { Fragment, useMemo, useState } from "react";
 import CompactacionPropuesta from "./CompactacionPropuesta";
+import ocasaLogo from "../../../../../assets/OcasaLogoSmall.png";
+import renaultVideo from "../../../../../assets/renault-claro.mp4";
+import renaultImagen from "../../../../../assets/renault-claro.png";
 
 const RenaultCompactacionDetalle = () => {
     const {warehouse, storage} = useParams();
@@ -22,13 +25,43 @@ const RenaultCompactacionDetalle = () => {
         }
     }, [warehouse, storage]);
     const totalLiberables = candidatos.reduce((total, item) => total + item.ubicacionesLiberables, 0);
+    const candidatoSeleccionado = candidatos.find(candidato => candidato.material === materialExpandido,);
 
     return (
-        <main className={styles.container}>
+        <main className={`${styles.container} ${candidatoSeleccionado ? styles.imprimirPropuesta : ""}`}>
             <header className={styles.header}>
-                <div>
-                    <h1>Oportunidades de compactación</h1>
-                    <p>{warehouse === "W1" ? "W1 · REP" : "W2 · BsAs"} {" · "} Storage {storage}</p>
+                <div className={styles.brandHeader}>
+                    <video
+                        className={`${styles.renaultLogo} ${styles.logoAnimado}`}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        poster={renaultImagen}
+                        aria-label="Renault"
+                    >
+                        <source src={renaultVideo} type="video/mp4" />
+                    </video>
+
+                    <img
+                        src={renaultImagen}
+                        alt="Renault"
+                        className={`${styles.renaultLogo} ${styles.logoEstatico}`}
+                    />
+
+                    <div className={styles.heading}>
+                        <h1>Oportunidades de compactación</h1>
+                        <p>
+                            {warehouse === "W1" ? "W1 · REP" : "W2 · BsAs"}
+                            {" · "} Storage {storage}
+                        </p>
+                    </div>
+
+                    <img
+                        src={ocasaLogo}
+                        alt="OCASA"
+                        className={styles.ocasaLogo}
+                    />
                 </div>
                 <div className={styles.summary}>
                     <div>
@@ -115,6 +148,38 @@ const RenaultCompactacionDetalle = () => {
                     </table>
                 </div>
             )}
+            <section className={styles.printOnly}>
+            {candidatoSeleccionado && (
+                <article className={styles.printCandidate}>
+                    <div className={styles.printMetrics}>
+                        <span>
+                            Stock total:{" "}
+                            <strong>{formatNumber(candidatoSeleccionado.cantidadTotal)}</strong>
+                        </span>
+                        <span>
+                            Capacidad observada:{" "}
+                            <strong>
+                                {formatNumber(candidatoSeleccionado.capacidadObservada,)}
+                            </strong>
+                        </span>
+                        <span>
+                            Ubicaciones actuales:{" "}
+                            <strong>
+                                {formatNumber(candidatoSeleccionado.ubicacionesActuales,)}
+                            </strong>
+                        </span>
+
+                        <span>
+                            Ubicaciones necesarias:{" "}
+                            <strong>
+                                {formatNumber(candidatoSeleccionado.ubicacionesNecesarias,)}
+                            </strong>
+                        </span>
+                    </div>
+                    <CompactacionPropuesta candidato={candidatoSeleccionado}/>
+                </article>
+            )}
+        </section>
         </main>
     );
 };

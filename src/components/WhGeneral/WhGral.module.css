@@ -306,3 +306,19 @@
     }
 
 }
+/* Tamaño del logo Renault únicamente en este portal */
+.renaultIcon video,
+.renaultIcon img {
+    width: 10em;
+    height: 10em;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+@media (max-width: 650px) {
+    .renaultIcon video,
+    .renaultIcon img {
+        width: 100px;
+        height: 118px;
+    }
+}

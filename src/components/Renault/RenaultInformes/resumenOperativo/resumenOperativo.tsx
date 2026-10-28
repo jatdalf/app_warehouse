@@ -1,8 +1,6 @@
 const resumenOperativo = ()=>{
     return(
-        <div>
-            Resumen
-        </div>
+        <div>Resumen</div>
     )
 }
 export default resumenOperativo;

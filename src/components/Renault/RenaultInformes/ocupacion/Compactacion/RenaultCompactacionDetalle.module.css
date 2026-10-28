@@ -1,277 +1,185 @@
 .container {
     width: calc(100% - 48px);
     max-width: 1180px;
-
     margin: 36px auto 60px;
 }
-
-
 /* =========================
    CABECERA
 ========================= */
-
 .header {
     width: 100%;
     max-width: 1020px;
-
     margin: 0 auto 26px;
-
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-
     gap: 40px;
 }
 
 .header h1 {
     margin: 0;
-
     color: #333;
-
     font-size: 26px;
     font-weight: 700;
 }
 
 .header p {
     margin: 6px 0 0;
-
     color: #2b8179;
-
     font-size: 17px;
     font-weight: 700;
 }
-
-
 /* =========================
    RESUMEN
 ========================= */
-
 .summary {
     display: flex;
     gap: 14px;
-
     flex-shrink: 0;
 }
 
 .summary > div {
     width: 190px;
-
     padding: 14px 18px;
-
     box-sizing: border-box;
-
     border: 1px solid #dce5e3;
     border-radius: 12px;
-
     background: white;
-
     text-align: center;
 }
 
 .summary span {
     display: block;
-
     margin-bottom: 5px;
-
     color: #777;
-
     font-size: 11px;
 }
-
 .summary strong {
     display: block;
-
     color: #2b8179;
-
     font-size: 22px;
 }
-
-
 /* =========================
    ACLARACIÓN
 ========================= */
-
 .notice {
     width: 100%;
     max-width: 1020px;
-
     margin: 0 auto 24px;
-
     padding: 13px 16px;
-
     box-sizing: border-box;
-
     background: #fff8df;
-
     border-radius: 10px;
-
     color: #665b35;
-
     font-size: 13px;
     line-height: 1.45;
 }
-
-
 /* =========================
    TABLA
 ========================= */
-
 .tableWrapper {
     width: 100%;
-
     overflow: hidden;
-
     border: 1px solid #e1e5e4;
     border-radius: 12px;
-
     background: white;
-
-    box-shadow:
-        0 4px 16px
-        rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
-
 .table {
     width: 100%;
-
     border-collapse: collapse;
-
     table-layout: fixed;
 }
 
 .table th {
     padding: 14px 16px;
-
     background: #f4f7f6;
-
     color: #555;
-
     font-size: 12px;
     font-weight: 700;
-
     text-align: left;
-
     white-space: nowrap;
-
     border-bottom: 1px solid #dfe5e3;
 }
 
 .table td {
     padding: 14px 16px;
-
     color: #444;
-
     font-size: 13px;
-
     vertical-align: middle;
-
     border-bottom: 1px solid #edf0ef;
 }
-
-
 /* =========================
    ANCHOS DE COLUMNAS
 ========================= */
-
 .table th:nth-child(1),
 .table td:nth-child(1) {
     width: 15%;
 }
-
 .table th:nth-child(2),
 .table td:nth-child(2) {
     width: 11%;
 }
-
 .table th:nth-child(3),
 .table td:nth-child(3) {
     width: 17%;
 }
-
 .table th:nth-child(4),
 .table td:nth-child(4) {
     width: 17%;
 }
-
 .table th:nth-child(5),
 .table td:nth-child(5) {
     width: 18%;
 }
-
 .table th:nth-child(6),
 .table td:nth-child(6) {
     width: 18%;
 }
-
 .table th:nth-child(7),
 .table td:nth-child(7) {
     width: 4%;
 }
-
-
 /* =========================
    FILA CANDIDATO
 ========================= */
-
 .candidateRow {
     cursor: pointer;
-
     transition: background 0.15s ease;
 }
-
 .candidateRow:hover {
     background: #f7faf9;
 }
-
-
 /* =========================
    MATERIAL
 ========================= */
-
 .material {
     color: #2b8179 !important;
-
     font-weight: 700;
-
     white-space: nowrap;
 }
-
-
 /* =========================
    LIBERABLES
 ========================= */
-
 .liberables {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     min-width: 42px;
-
     padding: 5px 10px;
-
     box-sizing: border-box;
-
     background: #fff6d8;
-
     border-radius: 15px;
-
     color: #66551e;
-
     font-weight: 700;
 }
-
-
 /* =========================
    EXPANDIR / CONTRAER
 ========================= */
-
 .expandCell {
     padding-left: 4px !important;
     padding-right: 8px !important;
-
     text-align: center !important;
-
     white-space: nowrap;
 }
 
@@ -279,148 +187,412 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     width: 24px;
     height: 24px;
-
     border-radius: 50%;
-
     color: #2b8179;
-
-    font-size: 11px;
+    font-size: 11px;    
     font-weight: 700;
-
-    transition:
-        background 0.15s ease,
-        transform 0.15s ease;
+    transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .candidateRow:hover .expandIcon {
     background: #eaf4f2;
 }
-
-
 /* =========================
    FILA DE DETALLE
 ========================= */
-
 .detailRow td {
     padding: 0 !important;
-
     background: #fafcfc;
-
     border-bottom: 1px solid #dde6e3;
 }
-
 
 /*
    Muy importante:
    el td del detalle usa colSpan={7}.
-
    Por eso evitamos que las reglas nth-child
    normales interfieran visualmente con él.
 */
-
 .detailRow td:first-child {
     width: auto;
 }
-
-
 /* =========================
    VACÍO
 ========================= */
-
 .empty {
     padding: 30px;
-
     text-align: center;
-
     color: #777;
 }
-
-
 /* =========================
    MOBILE / TABLET
 ========================= */
-
 @media (max-width: 800px) {
-
     .container {
         width: calc(100% - 24px);
-
         margin-top: 22px;
     }
-
-
     .header {
         max-width: none;
-
         align-items: stretch;
         flex-direction: column;
-
         gap: 18px;
     }
-
-
     .summary {
         width: 100%;
+    }
+    .summary > div {
+        width: auto;
+        flex: 1;
+    }
+    .notice {
+        max-width: none;
+    }
+    .tableWrapper {
+        overflow-x: auto;
+    }
+    .table {
+        min-width: 900px;
+        table-layout: fixed;
+    }
+}
+/* =========================
+   MOBILE PEQUEÑO
+========================= */
+@media (max-width: 520px) {
+    .container {
+        width: calc(100% - 16px);
+    }
+    .header h1 {
+        font-size: 22px;
+    }
+    .summary {
+        gap: 8px;
+    }
+    .summary > div {
+        padding: 12px 10px;
+    }
+    .summary strong {
+        font-size: 20px;
+    }
+    .notice {
+        font-size: 12px;
+    }
+}
+/* Ocultar la versión de impresión en pantalla */
+.printOnly {
+    display: none;
+}
+
+@page {
+    size: A4 portrait;
+    margin: 12mm;
+}
+
+@media print {
+    .container {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        color: black;
+        overflow: visible;
+    }
+
+    .header {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        margin: 0 0 5mm;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4mm;
+        break-inside: avoid;
+    }
+
+    .header h1 {
+        color: black;
+        font-size: 17pt;
+        line-height: 1.2;
+    }
+
+    .header p {
+        margin-top: 2mm;
+        color: black;
+        font-size: 11pt;
+    }
+
+    .summary {
+        display: flex;
+        width: 100%;
+        gap: 4mm;
     }
 
     .summary > div {
         width: auto;
-
         flex: 1;
+        padding: 2mm 3mm;
+        border: 1px solid #888;
+        border-radius: 0;
+        background: white;
+        text-align: left;
     }
 
-
-    .notice {
-        max-width: none;
-    }
-
-
-    .tableWrapper {
-        overflow-x: auto;
-    }
-
-
-    .table {
-        min-width: 900px;
-
-        table-layout: fixed;
-    }
-}
-
-
-/* =========================
-   MOBILE PEQUEÑO
-========================= */
-
-@media (max-width: 520px) {
-
-    .container {
-        width: calc(100% - 16px);
-    }
-
-
-    .header h1 {
-        font-size: 22px;
-    }
-
-
-    .summary {
-        gap: 8px;
-    }
-
-    .summary > div {
-        padding: 12px 10px;
+    .summary span {
+        margin-bottom: 1mm;
+        color: black;
+        font-size: 9pt;
     }
 
     .summary strong {
-        font-size: 20px;
+        color: black;
+        font-size: 14pt;
     }
 
-
     .notice {
-        font-size: 12px;
+        width: 100%;
+        max-width: none;
+        margin: 0 0 5mm;
+        padding: 3mm;
+        border: 1px solid #999;
+        border-radius: 0;
+        background: white;
+        color: black;
+        font-size: 9pt;
+        line-height: 1.4;
+        break-inside: avoid;
+    }
+
+    /* La tabla interactiva se reemplaza por las órdenes */
+    .tableWrapper {
+        display: none;
+    }
+
+    .printOnly {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .printCandidate {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Un material nuevo comienza en otra hoja */
+    .printCandidate + .printCandidate {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .printMetrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2mm 5mm;
+        padding: 3mm;
+        border: 1px solid #888;
+        color: black;
+        font-size: 9pt;
+        break-inside: avoid;
+        break-after: avoid;
+    }
+
+    .empty {
+        padding: 5mm 0;
+        color: black;
+        font-size: 11pt;
+    }
+}
+@media print {
+    /* Sin selección: imprimir el listado resumen */
+    .container .tableWrapper {
+        display: block;
+        width: 100%;
+        overflow: visible;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .container .table {
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    /* Estas reglas solo afectan la tabla principal */
+    .container .table > thead > tr > th,
+    .container .table > tbody > tr > td {
+        padding: 2.5mm 1.5mm;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        font-size: 8pt;
+    }
+
+    .container .table > thead {
+        display: table-header-group;
+    }
+
+    .container .table > tbody > tr {
+        break-inside: avoid;
+    }
+
+    .container .expandCell,
+    .container .table > thead > tr > th:last-child,
+    .container .detailRow {
+        display: none;
+    }
+
+    .container .liberables {
+        min-width: 0;
+        padding: 0;
+        background: none;
+        color: black;
+    }
+
+    .container .printOnly {
+        display: none;
+    }
+
+    /* Con selección: imprimir únicamente su propuesta */
+    .container.imprimirPropuesta .tableWrapper {
+        display: none;
+    }
+
+    .container.imprimirPropuesta .printOnly {
+        display: block;
+    }
+
+    /*
+     * Los indicadores superiores corresponden a todo el storage.
+     * Ocultarlos en la orden individual evita confundir sus totales.
+     */
+    .container.imprimirPropuesta .summary {
+        display: none;
+    }
+}
+.header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+}
+
+.brandHeader {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr) 150px;
+    align-items: center;
+    gap: 22px;
+    width: 100%;
+}
+
+.heading {
+    min-width: 0;
+    text-align: center;
+}
+
+.renaultLogo,
+.ocasaLogo {
+    display: block;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.renaultLogo {
+    width: 65px;
+    height: 75px;
+    justify-self: start;
+}
+
+.ocasaLogo {
+    width: 150px;
+    height: 60px;
+    justify-self: end;
+}
+
+.summary {
+    justify-content: flex-end;
+}
+
+@media screen and (max-width: 600px) {
+    .brandHeader {
+        grid-template-columns: 60px minmax(0, 1fr) 95px;
+        gap: 10px;
+    }
+
+    .renaultLogo {
+        width: 45px;
+        height: 55px;
+    }
+
+    .ocasaLogo {
+        width: 95px;
+        height: 40px;
+    }
+
+    .heading h1 {
+        font-size: 18px;
+    }
+
+    .heading p {
+        font-size: 13px;
+    }
+}
+
+@media print {
+    .header {
+        gap: 4mm;
+    }
+
+    .brandHeader {
+        grid-template-columns: 17mm minmax(0, 1fr) 30mm;
+        gap: 4mm;
+        break-inside: avoid;
+    }
+
+    .renaultLogo {
+        width: 13mm;
+        height: 18mm;
+    }
+
+    .ocasaLogo {
+        width: 30mm;
+        height: 13mm;
+    }
+
+    .heading h1 {
+        font-size: 16pt;
+        line-height: 1.2;
+    }
+
+    .heading p {
+        font-size: 10pt;
+    }
+}
+.logoEstatico {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logoAnimado {
+        display: none;
+    }
+
+    .logoEstatico {
+        display: block;
+    }
+}
+
+@media print {
+    .logoAnimado {
+        display: none;
+    }
+
+    .logoEstatico {
+        display: block;
     }
 }
