@@ -4,6 +4,12 @@ import styles from "./CompactacionPropuesta.module.css";
 interface Props {
     candidato: CompactacionCandidato;
 }
+const fechaTrabajo = new Date().toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "America/Argentina/Buenos_Aires",
+});
 
 const CompactacionPropuesta = ({ candidato }: Props) => {
     return (
@@ -66,7 +72,7 @@ const CompactacionPropuesta = ({ candidato }: Props) => {
                     </div>
                     <div className={styles.camposOperario}>
                         <span>Operario: __________________________</span>
-                        <span>Fecha: ____ / ____ / ________</span>
+                        <span>Fecha: {fechaTrabajo}</span>
                     </div>
                     <div className={styles.observaciones}>
                         Observaciones:

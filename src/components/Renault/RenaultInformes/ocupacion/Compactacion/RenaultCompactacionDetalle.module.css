@@ -596,3 +596,205 @@
         display: block;
     }
 }
+/* Estados de revisión */
+.table > tbody > .filaProgramada > td {
+    background: #e8f5ee;
+}
+
+.table > tbody > .filaPospuesta > td {
+    background: #fff1df;
+}
+
+.table > tbody > .filaProgramada:hover > td {
+    background: #dcefe4;
+}
+
+.table > tbody > .filaPospuesta:hover > td {
+    background: #fce7cc;
+}
+
+.estadoEtiqueta {
+    display: block;
+    margin-top: 5px;
+    color: #56635e;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* Acciones de la propuesta */
+.propuestaAcciones {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 28px 24px;
+    background: #fafcfc;
+}
+
+.propuestaAcciones button,
+.imprimirLoteButton {
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.programarButton {
+    background: #dcefe3;
+    border-color: #a9d3b9 !important;
+    color: #255d3e;
+}
+
+.posponerButton {
+    background: #fff0dc;
+    border-color: #edc68f !important;
+    color: #80551d;
+}
+
+.quitarButton,
+.imprimirIndividual {
+    background: white;
+    border-color: #d3dfdb !important;
+    color: #526660;
+}
+
+.imprimirIndividual {
+    margin-right: auto;
+}
+
+.propuestaAcciones button:hover,
+.imprimirLoteButton:hover {
+    filter: brightness(0.96);
+}
+
+.propuestaAcciones button:focus-visible,
+.imprimirLoteButton:focus-visible {
+    outline: 3px solid #80bcb5;
+    outline-offset: 3px;
+}
+
+/* Resumen de trabajos seleccionados */
+.trabajosBar {
+    position: sticky;
+    bottom: 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 22px;
+    padding: 16px 20px;
+    border: 1px solid #b9d8cd;
+    border-radius: 12px;
+    background: #f1faf5;
+    box-shadow: 0 5px 20px rgb(25 65 50 / 12%);
+}
+
+.trabajosResumen {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.trabajosResumen strong {
+    color: #285c45;
+    font-size: 14px;
+}
+
+.trabajosResumen span {
+    color: #61746b;
+    font-size: 12px;
+}
+
+.imprimirLoteButton {
+    flex-shrink: 0;
+    background: #2b8179;
+    color: white;
+}
+
+@media screen and (max-width: 700px) {
+    .propuestaAcciones {
+        padding: 0 18px 18px;
+    }
+
+    .trabajosBar {
+        flex-direction: column;
+        align-items: stretch;
+        bottom: 8px;
+    }
+
+    .imprimirLoteButton {
+        width: 100%;
+    }
+}
+
+@media print {
+    .propuestaAcciones,
+    .trabajosBar {
+        display: none !important;
+    }
+
+    .printCandidate + .printCandidate {
+        break-before: page;
+        page-break-before: always;
+    }
+}
+.printJobHeader {
+    display: none;
+}
+
+@media print {
+    /* La aclaración queda disponible solo en pantalla */
+    .notice {
+        display: none;
+    }
+
+    /* Cada orden tiene su propio encabezado */
+    .container.imprimirPropuesta > .header {
+        display: none;
+    }
+
+    .printJobHeader {
+        display: grid;
+        grid-template-columns: 20mm minmax(0, 1fr) 35mm;
+        align-items: center;
+        gap: 4mm;
+        margin: 0 0 5mm;
+        padding: 0;
+        break-inside: avoid;
+        break-after: avoid;
+    }
+
+    .printJobHeader h2 {
+        margin: 0;
+        color: black;
+        font-size: 15pt;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .printJobHeader p {
+        margin: 2mm 0 0;
+        color: black;
+        font-size: 10pt;
+        text-align: center;
+    }
+
+    .printJobHeader .renaultLogo {
+        width: 13mm;
+        height: 17mm;
+        object-fit: contain;
+        justify-self: start;
+    }
+
+    .printJobHeader .ocasaLogo {
+        width: 32mm;
+        height: 13mm;
+        object-fit: contain;
+        justify-self: end;
+    }
+}
