@@ -19,7 +19,7 @@ const ChangePassword = ({
   const [error, setError] = useState("");
 
   const handleSubmit = async (
-    event: React.SubmitEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
