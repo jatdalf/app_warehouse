@@ -301,3 +301,42 @@
         page-break-inside: avoid;
     }
 }
+.sortButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+}
+
+.sortButton:hover {
+    color: #2b8179;
+}
+
+.sortButton:focus-visible {
+    outline: 2px solid #2b8179;
+    outline-offset: 4px;
+    border-radius: 3px;
+}
+
+.sortIcon {
+    flex-shrink: 0;
+    color: #2b8179;
+    font-size: 13px;
+}
+
+@media print {
+    .sortButton {
+        display: inline;
+        color: inherit;
+    }
+
+    .sortIcon {
+        display: none;
+    }
+}

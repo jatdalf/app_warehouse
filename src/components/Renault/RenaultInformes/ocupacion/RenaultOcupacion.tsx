@@ -16,7 +16,7 @@ import styles from "./RenaultOcupacion.module.css";
 import type { AlmacenItem } from "./AlmacenItem";
 import OcupacionRenaultHeader from "./Header/OcupacionRenaultHeader";
 import { useRenaultAuth } from "../../../../components/hooks/useRenaultAuth";
-import { RenaultOcupacionLogin } from "../../Loguin/RenaultOcupacionLogin";
+import { RenaultOcupacionLogin } from "../../Login/RenaultOcupacionLogin";
 import { INVENTARIO_WAREHOUSES } from "../inventarios/InventarioWarehouseConfig";
 
 type Warehouse = "W1" | "W2";

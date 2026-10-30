@@ -15,6 +15,7 @@
     "@lottiefiles/dotlottie-react": "^0.19.15",
     "@mui/material": "^9.2.0",
     "@mui/x-data-grid": "^9.8.0",
+    "@supabase/supabase-js": "^2.118.0",
     "canvas-confetti": "^1.6.0",
     "chart.js": "^4.5.1",
     "exceljs": "^4.4.0",
