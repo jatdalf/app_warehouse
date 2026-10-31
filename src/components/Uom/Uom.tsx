@@ -63,70 +63,140 @@
       return Number.isFinite(n) ? n : null;
     };
 
-    const analyzeWorkbook = (arrayBuffer: ArrayBuffer) => {
-      // load xlsx dynamically
-      return import('xlsx').then((XLSX) => {
-        const wb = XLSX.read(arrayBuffer, { type: 'array' });
-        const sheetName = wb.SheetNames[0];
-        const sheet = wb.Sheets[sheetName];
-        const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+const analyzeWorkbook = async (
+  arrayBuffer: ArrayBuffer
+): Promise<FailureRow[]> => {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.read(arrayBuffer, { type: "array" });
 
-        // validate column count: expect exactly 14 columns in the file
-        const header = rows[0] || [];
-        const colCount = Array.isArray(header) ? header.length : 0;
-        if (colCount !== 14) {
-          // throw an error with a user-facing message so callers can display it
-          throw new Error('Por favor verifique la disposicion del excel, se espera un excel con 14 columnas');
-        }
+  const sheetName = wb.SheetNames[0];
 
-        const results: FailureRow[] = [];
+  if (!sheetName) {
+    throw new Error("El archivo Excel no contiene hojas.");
+  }
 
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i];
-          // columns are 0-based: A=0, C=2, F=5, N=13
-          const loteSap = row[1];
-          const matCliente = row[0];
-          const descripcion = row[2];
-          const stockCell = row[5];
-          const uomCell = row[13];
+  const rows = XLSX.utils.sheet_to_json<unknown[]>(
+    wb.Sheets[sheetName],
+    { header: 1, defval: "" }
+  );
 
-          const stockParsed = (() => {
-            if (stockCell === null || stockCell === undefined || stockCell === '') return null;
-            // If it's a number like 12345.000 JS may parse as number; convert to string then remove trailing .000 if present
-            if (typeof stockCell === 'number') return stockCell;
-            let s = String(stockCell).trim();
-            if (s.endsWith('.000')) s = s.slice(0, -4);
-            s = s.replace(/[,]/g, '');
-            const n = Number(s);
-            return Number.isFinite(n) ? n : null;
-          })();
+  // Ignora mayúsculas, acentos, espacios y signos.
+  // Por ejemplo: "MAT.CLIENTE" y "Mat. Cliente" coinciden.
+  const normalizar = (value: unknown): string =>
+    String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
 
-          const uom = parseNumber(uomCell);
+  const requeridas = [
+    "MAT. CLIENTE",
+    "LOTE",
+    "DESCRIPCIÓN MATERIAL",
+    "STOCK",
+    "UOM",
+  ] as const;
 
-          if (stockParsed === null || uom === null || uom === 0) {
-            // skip or consider as failure? we'll skip rows with missing data
-            continue;
-          }
+  // Localiza los encabezados, aunque haya filas de título arriba.
+  const candidatas = rows.map((row, index) => {
+    const encabezados = row.map(normalizar);
 
-          const division = stockParsed / uom;
-          const isInteger = Math.abs(division - Math.round(division)) < 1e-9;
-          if (!isInteger) {
-            results.push({
-              rowIndex: i + 1, // human-friendly (1-based)
-              loteSap,
-              matCliente,
-              descripcion,
-              stockOriginal: stockCell,
-              stockParsed,
-              uom,
-              division,
-            });
-          }
-        }
-
-        return results;
-      });
+    return {
+      index,
+      encabezados,
+      coincidencias: requeridas.filter(nombre =>
+        encabezados.includes(normalizar(nombre))
+      ).length,
     };
+  });
+
+  const cabecera = candidatas.reduce<
+    (typeof candidatas)[number] | undefined
+  >(
+    (mejor, actual) =>
+      !mejor || actual.coincidencias > mejor.coincidencias
+        ? actual
+        : mejor,
+    undefined
+  );
+
+  if (!cabecera || cabecera.coincidencias === 0) {
+    throw new Error(
+      `Verificar disposición de archivo. No se encontraron los ` +
+      `encabezados necesarios: ${requeridas.join(", ")}.`
+    );
+  }
+
+  const faltantes = requeridas.filter(nombre =>
+    !cabecera.encabezados.includes(normalizar(nombre))
+  );
+
+  if (faltantes.length > 0) {
+    throw new Error(
+      `Verificar disposición de archivo. ` +
+      `${faltantes.length === 1 ? "Falta columna" : "Faltan columnas"}: ` +
+      `${faltantes.join(", ")}.`
+    );
+  }
+
+  const duplicadas = requeridas.filter(nombre =>
+    cabecera.encabezados.filter(
+      encabezado => encabezado === normalizar(nombre)
+    ).length > 1
+  );
+
+  if (duplicadas.length > 0) {
+    throw new Error(
+      `Verificar disposición de archivo. ` +
+      `Encabezados repetidos: ${duplicadas.join(", ")}.`
+    );
+  }
+
+  const columna = (nombre: string): number =>
+    cabecera.encabezados.indexOf(normalizar(nombre));
+
+  const columnas = {
+    material: columna("MAT. CLIENTE"),
+    lote: columna("LOTE"),
+    descripcion: columna("DESCRIPCIÓN MATERIAL"),
+    stock: columna("STOCK"),
+    uom: columna("UOM"),
+  };
+
+  const results: FailureRow[] = [];
+
+  for (let i = cabecera.index + 1; i < rows.length; i++) {
+    const row = rows[i];
+
+    const stockCell = row[columnas.stock];
+    const stockParsed = parseNumber(stockCell);
+    const uom = parseNumber(row[columnas.uom]);
+
+    // Conserva el comportamiento actual para datos incompletos.
+    if (stockParsed === null || uom === null || uom === 0) {
+      continue;
+    }
+
+    const division = stockParsed / uom;
+    const isInteger =
+      Math.abs(division - Math.round(division)) < 1e-9;
+
+    if (!isInteger) {
+      results.push({
+        rowIndex: i + 1,
+        loteSap: String(row[columnas.lote] ?? ""),
+        matCliente: String(row[columnas.material] ?? ""),
+        descripcion: String(row[columnas.descripcion] ?? ""),
+        stockOriginal: stockCell,
+        stockParsed,
+        uom,
+        division,
+      });
+    }
+  }
+
+  return results;
+};
 
     const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const f = e.target.files?.[0];
