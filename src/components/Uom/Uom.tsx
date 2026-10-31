@@ -139,10 +139,8 @@ const analyzeWorkbook = async (
     );
   }
 
-  const duplicadas = requeridas.filter(nombre =>
-    cabecera.encabezados.filter(
-      encabezado => encabezado === normalizar(nombre)
-    ).length > 1
+  const duplicadas = requeridas.filter(nombre => nombre !== "MAT. CLIENTE" &&
+    cabecera.encabezados.filter(encabezado => encabezado === normalizar(nombre)).length > 1
   );
 
   if (duplicadas.length > 0) {
@@ -163,11 +161,11 @@ const analyzeWorkbook = async (
     uom: columna("UOM"),
   };
 
+  const normalizarMaterial = (value: unknown): string => String(value ?? "").trim().replace(/^0+(?=\d)/, "");
   const results: FailureRow[] = [];
 
   for (let i = cabecera.index + 1; i < rows.length; i++) {
     const row = rows[i];
-
     const stockCell = row[columnas.stock];
     const stockParsed = parseNumber(stockCell);
     const uom = parseNumber(row[columnas.uom]);
@@ -185,7 +183,7 @@ const analyzeWorkbook = async (
       results.push({
         rowIndex: i + 1,
         loteSap: String(row[columnas.lote] ?? ""),
-        matCliente: String(row[columnas.material] ?? ""),
+        matCliente: normalizarMaterial(row[columnas.material]),
         descripcion: String(row[columnas.descripcion] ?? ""),
         stockOriginal: stockCell,
         stockParsed,
