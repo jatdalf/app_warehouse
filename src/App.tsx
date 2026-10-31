@@ -1,3 +1,5 @@
+import WarehouseSalud from "./components/Salud/WarehouseSalud";
+import OcupacionSalud from "./components/Salud/OcupacionSalud";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Loguin from "./components/Loguin/Login03";
 import Home from "./components/Home/Home";
@@ -40,6 +42,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Loguin />} />
         <Route path="/Home" element={<Home />} />
+        <Route path="/WarehouseSalud" element={<WarehouseSalud />} />
+        <Route path="/WarehouseSalud/ubicaciones" element={<OcupacionSalud />} />
         <Route path="/Uom" element={<Uom />} />
         <Route path="/GuiaYwm005" element={<GuiaYwm005 />} />
         <Route path="/Traslados" element={<Traslados />} />

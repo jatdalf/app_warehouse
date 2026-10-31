@@ -1,94 +1,25 @@
 import { Link } from "react-router-dom";
+import LogoOcasa from "../LogoOcasa/LogoOcasa";
+import PortalIcon from "./PortalIcon";
 import styles from "./Home.module.css";
-import logo from "../../assets/OcasaLogoSmall.png";
-import UOM from "../../assets/UOM.png";
-import forklift from "../../assets/Forklift.png";
-import Inventario from "../../assets/inventario.png";
-import whGralIcon from "../../assets/whGral.png";
-// import riskIcon from "../../assets/risk.gif";
-// import environmentIcon from "../../assets/environment.gif";
-// import ideaIcon from "../../assets/idea.gif";
-// import heartIcon from "../../assets/heart.gif";
-// import hashtagIcon from "../../assets/hashtag.gif";
-
-const Home: React.FC = () => {
- 
-  return (
-     <div className={styles.headerContainer}>      
-
-      <div className={styles.titleContainer}>
-        <div className={styles.logoTextRow}>
-          <h1 className={styles.ocasaTitle}>OCASA</h1>
-          <img
-            src={logo}
-            alt="OCASA Logo"
-            className={styles.ocasaLogo}
-          />
+const proximas = [
+    { titulo:"Capital Humano", icono:"personas", texto:"Personas y desarrollo" },
+    { titulo:"Distribución / Tráfico", icono:"camion", texto:"Coordinación y transporte" },
+    { titulo:"Seguridad e Higiene", icono:"seguridad", texto:"Prevención y cuidado" },
+    { titulo:"Calidad", icono:"calidad", texto:"Control y mejora continua" },
+];
+export default function Home(){return <main className={styles.page}>
+    <header className={styles.header}>
+        <div className={styles.headerIntro}>
+            <span className={styles.eyebrow}>OPERACIONES · OCASA</span>
+            <p>Seleccioná el área para acceder a sus herramientas.</p>
         </div>
-      
-       
-
-      </div>
-
-      {/* Grid de tarjetas */}
-      <section className={styles.grid}>
-
-   
-        
-        <Link to="/Uom" className={styles.card}>
-          <img src={UOM} alt="Control de UOM" className={styles.icon} />
-          <p className={styles.cardText}>Comprobar UOM</p>
-        </Link>
-
-        <Link to="/Traslados" className={styles.card}>
-          <img src={forklift} alt="Informe" className={styles.icon} />
-          <p className={styles.cardText}>Traslados</p>
-        </Link>
-
-         <Link to="/Inventarios" className={styles.card}>
-          <img src={Inventario} alt="Inventarios" className={styles.icon} />
-          <p className={styles.cardText}>Inventarios</p>
-        </Link>
-
-
-        <Link to="/whGral" className={styles.card}>
-          <img src={whGralIcon} alt="whGral" className={styles.icon} />
-          <p className={styles.cardText}>Warehouse General</p>
-        </Link>
-
-        {/* 
-        <Link to="/noticias" className={`${styles.card} ${styles.cardNoticias}`}>
-          <div>
-          <img src={hashtagIcon} alt="Hastag" className={styles.SmallIcon} />
-          <img src={heartIcon} alt="Me gusta" className={styles.SmallIcon2} />
-          </div>
-          <img src={newsIcon} alt="Noticias" className={styles.LargeIcon} />
-          <p className={styles.cardText}>Stand By</p>
-        </Link>
-
-        <Link to="/riesgo" className={styles.card}>
-          <img src={riskIcon} alt="Riesgo" className={styles.icon} />
-          <p className={styles.cardText}>Stand By</p>
-        </Link>
-
-        <Link to="/ambientales" className={styles.card}>
-          <img src={environmentIcon} alt="Impactos ambientales" className={styles.icon} />
-          <p className={styles.cardText}>Stand By</p>
-        </Link>
-
-        <Link to="/consulta" className={styles.card}>
-          <img src={ideaIcon} alt="Consulta" className={styles.icon} />
-          <p className={styles.cardText}>Stand By</p>
-        </Link> */}
-      </section>
-
-      <div className={styles.footer}>
-        <p className={styles.footerText}>© 2025 OCASA. Todos los derechos reservados. (Version: 1.025)</p>  
-        <p className={styles.footerText}>Desarrollado por Jorge Toso</p>
-      </div>  
-
-    </div>
-  );
-};
-
-export default Home;
+        <div className={styles.headerLogo}><LogoOcasa /></div>
+    </header>
+    <section className={styles.activeGrid} aria-label="Warehouses">
+        <Link to="/WarehouseSalud" className={`${styles.card} ${styles.featured}`}><span className={styles.icon}><PortalIcon name="salud"/></span><div><span className={styles.kicker}>OPERACIÓN SALUD</span><h2>Warehouse Salud</h2><p>UOM, traslados, inventarios y análisis de ubicaciones.</p></div><span className={styles.enter}>Ingresar <span aria-hidden="true">↗</span></span></Link>
+        <Link to="/WhGral" className={styles.card}><span className={styles.icon}><PortalIcon name="warehouse"/></span><div><span className={styles.kicker}>OPERACIÓN GENERAL</span><h2>Warehouse General</h2><p>Gestión e informes de las operaciones del warehouse.</p></div><span className={styles.enter}>Ingresar <span aria-hidden="true">↗</span></span></Link>
+    </section>
+    <section className={styles.futureSection} aria-label="Próximas áreas"><div className={styles.sectionLabel}><span>Un portal que sigue creciendo</span><span>Próximas áreas</span></div><div className={styles.futureGrid}>{proximas.map(p=><div key={p.titulo} className={styles.disabledCard} aria-disabled="true"><PortalIcon name={p.icono}/><h2>{p.titulo}</h2><p>{p.texto}</p><span className={styles.soon}>Próximamente…</span></div>)}</div></section>
+    <footer className={styles.footer}><span>© {new Date().getFullYear()} OCASA · Operaciones Warehouse</span><span>Desarrollado por Jorge Toso</span></footer>
+</main>;}
