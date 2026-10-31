@@ -1,3 +1,5 @@
+import RotacionReubicacion from "./rotacion/RotacionReubicacion";
+import type { Lx03OcupacionItem } from "./Lx03OcupacionItem";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import LottieDataAnalisis from "../../../Lotties/LottieCompactar";
@@ -22,6 +24,7 @@ import { INVENTARIO_WAREHOUSES } from "../inventarios/InventarioWarehouseConfig"
 type Warehouse = "W1" | "W2";
 
 interface Informe {
+    lx03: Lx03OcupacionItem[];
     ocupacion: OcupacionResumen;
     compactacion: CompactacionResumen;
 }
@@ -99,6 +102,7 @@ const RenaultOcupacion = () => {
                     ]);
 
                     resultado = {
+                        lx03,
                         ocupacion: OcupacionBuilder.build(lx03, almacenes),
                         compactacion: CompactacionBuilder.build(lx03),
                     };
@@ -160,6 +164,7 @@ const RenaultOcupacion = () => {
             ]);
 
             const resultado: InformeLocal = {
+                lx03,
                 ocupacion: OcupacionBuilder.build(lx03, almacenes),
                 compactacion: CompactacionBuilder.build(lx03),
                 nombreArchivo: file.name,
@@ -324,8 +329,15 @@ const RenaultOcupacion = () => {
                     <CompactacionResumenCards
                         resumen={informe.compactacion}
                     />
+
                 </>
             )}
+
+            <RotacionReubicacion
+                lx03={informe?.lx03 ?? []}
+                warehouse={warehouse}
+                disponible={Boolean(informe)}
+            />
         </div>
     );
 };
