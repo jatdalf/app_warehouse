@@ -3,10 +3,12 @@ import type { Lx03OcupacionItem } from "../Lx03OcupacionItem";
 import { analizarRotacion, combinarHistorial, parseLtak, parseLtap, textoSAP } from "./RotacionData";
 import type { HistorialRotacion, MaterialRotacion } from "./RotacionData";
 import styles from "./RotacionReubicacion.module.css";
+import SugerenciasMovimientos from "./SugerenciasMovimientos";
 
 type Grupo = "bajar" | "subir" | "sin";
 interface Fuente { historial: HistorialRotacion; desde: string; hasta: string; movimiento: string; cobertura: boolean }
 const formato = (n: number) => n.toLocaleString("es-AR", { maximumFractionDigits: 3 });
+const materialesVacios: MaterialRotacion[] = [];
 const fecha = (s: string) => s ? s.split("-").reverse().join("/") : "—";
 
 export default function RotacionReubicacion({ lx03, warehouse, disponible }: { lx03: Lx03OcupacionItem[]; warehouse: "W1" | "W2"; disponible: boolean }) {
@@ -77,8 +79,11 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
         { key: "subir", titulo: "Candidatos a subir", texto: "Baja frecuencia · stock en piso", habilitada: Boolean(resultado && umbralesValidos && coberturaValida) },
         { key: "sin", titulo: "Sin picking en el período", texto: "Materiales con stock actual · piso o altura", habilitada: Boolean(resultado && coberturaValida) },
     ];
+    const sugerencias = <SugerenciasMovimientos lx03={lx03} materiales={resultado?.materiales ?? materialesVacios}
+        habilitado={Boolean(disponible && coberturaValida && !ocupado)} warehouse={warehouse}
+        desde={fuente?.desde ?? ""} hasta={fuente?.hasta ?? ""} movimiento={fuente?.movimiento ?? ""} />;
     return <section hidden={!disponible} className={styles.container} aria-label="Rotación y reubicación">
-        <div className={styles.heading}><div><h2>Rotación y reubicación</h2><p>{warehouse} · Historial de picking + LX03 actual</p></div><span className={styles.tag}>Sugerencias para revisión</span></div>
+        <div className={styles.heading}><div><h2>Rotación y reubicación</h2><p>{warehouse} · Historial de picking + LX03 actual</p></div><span className={styles.heatTag}>Mapa de calor 🔥</span><span className={styles.tag}>Sugerencias para revisión</span></div>
         <details className={styles.carga} open={!fuente}>
             <summary>Cargar historial LTAK / LTAP</summary>
             <p>Podés seleccionar varias semanas. Los registros idénticos no se vuelven a contar. El historial queda en memoria mientras esta pantalla esté abierta.</p>
@@ -89,10 +94,11 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
                 <label>Modo de carga<select value={sumar ? "sumar" : "reemplazar"} disabled={ocupado} onChange={e => setSumar(e.target.value === "sumar")}><option value="sumar">Agregar al historial</option><option value="reemplazar">Reemplazar historial</option></select></label>
             </div>
             <label className={styles.check}><input type="checkbox" checked={confirmarWarehouse} disabled={ocupado} onChange={e => setConfirmarWarehouse(e.target.checked)} />Confirmo que ambos extractos corresponden a {destino} y al mismo sistema SAP.</label>
-            <button type="button" disabled={ocupado || !ltak.length || !ltap.length || !confirmarWarehouse} onClick={() => void cargar()}>{ocupado ? "Procesando..." : "Analizar historial"}</button>
+            <div className={styles.acciones}><button type="button" disabled={ocupado || !ltak.length || !ltap.length || !confirmarWarehouse} onClick={() => void cargar()}>{ocupado ? "Procesando..." : "Analizar historial"}</button></div>
             {error && <p className={styles.error} role="alert">{error}</p>}
         </details>
         {fuente && <>
+            <div className={styles.accionesResumen}><span>Propuestas dentro de la misma familia · excluye 52P, NOC y 900–999</span>{sugerencias}</div>
             <div className={styles.filtros}>
                 <label>Desde<input type="date" value={fuente.desde} onChange={e => actualizar({ desde: e.target.value, cobertura: false })} /></label>
                 <label>Hasta<input type="date" value={fuente.hasta} onChange={e => actualizar({ hasta: e.target.value, cobertura: false })} /></label>
@@ -115,7 +121,7 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
         <div className={styles.cards}>{cards.map(card => <button type="button" key={card.key} disabled={!card.habilitada} aria-pressed={grupo === card.key} className={`${styles.card} ${styles[card.key]}`} onClick={() => { setGrupo(card.key); setPagina(0); detalle.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><span>{card.titulo}</span><strong>{card.habilitada ? formato(grupos[card.key].length) : "—"}</strong><small>{card.texto}</small></button>)}</div>
         {resultado && <div ref={detalle} className={styles.detalle}>
             <div className={styles.detailHeading}><h3>{cards.find(c => c.key === grupo)?.titulo}</h3><input aria-label="Buscar material, descripción, storage o ubicación" placeholder="Buscar material o ubicación…" value={busqueda} onChange={e => { setBusqueda(e.target.value); setPagina(0); }} /></div>
-            <p className={styles.note}>Stock según la LX03 seleccionada. Piso: storage terminado en P. Cantidades de stock según el lector LX03 actual; no se convierten unidades. Las propuestas no asignan destino ni validan capacidad, peso o compatibilidad.</p>
+            <p className={styles.note}>Stock según la LX03 seleccionada. Piso: storage terminado en P. Se excluyen 52P, NOC y los storage 900–999 tanto del stock como de los movimientos del análisis. Cantidades de stock según el lector LX03 actual; no se convierten unidades. La tabla muestra candidatos; “Sugerir movimientos” permite revisar intercambios. La capacidad, los bloqueos, el peso y la compatibilidad requieren revisión física.</p>
             {!cards.find(c => c.key === grupo)?.habilitada ? <p className={styles.empty}>Completá las condiciones de análisis para habilitar esta categoría.</p> : filtrados.length === 0 ? <p className={styles.empty}>No hay materiales que cumplan estos criterios.</p> : <>
                 <div className={styles.tableWrapper}><table><thead><tr><th>Material / descripción</th><th>Líneas picking</th><th>Días con picking</th><th>Última salida</th><th>Extraído por UM</th><th>Stock piso</th><th>Stock altura</th><th>Ubicaciones actuales</th></tr></thead><tbody>{filtrados.slice(paginaActual * 50, (paginaActual + 1) * 50).map((m: MaterialRotacion) => <tr key={m.material}><td><strong>{m.material}</strong><small>{m.descripcion || "Sin descripción en el historial seleccionado"}</small></td><td>{formato(m.frecuencia)}</td><td>{m.dias}</td><td>{fecha(m.ultimaSalida)}</td><td>{Object.entries(m.cantidades).map(([um, n]) => `${formato(n)} ${um}`).join(" · ") || "—"}</td><td>{formato(m.stockPiso)}</td><td>{formato(m.stockAltura)}</td><td>{m.ubicaciones.map(u => <small key={`${u.storage}|${u.ubicacion}`}>{u.storage} · {u.ubicacion} · {formato(u.cantidad)} · {u.piso ? "Piso" : "Altura"}</small>)}</td></tr>)}</tbody></table></div>
                 <div className={styles.paginacion}><button type="button" disabled={paginaActual === 0} onClick={() => setPagina(paginaActual - 1)}>Anterior</button><span>{formato(filtrados.length)} materiales · Página {paginaActual + 1} de {paginas}</span><button type="button" disabled={paginaActual + 1 >= paginas} onClick={() => setPagina(paginaActual + 1)}>Siguiente</button></div>

@@ -115,7 +115,7 @@ const ReingenieriaInforme = ({ data, desde, hasta }: Props) => {
             />
 
             <Tabla
-                titulo="Mapa de calor"
+                titulo="Mapa de calor 🔥"
                 primeraColumna="Ubicaciones bajadas"
                 segundaColumna="Ubicaciones subidas"
                 filas={mapaCalor}

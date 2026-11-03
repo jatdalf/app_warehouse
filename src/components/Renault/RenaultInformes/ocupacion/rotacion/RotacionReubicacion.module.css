@@ -37,3 +37,9 @@
 .paginacion { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:12px; margin-top:16px; font-size:12px; }
 @media(max-width:700px) { .cards { grid-template-columns:1fr; } .container { padding:0 12px; box-sizing:border-box; } .inputs label { width:100%; } .detailHeading input { width:100%; } }
 @media print { .carga,.filtros,.check,.detalle { display:none !important; } .container { width:100%; margin:6mm 0; break-inside:avoid; } .cards { gap:3mm; } .container .card { box-shadow:none; padding:3mm; opacity:1; } .card strong { font-size:18pt; } .coverage { font-size:8pt; } .note { font-size:8pt; } }
+
+.heatTag { background:#fff0df; color:#a65019; padding:8px 15px; border-radius:20px; font-size:13px; font-weight:700; margin-left:auto; }
+.acciones,.accionesResumen { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.accionesResumen { margin:12px 0; color:#718178; font-size:12px; }
+@media(max-width:700px) { .heatTag { margin-left:0; } .acciones button { flex:1; } }
+@media print { .accionesResumen { display:none; } }

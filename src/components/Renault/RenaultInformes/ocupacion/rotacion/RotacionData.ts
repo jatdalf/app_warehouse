@@ -100,7 +100,7 @@ export function parseLtap(texto: string): MovimientoPicking[] {
         confirmado: columna(h, ["Confirmación", "PQUIT"]), fecha: columna(h, ["Fe.confirmación", "QDATU"]),
         storage: columna(h, ["Tp.alm.proced.", "VLTYP"]), ubicacion: columna(h, ["Ubic.proced.", "VLPLA"]),
         cantidad: columna(h, ["CtdRealDesde", "VISTM"]), destino: columna(h, ["Ctd.real dest.", "NISTM"]),
-        descripcion: columna(h, ["Denominación", "MAKTX"]),
+        descripcion: h.findIndex(nombre => ["DENOMINACION", "MAKTX"].includes(nombre)),
     };
     return filas.filter(f => /^\d+$/.test(f[campos.ot])).map(f => {
         const c = campos;
@@ -111,7 +111,7 @@ export function parseLtap(texto: string): MovimientoPicking[] {
         const confirmado = f[c.confirmado].toUpperCase() === "X";
         return {
             key: `${otKey}|${id(f[c.posicion])}`, otKey,
-            material: f[c.material].toUpperCase(), descripcion: f[c.descripcion], centro: f[c.centro],
+            material: f[c.material].toUpperCase(), descripcion: c.descripcion >= 0 ? f[c.descripcion] : "", centro: f[c.centro],
             unidad: f[c.unidad], confirmado, fecha: confirmado ? fechaSAP(f[c.fecha]) : "",
             storage: f[c.storage].toUpperCase(), ubicacion: f[c.ubicacion].toUpperCase(),
             cantidad: numero(f[c.cantidad]), cantidadDestino: numero(f[c.destino]),
@@ -148,13 +148,18 @@ export function combinarHistorial(anterior: HistorialRotacion | undefined, nuevo
         archivos: [...new Set([...(anterior?.archivos ?? []), ...nuevo.archivos])],
         duplicados: (anterior?.duplicados ?? 0) + movimientos.duplicados };
 }
+/** Storage físicos elegibles para el mapa de calor y sus propuestas. */
+export function storageElegible(valor: string): boolean {
+    const storage = valor.trim().toUpperCase();
+    return Boolean(storage) && storage !== "NOC" && storage !== "52P" && !/^9\d{2}$/.test(storage);
+}
 export function analizarRotacion(lx03: Lx03OcupacionItem[], historial: HistorialRotacion,
     desde: string, hasta: string, movimiento: string) {
     const cabeceras = new Map(historial.cabeceras.map(c => [c.key, c]));
     const materiales = new Map<string, MaterialRotacion>();
     for (const fila of lx03) {
         const material = fila.material.trim().toUpperCase();
-        if (!material || !Number.isFinite(fila.cantidad) || fila.cantidad <= 0) continue;
+        if (!storageElegible(fila.storage) || !material || !Number.isFinite(fila.cantidad) || fila.cantidad <= 0) continue;
         const item = materiales.get(material) ?? { material, descripcion: "", frecuencia: 0, dias: 0,
             ultimaSalida: "", cantidades: {}, stockPiso: 0, stockAltura: 0, ubicaciones: [] };
         const storage = fila.storage.trim().toUpperCase();
@@ -169,6 +174,7 @@ export function analizarRotacion(lx03: Lx03OcupacionItem[], historial: Historial
     const dias = new Map<string, Set<string>>();
     let sinCruce = 0, noConfirmadas = 0, sinExtraccion = 0, diferencias = 0, incluidas = 0;
     for (const fila of historial.movimientos) {
+        if (!storageElegible(fila.storage)) continue;
         const cabecera = cabeceras.get(fila.otKey);
         if (!cabecera) { sinCruce++; continue; }
         if (!fila.confirmado) { noConfirmadas++; continue; }
