@@ -48,3 +48,12 @@
 .cardConExcel .card { flex:1; }
 .cardConExcel .excel { font-size:12px; font-weight:600; }
 @media print { .cardConExcel .excel { display:none; } }
+
+.driveModal { width:min(420px, calc(100vw - 32px)); max-height:85vh; overflow:auto; padding:22px; border:1px solid #c5d9d1; border-radius:14px; color:#324642; }
+.driveModal::backdrop { background:#183e335c; }
+.driveModal h3 { margin:0 0 8px; }
+.driveMeses { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; margin-bottom:14px; }
+@media(max-width:440px) { .driveMeses { grid-template-columns:1fr; } }
+
+.avance { display:grid; gap:6px; margin:12px 0; }
+.avance progress { width:100%; accent-color:#167b77; }

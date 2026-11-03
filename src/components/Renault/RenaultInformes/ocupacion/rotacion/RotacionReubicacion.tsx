@@ -1,3 +1,4 @@
+import { descargarExtracto, historialDrive } from "./RotacionDrive";
 import { useMemo, useRef, useState } from "react";
 import type { Lx03OcupacionItem } from "../Lx03OcupacionItem";
 import { analizarRotacion, combinarHistorial, parseLtak, parseLtap, textoSAP } from "./RotacionData";
@@ -18,8 +19,14 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
     const [ltak, setLtak] = useState<File[]>([]);
     const [ltap, setLtap] = useState<File[]>([]);
     const [destino, setDestino] = useState<"W1" | "W2">(warehouse);
+    const [mesesDrive, setMesesDrive] = useState<string[]>([]);
+    const [borradorDrive, setBorradorDrive] = useState<string[]>([]);
+    const dialogoDrive = useRef<HTMLDialogElement>(null);
+    const disponiblesDrive = historialDrive[destino];
+    const mesesElegidos = disponiblesDrive.filter(m => mesesDrive.includes(m.mes));
     const [sumar, setSumar] = useState(true);
     const [confirmarWarehouse, setConfirmarWarehouse] = useState(false);
+    const [avance, setAvance] = useState({ hechos: 0, total: 1, etapa: "" });
     const [ocupado, setOcupado] = useState(false);
     const [error, setError] = useState("");
     const [alta, setAlta] = useState(20);
@@ -55,23 +62,52 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
         setPagina(0);
     };
     const cargar = async () => {
+        if (Boolean(ltak.length) !== Boolean(ltap.length)) {
+            setError("Para incorporar archivos locales, seleccioná ambos extractos: LTAK y LTAP.");
+            return;
+        }
         const warehouseDestino = destino;
+        const total = mesesElegidos.length * 2 + ltak.length + ltap.length + mesesElegidos.length * 2 + 1;
+        let hechos = 0;
+        const paso = async (etapa: string) => {
+            setAvance({ hechos, total, etapa });
+            await new Promise<void>(resolve => setTimeout(resolve, 0));
+        };
         setOcupado(true); setError("");
         try {
-            const [cabeceras, posiciones] = await Promise.all([
-                Promise.all(ltak.map(async f => parseLtak(await textoSAP(f)))),
-                Promise.all(ltap.map(async f => parseLtap(await textoSAP(f)))),
-            ]);
+            const archivosLtak = [...ltak];
+            const archivosLtap = [...ltap];
+            for (const mes of mesesElegidos) {
+                await paso("Descargando LTAK " + mes.mes);
+                archivosLtak.push(await descargarExtracto(mes.ltak, "LTAK " + warehouseDestino + " " + mes.mes + " (Drive).dat"));
+                hechos++;
+                await paso("Descargando LTAP " + mes.mes);
+                archivosLtap.push(await descargarExtracto(mes.ltap, "LTAP " + warehouseDestino + " " + mes.mes + " (Drive).dat"));
+                hechos++;
+            }
+            const leer = async <T,>(archivos: File[], parsear: (texto: string) => T[]) => {
+                const resultados: T[][] = [];
+                for (const archivo of archivos) {
+                    await paso("Leyendo " + archivo.name);
+                    resultados.push(parsear(await textoSAP(archivo)));
+                    hechos++;
+                }
+                return resultados;
+            };
+            const cabeceras = await leer(archivosLtak, parseLtak);
+            const posiciones = await leer(archivosLtap, parseLtap);
+            await paso("Integrando el historial");
             const previo = sumar ? fuentes[warehouseDestino] : undefined;
             const historial = combinarHistorial(previo?.historial, {
                 cabeceras: cabeceras.flat(), movimientos: posiciones.flat(),
-                archivos: [...ltak, ...ltap].map(f => f.name), duplicados: 0,
+                archivos: [...archivosLtak, ...archivosLtap].map(f => f.name), duplicados: 0,
             });
             const fechas = historial.movimientos.filter(m => m.confirmado).map(m => m.fecha).sort();
             if (!fechas.length) throw new Error("No hay posiciones confirmadas con fecha válida.");
             const nueva: Fuente = { historial, desde: fechas[0], hasta: fechas[fechas.length - 1], movimiento: previo?.movimiento ?? "", cobertura: false };
             setFuentes(actual => ({ ...actual, [warehouseDestino]: nueva }));
             setPagina(0);
+            setAvance({ hechos: total, total, etapa: "Historial listo" });
         } catch (err) {
             setError(err instanceof Error ? err.message : "No fue posible procesar los archivos.");
         } finally { setOcupado(false); }
@@ -98,18 +134,18 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
                 XLSX.utils.book_append_sheet(libro, hoja, nombre);
             };
             agregarHoja("Materiales", [
-                ["Material", "Descripción", "Líneas picking", "Días con picking", "Última salida", "Stock piso", "Stock altura", ...unidades.map(um => "Extraído (" + um + ")")],
+                ["Material", "Descripción", "Storage", "Líneas picking", "Días con picking", "Última salida", "Stock piso", "Stock altura", ...unidades.map(um => "Extraído (" + um + ")")],
                 ...materiales.map(m => [
-                    m.material, m.descripcion, m.frecuencia, m.dias, m.ultimaSalida, m.stockPiso, m.stockAltura,
+                    m.material, m.descripcion || "Sin descripción en LTAP", [...new Set(m.ubicaciones.map(u => u.storage))].join(", "), m.frecuencia, m.dias, m.ultimaSalida, m.stockPiso, m.stockAltura,
                     ...unidades.map(um => m.cantidades[um] ?? 0),
                 ]),
-            ], [24, 48, 18, 18, 16, 16, 16, ...unidades.map(() => 20)]);
+            ], [24, 48, 22, 18, 18, 16, 16, 16, ...unidades.map(() => 20)]);
             agregarHoja("Ubicaciones", [
-                ["Material", "Storage", "Ubicación", "Cantidad", "Nivel"],
+                ["Material", "Descripción", "Storage", "Ubicación", "Cantidad", "Nivel"],
                 ...materiales.flatMap(m => m.ubicaciones.map(u => [
-                    m.material, u.storage, u.ubicacion, u.cantidad, u.piso ? "Piso" : "Altura",
+                    m.material, m.descripcion || "Sin descripción en LTAP", u.storage, u.ubicacion, u.cantidad, u.piso ? "Piso" : "Altura",
                 ])),
-            ], [24, 14, 24, 16, 14]);
+            ], [24, 48, 14, 24, 16, 14]);
             agregarHoja("Contexto", [
                 ["Campo", "Valor"],
                 ["Categoría", card.titulo], ["Warehouse", warehouse],
@@ -128,17 +164,63 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
         desde={fuente?.desde ?? ""} hasta={fuente?.hasta ?? ""} movimiento={fuente?.movimiento ?? ""} />;
     return <section hidden={!disponible} className={styles.container} aria-label="Rotación y reubicación">
         <div className={styles.heading}><div><h2>Rotación y reubicación</h2><p>{warehouse} · Historial de picking + LX03 actual</p></div><span className={styles.heatTag}>Mapa de calor 🔥</span><span className={styles.tag}>Sugerencias para revisión</span></div>
+        <details className={styles.carga}>
+            <summary>Registro operativo · {warehouse}</summary>
+            <p>Registrá los resultados en la planilla del warehouse con tu cuenta de Google. Necesitás permiso de edición.</p>
+            <ul>
+                <li>Compactación: fecha, ubicaciones trabajadas y liberadas.</li>
+                <li>Mapa de calor: fecha, ubicaciones bajadas y subidas.</li>
+                <li>Vacías: fecha, ubicaciones relevadas y ocupadas.</li>
+            </ul>
+            <a target="_blank" rel="noopener noreferrer" href={warehouse === "W1"
+                ? "https://docs.google.com/spreadsheets/d/1yOm2ivDf7rIsiM0i5-DhBJFk934Bkybr/edit"
+                : "https://docs.google.com/spreadsheets/d/1JCHc6aBmurA2-L0vZ0xJhkuWx-8o6R6R/edit"}>
+                Abrir planilla de registro · {warehouse} ↗
+            </a>
+        </details>
         <details className={styles.carga} open={!fuente}>
             <summary>Cargar historial LTAK / LTAP</summary>
             <p>Podés seleccionar varias semanas. Los registros idénticos no se vuelven a contar. El historial queda en memoria mientras esta pantalla esté abierta.</p>
             <div className={styles.inputs}>
                 <label>LTAK (.dat o .txt)<input type="file" accept=".dat,.txt" multiple disabled={ocupado} onChange={e => { setLtak(Array.from(e.target.files ?? [])); setConfirmarWarehouse(false); }} /></label>
                 <label>LTAP (.dat o .txt)<input type="file" accept=".dat,.txt" multiple disabled={ocupado} onChange={e => { setLtap(Array.from(e.target.files ?? [])); setConfirmarWarehouse(false); }} /></label>
-                <label>Warehouse del historial<select value={destino} disabled={ocupado} onChange={e => { setDestino(e.target.value as "W1" | "W2"); setConfirmarWarehouse(false); }}><option value="W1">W1 · REP</option><option value="W2">W2 · BsAs</option></select></label>
+                <label>Warehouse del historial<select value={destino} disabled={ocupado} onChange={e => { setDestino(e.target.value as "W1" | "W2"); setMesesDrive([]); setConfirmarWarehouse(false); }}><option value="W1">W1 · REP</option><option value="W2">W2 · BsAs</option></select></label>
                 <label>Modo de carga<select value={sumar ? "sumar" : "reemplazar"} disabled={ocupado} onChange={e => setSumar(e.target.value === "sumar")}><option value="sumar">Agregar al historial</option><option value="reemplazar">Reemplazar historial</option></select></label>
+                <button type="button" disabled={ocupado} onClick={() => {
+                    setBorradorDrive(mesesDrive);
+                    dialogoDrive.current?.showModal();
+                }}>Cargar desde Drive{mesesElegidos.length ? ` (${mesesElegidos.length})` : ""}</button>
             </div>
             <label className={styles.check}><input type="checkbox" checked={confirmarWarehouse} disabled={ocupado} onChange={e => setConfirmarWarehouse(e.target.checked)} />Confirmo que ambos extractos corresponden a {destino} y al mismo sistema SAP.</label>
-            <div className={styles.acciones}><button type="button" disabled={ocupado || !ltak.length || !ltap.length || !confirmarWarehouse} onClick={() => void cargar()}>{ocupado ? "Procesando..." : "Analizar historial"}</button></div>
+            <div className={styles.acciones}><button type="button" disabled={ocupado || (!mesesElegidos.length && (!ltak.length || !ltap.length)) || !confirmarWarehouse} onClick={() => void cargar()}>{ocupado ? "Procesando..." : "Analizar historial"}</button></div>
+            {mesesElegidos.length > 0 && <p>Meses de Drive: {mesesElegidos.map(m => m.mes).join(", ")}. Se incorporan al analizar el historial.</p>}
+            <dialog ref={dialogoDrive} className={styles.driveModal} aria-labelledby="titulo-drive-rotacion">
+                <h3 id="titulo-drive-rotacion">Cargar desde Drive · {destino}</h3>
+                {disponiblesDrive.length ? <>
+                    <p>Cada mes incluye los archivos LTAK y LTAP.</p>
+                    <div className={styles.driveMeses}>
+                        {disponiblesDrive.map(({ mes }) => <label key={mes} className={styles.check}>
+                            <input type="checkbox" checked={borradorDrive.includes(mes)} onChange={e => {
+                                const marcado = e.target.checked;
+                                setBorradorDrive(prev => marcado ? [...prev, mes] : prev.filter(m => m !== mes));
+                            }} />
+                            {new Intl.DateTimeFormat("es-AR", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(mes + "-01T00:00:00Z"))}
+                        </label>)}
+                    </div>
+                </> : <p>Todavía no hay meses disponibles para {destino}.</p>}
+                <div className={styles.acciones}>
+                    <button type="button" onClick={() => dialogoDrive.current?.close()}>Cancelar</button>
+                    <button type="button" disabled={!disponiblesDrive.length} onClick={() => {
+                        setMesesDrive(borradorDrive);
+                        setConfirmarWarehouse(false);
+                        dialogoDrive.current?.close();
+                    }}>Aplicar selección</button>
+                </div>
+            </dialog>
+            {(ocupado || (!error && avance.hechos === avance.total)) && <div className={styles.avance} role="status">
+                <progress aria-label="Avance del historial" value={avance.hechos} max={avance.total} />
+                <span>{Math.floor(100 * avance.hechos / avance.total)}% · {avance.etapa}</span>
+            </div>}
             {error && <p className={styles.error} role="alert">{error}</p>}
         </details>
         {fuente && <>

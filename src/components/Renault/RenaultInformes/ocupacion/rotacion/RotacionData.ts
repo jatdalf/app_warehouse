@@ -174,6 +174,8 @@ export function analizarRotacion(lx03: Lx03OcupacionItem[], historial: Historial
     const dias = new Map<string, Set<string>>();
     let sinCruce = 0, noConfirmadas = 0, sinExtraccion = 0, diferencias = 0, incluidas = 0;
     for (const fila of historial.movimientos) {
+        const materialActual = materiales.get(fila.material);
+        if (materialActual && !materialActual.descripcion) materialActual.descripcion = fila.descripcion.trim();
         if (!storageElegible(fila.storage)) continue;
         const cabecera = cabeceras.get(fila.otKey);
         if (!cabecera) { sinCruce++; continue; }
