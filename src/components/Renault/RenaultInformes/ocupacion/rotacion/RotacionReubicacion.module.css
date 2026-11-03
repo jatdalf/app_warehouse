@@ -43,3 +43,8 @@
 .accionesResumen { margin:12px 0; color:#718178; font-size:12px; }
 @media(max-width:700px) { .heatTag { margin-left:0; } .acciones button { flex:1; } }
 @media print { .accionesResumen { display:none; } }
+
+.cardConExcel { display:flex; flex-direction:column; gap:8px; min-width:0; }
+.cardConExcel .card { flex:1; }
+.cardConExcel .excel { font-size:12px; font-weight:600; }
+@media print { .cardConExcel .excel { display:none; } }

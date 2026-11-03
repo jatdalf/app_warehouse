@@ -13,6 +13,8 @@ const fecha = (s: string) => s ? s.split("-").reverse().join("/") : "—";
 
 export default function RotacionReubicacion({ lx03, warehouse, disponible }: { lx03: Lx03OcupacionItem[]; warehouse: "W1" | "W2"; disponible: boolean }) {
     const [fuentes, setFuentes] = useState<Partial<Record<"W1" | "W2", Fuente>>>({});
+    const [exportando, setExportando] = useState<Grupo | null>(null);
+    const [errorExcel, setErrorExcel] = useState("");
     const [ltak, setLtak] = useState<File[]>([]);
     const [ltap, setLtap] = useState<File[]>([]);
     const [destino, setDestino] = useState<"W1" | "W2">(warehouse);
@@ -79,6 +81,48 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
         { key: "subir", titulo: "Candidatos a subir", texto: "Baja frecuencia · stock en piso", habilitada: Boolean(resultado && umbralesValidos && coberturaValida) },
         { key: "sin", titulo: "Sin picking en el período", texto: "Materiales con stock actual · piso o altura", habilitada: Boolean(resultado && coberturaValida) },
     ];
+    const descargarExcel = async (categoria: Grupo) => {
+        const card = cards.find(item => item.key === categoria);
+        const materiales = grupos[categoria];
+        if (!fuente || !card?.habilitada || !materiales.length || exportando) return;
+        setExportando(categoria);
+        setErrorExcel("");
+        try {
+            const XLSX = await import("xlsx");
+            const libro = XLSX.utils.book_new();
+            const unidades = [...new Set(materiales.flatMap(m => Object.keys(m.cantidades)))].sort();
+            const agregarHoja = (nombre: string, filas: (string | number)[][], anchos: number[]) => {
+                const hoja = XLSX.utils.aoa_to_sheet(filas);
+                hoja["!cols"] = anchos.map(wch => ({ wch }));
+                if (hoja["!ref"]) hoja["!autofilter"] = { ref: hoja["!ref"] };
+                XLSX.utils.book_append_sheet(libro, hoja, nombre);
+            };
+            agregarHoja("Materiales", [
+                ["Material", "Descripción", "Líneas picking", "Días con picking", "Última salida", "Stock piso", "Stock altura", ...unidades.map(um => "Extraído (" + um + ")")],
+                ...materiales.map(m => [
+                    m.material, m.descripcion, m.frecuencia, m.dias, m.ultimaSalida, m.stockPiso, m.stockAltura,
+                    ...unidades.map(um => m.cantidades[um] ?? 0),
+                ]),
+            ], [24, 48, 18, 18, 16, 16, 16, ...unidades.map(() => 20)]);
+            agregarHoja("Ubicaciones", [
+                ["Material", "Storage", "Ubicación", "Cantidad", "Nivel"],
+                ...materiales.flatMap(m => m.ubicaciones.map(u => [
+                    m.material, u.storage, u.ubicacion, u.cantidad, u.piso ? "Piso" : "Altura",
+                ])),
+            ], [24, 14, 24, 16, 14]);
+            agregarHoja("Contexto", [
+                ["Campo", "Valor"],
+                ["Categoría", card.titulo], ["Warehouse", warehouse],
+                ["Desde", fuente.desde], ["Hasta", fuente.hasta], ["Movimiento WM / IM", fuente.movimiento],
+                ["Umbral alta", alta], ["Umbral baja", baja], ["Materiales", materiales.length],
+            ], [24, 48]);
+            XLSX.writeFile(libro, `rotacion-${categoria}-${warehouse}-${fuente.desde}_${fuente.hasta}.xlsx`);
+        } catch {
+            setErrorExcel("No se pudo descargar el listado. Volvé a intentarlo.");
+        } finally {
+            setExportando(null);
+        }
+    };
     const sugerencias = <SugerenciasMovimientos lx03={lx03} materiales={resultado?.materiales ?? materialesVacios}
         habilitado={Boolean(disponible && coberturaValida && !ocupado)} warehouse={warehouse}
         desde={fuente?.desde ?? ""} hasta={fuente?.hasta ?? ""} movimiento={fuente?.movimiento ?? ""} />;
@@ -118,7 +162,13 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
             </div>}
         </>}
         {!fuente && <p className={styles.empty}>Cargá el historial de {warehouse} para analizar la rotación. No se calcula demanda a partir de la LX03.</p>}
-        <div className={styles.cards}>{cards.map(card => <button type="button" key={card.key} disabled={!card.habilitada} aria-pressed={grupo === card.key} className={`${styles.card} ${styles[card.key]}`} onClick={() => { setGrupo(card.key); setPagina(0); detalle.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><span>{card.titulo}</span><strong>{card.habilitada ? formato(grupos[card.key].length) : "—"}</strong><small>{card.texto}</small></button>)}</div>
+        <div className={styles.cards}>{cards.map(card => <div className={styles.cardConExcel} key={card.key}><button type="button" disabled={!card.habilitada} aria-pressed={grupo === card.key} className={`${styles.card} ${styles[card.key]}`} onClick={() => { setGrupo(card.key); setPagina(0); detalle.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><span>{card.titulo}</span><strong>{card.habilitada ? formato(grupos[card.key].length) : "—"}</strong><small>{card.texto}</small></button>
+            <button type="button" className={styles.excel} disabled={!card.habilitada || !grupos[card.key].length || exportando !== null}
+                aria-label={`Descargar listado en Excel: ${card.titulo}`} onClick={() => void descargarExcel(card.key)}>
+                {exportando === card.key ? "Preparando Excel…" : "Descargar listado en Excel"}
+            </button>
+        </div>)}</div>
+        {errorExcel && <p className={styles.error} role="alert">{errorExcel}</p>}
         {resultado && <div ref={detalle} className={styles.detalle}>
             <div className={styles.detailHeading}><h3>{cards.find(c => c.key === grupo)?.titulo}</h3><input aria-label="Buscar material, descripción, storage o ubicación" placeholder="Buscar material o ubicación…" value={busqueda} onChange={e => { setBusqueda(e.target.value); setPagina(0); }} /></div>
             <p className={styles.note}>Stock según la LX03 seleccionada. Piso: storage terminado en P. Se excluyen 52P, NOC y los storage 900–999 tanto del stock como de los movimientos del análisis. Cantidades de stock según el lector LX03 actual; no se convierten unidades. La tabla muestra candidatos; “Sugerir movimientos” permite revisar intercambios. La capacidad, los bloqueos, el peso y la compatibilidad requieren revisión física.</p>
