@@ -7,7 +7,7 @@ import styles from "./RotacionReubicacion.module.css";
 import SugerenciasMovimientos from "./SugerenciasMovimientos";
 
 type Grupo = "bajar" | "subir" | "sin";
-interface Fuente { historial: HistorialRotacion; desde: string; hasta: string; movimiento: string; cobertura: boolean }
+interface Fuente { historial: HistorialRotacion; desde: string; hasta: string; movimientos: string[]; cobertura: boolean }
 const formato = (n: number) => n.toLocaleString("es-AR", { maximumFractionDigits: 3 });
 const materialesVacios: MaterialRotacion[] = [];
 const fecha = (s: string) => s ? s.split("-").reverse().join("/") : "—";
@@ -37,8 +37,8 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
     const detalle = useRef<HTMLDivElement>(null);
     const fuente = fuentes[warehouse];
     const rangoValido = Boolean(fuente && fuente.desde && fuente.hasta && fuente.desde <= fuente.hasta);
-    const resultado = useMemo(() => fuente && rangoValido && fuente.movimiento
-        ? analizarRotacion(lx03, fuente.historial, fuente.desde, fuente.hasta, fuente.movimiento) : null,
+    const resultado = useMemo(() => fuente && rangoValido && fuente.movimientos.length > 0
+        ? analizarRotacion(lx03, fuente.historial, fuente.desde, fuente.hasta, fuente.movimientos) : null,
         [lx03, fuente, rangoValido]);
     const umbralesValidos = Number.isFinite(alta) && Number.isFinite(baja) && alta > baja && baja >= 1;
     const coberturaValida = Boolean(fuente?.cobertura && resultado && resultado.sinCruce === 0);
@@ -47,7 +47,7 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
         return {
             bajar: umbralesValidos ? materiales.filter(m => m.frecuencia >= alta && m.stockPiso === 0 && m.stockAltura > 0) : [],
             subir: umbralesValidos && coberturaValida ? materiales.filter(m => m.frecuencia >= 1 && m.frecuencia <= baja && m.stockPiso > 0) : [],
-            sin: coberturaValida ? materiales.filter(m => m.frecuencia === 0) : [],
+            sin: coberturaValida ? materiales.filter(m => m.movimientosPeriodo === 0) : [],
         };
     }, [resultado, alta, baja, umbralesValidos, coberturaValida]);
     const filtrados = grupos[grupo].filter(m => `${m.material} ${m.descripcion} ${m.ubicaciones.map(u => `${u.storage} ${u.ubicacion}`).join(" ")}`.toUpperCase().includes(busqueda.trim().toUpperCase()));
@@ -104,7 +104,7 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
             });
             const fechas = historial.movimientos.filter(m => m.confirmado).map(m => m.fecha).sort();
             if (!fechas.length) throw new Error("No hay posiciones confirmadas con fecha válida.");
-            const nueva: Fuente = { historial, desde: fechas[0], hasta: fechas[fechas.length - 1], movimiento: previo?.movimiento ?? "", cobertura: false };
+            const nueva: Fuente = { historial, desde: fechas[0], hasta: fechas[fechas.length - 1], movimientos: [...new Set(historial.cabeceras.map(c => `${c.movimiento}/${c.movimientoIM}`))].filter(m => m === "Y93/601" || m.startsWith("YCC/") || m.startsWith("Y95/") || previo?.movimientos.includes(m)).sort(), cobertura: false };
             setFuentes(actual => ({ ...actual, [warehouseDestino]: nueva }));
             setPagina(0);
             setAvance({ hechos: total, total, etapa: "Historial listo" });
@@ -115,7 +115,7 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
     const cards: { key: Grupo; titulo: string; texto: string; habilitada: boolean }[] = [
         { key: "bajar", titulo: "Candidatos a bajar", texto: "Alta frecuencia · stock solo en altura", habilitada: Boolean(resultado && umbralesValidos) },
         { key: "subir", titulo: "Candidatos a subir", texto: "Baja frecuencia · stock en piso", habilitada: Boolean(resultado && umbralesValidos && coberturaValida) },
-        { key: "sin", titulo: "Sin picking en el período", texto: "Materiales con stock actual · piso o altura", habilitada: Boolean(resultado && coberturaValida) },
+        { key: "sin", titulo: "Sin movimiento en el período", texto: "Materiales con stock actual · piso o altura", habilitada: Boolean(resultado && coberturaValida) },
     ];
     const descargarExcel = async (categoria: Grupo) => {
         const card = cards.find(item => item.key === categoria);
@@ -149,7 +149,7 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
             agregarHoja("Contexto", [
                 ["Campo", "Valor"],
                 ["Categoría", card.titulo], ["Warehouse", warehouse],
-                ["Desde", fuente.desde], ["Hasta", fuente.hasta], ["Movimiento WM / IM", fuente.movimiento],
+                ["Desde", fuente.desde], ["Hasta", fuente.hasta], ["Movimientos WM / IM", fuente.movimientos.join(", ")],
                 ["Umbral alta", alta], ["Umbral baja", baja], ["Materiales", materiales.length],
             ], [24, 48]);
             XLSX.writeFile(libro, `rotacion-${categoria}-${warehouse}-${fuente.desde}_${fuente.hasta}.xlsx`);
@@ -161,7 +161,7 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
     };
     const sugerencias = <SugerenciasMovimientos lx03={lx03} materiales={resultado?.materiales ?? materialesVacios}
         habilitado={Boolean(disponible && coberturaValida && !ocupado)} warehouse={warehouse}
-        desde={fuente?.desde ?? ""} hasta={fuente?.hasta ?? ""} movimiento={fuente?.movimiento ?? ""} />;
+        desde={fuente?.desde ?? ""} hasta={fuente?.hasta ?? ""} movimiento={fuente?.movimientos.join(", ") ?? ""} />;
     return <section hidden={!disponible} className={styles.container} aria-label="Rotación y reubicación">
         <div className={styles.heading}><div><h2>Rotación y reubicación</h2><p>{warehouse} · Historial de picking + LX03 actual</p></div><span className={styles.heatTag}>Mapa de calor 🔥</span><span className={styles.tag}>Sugerencias para revisión</span></div>
         <details className={styles.carga}>
@@ -197,14 +197,14 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
             <dialog ref={dialogoDrive} className={styles.driveModal} aria-labelledby="titulo-drive-rotacion">
                 <h3 id="titulo-drive-rotacion">Cargar desde Drive · {destino}</h3>
                 {disponiblesDrive.length ? <>
-                    <p>Cada mes incluye los archivos LTAK y LTAP.</p>
+                    <p>Marcá una casilla por mes para cargar el par LTAK + LTAP.</p>
                     <div className={styles.driveMeses}>
                         {disponiblesDrive.map(({ mes }) => <label key={mes} className={styles.check}>
                             <input type="checkbox" checked={borradorDrive.includes(mes)} onChange={e => {
                                 const marcado = e.target.checked;
                                 setBorradorDrive(prev => marcado ? [...prev, mes] : prev.filter(m => m !== mes));
                             }} />
-                            {new Intl.DateTimeFormat("es-AR", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(mes + "-01T00:00:00Z"))}
+                            LTAK + LTAP · {new Intl.DateTimeFormat("es-AR", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(mes + "-01T00:00:00Z"))}
                         </label>)}
                     </div>
                 </> : <p>Todavía no hay meses disponibles para {destino}.</p>}
@@ -228,19 +228,32 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
             <div className={styles.filtros}>
                 <label>Desde<input type="date" value={fuente.desde} onChange={e => actualizar({ desde: e.target.value, cobertura: false })} /></label>
                 <label>Hasta<input type="date" value={fuente.hasta} onChange={e => actualizar({ hasta: e.target.value, cobertura: false })} /></label>
-                <label>Movimiento WM / IM<select value={fuente.movimiento} onChange={e => actualizar({ movimiento: e.target.value, cobertura: false })}><option value="">Seleccionar picking…</option>{movimientos.map(m => <option key={m} value={m}>{m}</option>)}</select></label>
+                <details>
+                    <summary>Movimientos WM / IM ({fuente.movimientos.length})</summary>
+                    {movimientos.map(m => <label key={m} className={styles.check}>
+                        <input type="checkbox" checked={fuente.movimientos.includes(m)} onChange={e => actualizar({
+                            movimientos: e.target.checked ? [...fuente.movimientos, m].sort() : fuente.movimientos.filter(item => item !== m),
+                            cobertura: false,
+                        })} />{m}
+                    </label>)}
+                </details>
                 <label>Alta: líneas ≥<input type="number" min={baja + 1} step="1" value={alta} onChange={e => { setAlta(Math.max(0, Math.trunc(Number(e.target.value)))); setPagina(0); }} /></label>
                 <label>Baja: líneas ≤<input type="number" min="1" max={alta - 1} step="1" value={baja} onChange={e => { setBaja(Math.max(0, Math.trunc(Number(e.target.value)))); setPagina(0); }} /></label>
             </div>
             <p className={styles.note}>Umbrales por material en todo el período elegido, medidos en posiciones de OT con extracción positiva. Confirmá con IT qué combinación WM / IM corresponde a picking. No se combinan PC y ST.</p>
+            {!fuente.movimientos.length && <p className={styles.note}>Seleccioná al menos un movimiento para analizar.</p>}
+            {["Y93", "YCC", "Y95"].filter(c => !movimientos.some(m => c === "Y93" ? m === "Y93/601" : m.startsWith(c + "/"))).map(c =>
+                <p key={c} className={styles.note}>{c === "Y93" ? "Y93/601" : c}: no aparece en el historial cargado. Revisá el alcance de los extractos.</p>
+            )}
             {!rangoValido && <p className={styles.error}>Elegí un rango de fechas válido.</p>}
             {!umbralesValidos && <p className={styles.error}>El umbral de alta debe superar al de baja; el de baja debe ser al menos 1.</p>}
             {resultado && <div className={styles.coverage}>
                 <strong>Período: {fecha(fuente.desde)} al {fecha(fuente.hasta)} · {formato(resultado.incluidas)} posiciones incluidas</strong>
                 <span>{formato(fuente.historial.movimientos.length)} posiciones únicas · {formato(fuente.historial.duplicados)} duplicadas omitidas · {formato(resultado.sinCruce)} sin LTAK · {formato(resultado.noConfirmadas)} no confirmadas · {formato(resultado.sinExtraccion)} sin extracción positiva en el filtro · {formato(resultado.diferencias)} con cantidad origen/destino distinta</span>
+                <span>Movimientos incluidos: {fuente.movimientos.join(", ")}</span>
                 <span>Archivos: {fuente.historial.archivos.join(" · ")}</span>
-                <label className={styles.check}><input type="checkbox" checked={fuente.cobertura} disabled={resultado.sinCruce > 0} onChange={e => actualizar({ cobertura: e.target.checked })} />Confirmo cobertura completa de picking para este warehouse, movimiento y período, sin semanas faltantes ni límites de exportación.</label>
-                {!coberturaValida && <span>Las categorías de baja frecuencia y sin picking se habilitan al confirmar cobertura completa y resolver posiciones sin LTAK. Una fecha sin movimientos no prueba por sí sola que falten datos.</span>}
+                <label className={styles.check}><input type="checkbox" checked={fuente.cobertura} disabled={resultado.sinCruce > 0} onChange={e => actualizar({ cobertura: e.target.checked })} />Confirmo cobertura completa de picking para este warehouse, los movimientos seleccionados y el período, sin semanas faltantes ni límites de exportación.</label>
+                {!coberturaValida && <span>Las categorías de baja frecuencia y sin movimiento se habilitan al confirmar cobertura completa y resolver posiciones sin LTAK. Una fecha sin movimientos no prueba por sí sola que falten datos.</span>}
             </div>}
         </>}
         {!fuente && <p className={styles.empty}>Cargá el historial de {warehouse} para analizar la rotación. No se calcula demanda a partir de la LX03.</p>}
@@ -259,6 +272,6 @@ export default function RotacionReubicacion({ lx03, warehouse, disponible }: { l
                 <div className={styles.paginacion}><button type="button" disabled={paginaActual === 0} onClick={() => setPagina(paginaActual - 1)}>Anterior</button><span>{formato(filtrados.length)} materiales · Página {paginaActual + 1} de {paginas}</span><button type="button" disabled={paginaActual + 1 >= paginas} onClick={() => setPagina(paginaActual + 1)}>Siguiente</button></div>
             </>}
         </div>}
-        <p className={styles.note}>Las recomendaciones son preliminares. “Sin picking” solo describe el período y movimiento declarados; también puede incluir materiales nuevos. Al cambiar de LX03, los candidatos se recalculan con el stock actual.</p>
+        <p className={styles.note}>Las recomendaciones son preliminares. “Sin movimiento” considera todos los movimientos confirmados del material en el LTAP cargado para el período, incluso en otras ubicaciones o fuera del filtro de picking; también puede incluir materiales nuevos. Al cambiar de LX03, los candidatos se recalculan con el stock actual.</p>
     </section>;
 }

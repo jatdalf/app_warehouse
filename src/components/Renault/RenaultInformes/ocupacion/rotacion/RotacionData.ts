@@ -29,6 +29,7 @@ export interface MaterialRotacion {
     material: string;
     descripcion: string;
     frecuencia: number;
+    movimientosPeriodo: number;
     dias: number;
     ultimaSalida: string;
     cantidades: Record<string, number>;
@@ -154,13 +155,14 @@ export function storageElegible(valor: string): boolean {
     return Boolean(storage) && storage !== "NOC" && storage !== "52P" && !/^9\d{2}$/.test(storage);
 }
 export function analizarRotacion(lx03: Lx03OcupacionItem[], historial: HistorialRotacion,
-    desde: string, hasta: string, movimiento: string) {
+    desde: string, hasta: string, movimientos: readonly string[]) {
+    const seleccion = new Set(movimientos);
     const cabeceras = new Map(historial.cabeceras.map(c => [c.key, c]));
     const materiales = new Map<string, MaterialRotacion>();
     for (const fila of lx03) {
         const material = fila.material.trim().toUpperCase();
         if (!storageElegible(fila.storage) || !material || !Number.isFinite(fila.cantidad) || fila.cantidad <= 0) continue;
-        const item = materiales.get(material) ?? { material, descripcion: "", frecuencia: 0, dias: 0,
+        const item = materiales.get(material) ?? { material, descripcion: "", frecuencia: 0, movimientosPeriodo: 0, dias: 0,
             ultimaSalida: "", cantidades: {}, stockPiso: 0, stockAltura: 0, ubicaciones: [] };
         const storage = fila.storage.trim().toUpperCase();
         const piso = storage.endsWith("P");
@@ -174,17 +176,20 @@ export function analizarRotacion(lx03: Lx03OcupacionItem[], historial: Historial
     const dias = new Map<string, Set<string>>();
     let sinCruce = 0, noConfirmadas = 0, sinExtraccion = 0, diferencias = 0, incluidas = 0;
     for (const fila of historial.movimientos) {
-        const materialActual = materiales.get(fila.material);
+        const materialActual = materiales.get(fila.material.trim().toUpperCase());
+        // La inactividad es del material, independientemente del storage y del filtro de picking.
+        if (materialActual && fila.confirmado && fila.fecha >= desde && fila.fecha <= hasta
+            && (fila.cantidad !== 0 || fila.cantidadDestino !== 0)) materialActual.movimientosPeriodo++;
         if (materialActual && !materialActual.descripcion) materialActual.descripcion = fila.descripcion.trim();
         if (!storageElegible(fila.storage)) continue;
         const cabecera = cabeceras.get(fila.otKey);
         if (!cabecera) { sinCruce++; continue; }
         if (!fila.confirmado) { noConfirmadas++; continue; }
-        if (`${cabecera.movimiento}/${cabecera.movimientoIM}` !== movimiento || fila.fecha < desde || fila.fecha > hasta) continue;
+        if (!seleccion.has(`${cabecera.movimiento}/${cabecera.movimientoIM}`) || fila.fecha < desde || fila.fecha > hasta) continue;
         if (fila.cantidad <= 0) { sinExtraccion++; continue; }
         incluidas++;
         if (fila.cantidad !== fila.cantidadDestino) diferencias++;
-        const item = materiales.get(fila.material);
+        const item = materialActual;
         if (!item) continue;
         item.descripcion ||= fila.descripcion;
         item.frecuencia++;

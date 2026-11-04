@@ -11,12 +11,10 @@ export interface WarehouseInventarioConfig {
     targetDiario: number;
     vaciasFileId: string;
     lx03FileId: string;
-
     zsappr110FileId?: string;
     lx22FileId?: string;
     zsappr110ArchivoFileId?: string;
     lx22ArchivoFileId?: string;
-
     meses: Record<string, InventarioMesConfig>;
 }
 
@@ -66,8 +64,9 @@ export const INVENTARIO_WAREHOUSES:
         "2026-10": {
             lx22FileId: "1VyIYWfIcK5eJ4WRK_eQrDz-H8Ine3Hbp",
             zsappr110FileId: "1K_YcmQmaz1PDG6-AM5d1_PWrKdv5rTx6",
-            linvFileId: "13aMhvpBHo8pbASoZnmc-M2KVhND0acAC"
+            linvFileId: "1b4ip5Ab_RHgB9y5Vv7rU1RDZsfg_epgz"
         }
+
     },
 },
     W2: {
@@ -114,9 +113,9 @@ export const INVENTARIO_WAREHOUSES:
         "2026-10": {
             lx22FileId: "1qPJbDF_r7c4hMihlKMoaUHbr8eaP8SEW",
             zsappr110FileId: "1HTVCA3mmQ1x-sEz6SRJIv4zb1-0fMui1",
-            linvFileId: "1cSliwLwuwRhQkBa_uhxZfqWaHcZWegUF"
+            linvFileId: "12yQ4Pl8U-SnotF33vikS4TV8gKBeU-n8"
         }
- 
+
     }
 }
 };

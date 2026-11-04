@@ -34,7 +34,9 @@ export function sugerirIntercambios(stock: Lx03OcupacionItem[], materiales: Mate
         const m = rotacion.get(material);
         if (!m) continue;
         const candidato = { material, cantidad, descripcion: m.descripcion, frecuencia: m.frecuencia, storage: p.storage, ubicacion: p.ubicacion };
-        if (p.storage.endsWith("P")) pisos.push(candidato);
+        if (p.storage.endsWith("P")) {
+            if (m.frecuencia > 0 || m.movimientosPeriodo === 0) pisos.push(candidato);
+        }
         else if (m.frecuencia > 0 && m.stockPiso === 0) altos.push(candidato);
     }
     // No se deduce una altura física desde una nomenclatura no documentada.

@@ -4,7 +4,6 @@
     justify-content: center;
     flex-shrink: 0;
 }
-
 .renaultLogo {
     display: block;
     width: 60px;
@@ -12,30 +11,13 @@
     max-width: 100%;
     object-fit: contain;
 }
-
-.logoEstatico {
-    display: none;
-}
-
+.logoEstatico {display: none;}
 @media (prefers-reduced-motion: reduce) {
-    .logoAnimado {
-        display: none;
-    }
-
-    .logoEstatico {
-        display: block;
-    }
+    .logoAnimado {display: none;}
+    .logoEstatico {display: block;}
 }
-
 @media print {
-    .logoAnimado {
-        display: none;
-    }
-
-    .logoEstatico {
-        display: block;
-    }
+    .logoAnimado {display: none;}
+    .logoEstatico {display: block;}
 }
-.logoAnimado {
-    pointer-events: none;
-}
+.logoAnimado {pointer-events: none;}

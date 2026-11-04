@@ -11,9 +11,10 @@ Orden	Campo	Descripción
 10	VLPLA	Ubicación de origen
 11	VSOLM	Cantidad prevista de origen
 12	VISTM	Cantidad real de origen, en unidad base
-13	NSOLM	Cantidad prevista de destino, en unidad base
-14	NISTM	Cantidad real de destino, en unidad base
-15	NSOLA	Cantidad prevista de destino, en unidad alternativa
-16	MAKTX	Descripción del material
-17	NLTYP	Tipo de almacén de destino
-18	NLPLA	Ubicación de destino
+13	NLTYP	Tipo de almacén de destino
+14	NLPLA	Ubicación de destino
+15	NSOLM	Cantidad prevista de destino, en unidad base
+16	NISTM	Cantidad real de destino, en unidad base
+17	NSOLA	Cantidad prevista de destino, en unidad alternativa
+18	MAKTX	Descripción del material
+

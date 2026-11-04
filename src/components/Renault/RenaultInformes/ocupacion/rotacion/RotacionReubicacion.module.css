@@ -57,3 +57,30 @@
 
 .avance { display:grid; gap:6px; margin:12px 0; }
 .avance progress { width:100%; accent-color:#167b77; }
+.driveModal {
+    box-sizing: border-box;
+    width: min(640px, calc(100vw - 32px));
+    max-width: none;
+    padding: 24px;
+}
+
+.driveMeses {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 16px;
+}
+
+.driveMeses .check {
+    margin: 0;
+    align-items: center;
+}
+
+.driveMeses .check input {
+    flex-shrink: 0;
+    margin-top: 0;
+}
+
+@media (max-width: 640px) {
+    .driveMeses {
+        grid-template-columns: 1fr;
+    }
+}

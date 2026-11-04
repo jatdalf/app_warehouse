@@ -7,10 +7,7 @@ import OcupacionResumenCards from "./cards/OcupacionResumenCards";
 import OcupacionStorageTable from "./cards/OcupacionStorageTable";
 import { Lx03OcupacionReader } from "../../../../readers/Lx03OcupacionReader";
 import { AlmacenesReader } from "../../../../readers/AlmacenesReader";
-import {
-    OcupacionBuilder,
-    type OcupacionResumen,
-} from "./builders/OcupacionBuilder";
+import {OcupacionBuilder, type OcupacionResumen,} from "./builders/OcupacionBuilder";
 import { CompactacionBuilder } from "./builders/CompactacionBuilder";
 import type { CompactacionResumen } from "./Compactacion/CompactacionItem";
 import CompactacionResumenCards from "./cards/CompactacionResumenCards";
@@ -22,17 +19,14 @@ import { RenaultOcupacionLogin } from "../../Login/RenaultOcupacionLogin";
 import { INVENTARIO_WAREHOUSES } from "../inventarios/InventarioWarehouseConfig";
 
 type Warehouse = "W1" | "W2";
-
 interface Informe {
     lx03: Lx03OcupacionItem[];
     ocupacion: OcupacionResumen;
     compactacion: CompactacionResumen;
 }
-
 interface InformeLocal extends Informe {
     nombreArchivo: string;
 }
-
 const ALMACENES_FILE_ID = "1ZRPxkVmnJDQYNuAZp0SVTIVHeSm1Wsmx";
 
 const RenaultOcupacion = () => {
@@ -112,19 +106,11 @@ const RenaultOcupacion = () => {
 
                 if (!cancelado) {
                     const informeCargado = resultado;
-
-                    setInformeDrive(actual => ({
-                        ...actual,
-                        [warehouse]: informeCargado,
-                    }));
+                    setInformeDrive(actual => ({...actual, [warehouse]: informeCargado,}));
                 }
             } catch (err) {
                 if (!cancelado) {
-                    setError(
-                        err instanceof Error
-                            ? err.message
-                            : "No fue posible cargar el informe.",
-                    );
+                    setError(err instanceof Error ? err.message : "No fue posible cargar el informe.",);
                 }
             } finally {
                 if (!cancelado) {
