@@ -7,7 +7,10 @@ import OcupacionResumenCards from "./cards/OcupacionResumenCards";
 import OcupacionStorageTable from "./cards/OcupacionStorageTable";
 import { Lx03OcupacionReader } from "../../../../readers/Lx03OcupacionReader";
 import { AlmacenesReader } from "../../../../readers/AlmacenesReader";
-import {OcupacionBuilder, type OcupacionResumen,} from "./builders/OcupacionBuilder";
+import {
+    OcupacionBuilder,
+    type OcupacionResumen,
+} from "./builders/OcupacionBuilder";
 import { CompactacionBuilder } from "./builders/CompactacionBuilder";
 import type { CompactacionResumen } from "./Compactacion/CompactacionItem";
 import CompactacionResumenCards from "./cards/CompactacionResumenCards";
@@ -18,15 +21,20 @@ import { useRenaultAuth } from "../../../../components/hooks/useRenaultAuth";
 import { RenaultOcupacionLogin } from "../../Login/RenaultOcupacionLogin";
 import { INVENTARIO_WAREHOUSES } from "../inventarios/InventarioWarehouseConfig";
 
+import { filtrarStoragesMedibles } from "./OcupacionWarehouseConfig";
+
 type Warehouse = "W1" | "W2";
+
 interface Informe {
     lx03: Lx03OcupacionItem[];
     ocupacion: OcupacionResumen;
     compactacion: CompactacionResumen;
 }
+
 interface InformeLocal extends Informe {
     nombreArchivo: string;
 }
+
 const ALMACENES_FILE_ID = "1ZRPxkVmnJDQYNuAZp0SVTIVHeSm1Wsmx";
 
 const RenaultOcupacion = () => {
@@ -88,13 +96,14 @@ const RenaultOcupacion = () => {
                 let resultado = driveCache.current[warehouse];
 
                 if (!resultado) {
-                    const [lx03, almacenes] = await Promise.all([
+                    const [extracto, almacenes] = await Promise.all([
                         Lx03OcupacionReader.read(
                             INVENTARIO_WAREHOUSES[warehouse].lx03FileId,
                         ),
                         obtenerAlmacenes(),
                     ]);
 
+                    const lx03 = filtrarStoragesMedibles(extracto, warehouse);
                     resultado = {
                         lx03,
                         ocupacion: OcupacionBuilder.build(lx03, almacenes),
@@ -106,11 +115,19 @@ const RenaultOcupacion = () => {
 
                 if (!cancelado) {
                     const informeCargado = resultado;
-                    setInformeDrive(actual => ({...actual, [warehouse]: informeCargado,}));
+
+                    setInformeDrive(actual => ({
+                        ...actual,
+                        [warehouse]: informeCargado,
+                    }));
                 }
             } catch (err) {
                 if (!cancelado) {
-                    setError(err instanceof Error ? err.message : "No fue posible cargar el informe.",);
+                    setError(
+                        err instanceof Error
+                            ? err.message
+                            : "No fue posible cargar el informe.",
+                    );
                 }
             } finally {
                 if (!cancelado) {
@@ -144,11 +161,12 @@ const RenaultOcupacion = () => {
         setErrorArchivo("");
 
         try {
-            const [lx03, almacenes] = await Promise.all([
+            const [extracto, almacenes] = await Promise.all([
                 Lx03OcupacionReader.readFile(file),
                 obtenerAlmacenes(),
             ]);
 
+            const lx03 = filtrarStoragesMedibles(extracto, warehouseDestino);
             const resultado: InformeLocal = {
                 lx03,
                 ocupacion: OcupacionBuilder.build(lx03, almacenes),

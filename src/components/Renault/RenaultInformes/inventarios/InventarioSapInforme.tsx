@@ -1,3 +1,4 @@
+import { GestionMeses, RegistroEntrega, IconoAccion } from "./InventarioAcciones";
 import React, { useMemo, useState } from "react";
 import { useFeriados } from "./hooks/useFeriados";
 import { useInventarioSapData } from "./hooks/useInventarioSapData";
@@ -23,7 +24,10 @@ const InventarioSapInforme: React.FC = () => {
     const [tipoPeriodo, setTipoPeriodo] = useState<TipoPeriodo>("SEMANA");
     const [warehouse, setWarehouse] = useState<WarehouseInventario>("W1");
     const targetDiario = INVENTARIO_WAREHOUSES[warehouse].targetDiario;
-    const { lineas, vacias, loading, reingenieria, error} = useInventarioSapData(warehouse);
+    const [selecciones, setSelecciones] = useState<Partial<Record<WarehouseInventario, string[]>>>({});
+    const meses = useMemo(() => Object.keys(INVENTARIO_WAREHOUSES[warehouse].meses).sort(), [warehouse]);
+    const mesesElegidos = useMemo(() => selecciones[warehouse] ?? meses.slice(-2), [warehouse, meses, selecciones]);
+    const { documentos, lineas, vacias, loading, reingenieria, error } = useInventarioSapData(warehouse, mesesElegidos);
     const { periodos, periodoSeleccionado, setPeriodoSeleccionado, periodo,
         periodoVisual, lineasPeriodo, lineasPeriodoCerradas, mesesPeriodo
     } = useInventarioPeriodos({lineas, feriados, tipoPeriodo, targetDiario});
@@ -39,9 +43,7 @@ const vaciasCombinadas = useMemo(() => [...vacias, ...VaciasSapBuilder.build(lin
             </div>
         );
     }
-    if (error) {
-        return (<div className={styles.error}>⚠️ {error}</div>);
-    }
+
 
 
     return (
@@ -68,17 +70,22 @@ const vaciasCombinadas = useMemo(() => [...vacias, ...VaciasSapBuilder.build(lin
                     <option key={item.key} value={item.key}>{item.label}</option>
                 ))}
             </select>
+            <GestionMeses key={warehouse} warehouse={warehouse} meses={meses} seleccion={mesesElegidos}
+                aplicar={nuevos => setSelecciones(prev => ({ ...prev, [warehouse]: nuevos }))} />
         </div>
-           {periodoVisual && periodo && (
+        {/* <p>Meses incluidos: {mesesElegidos.join(" · ")}. Los totales solo abarcan los meses cargados.</p> */}
+           {error && <p className={styles.error} role="alert">{error}</p>}
+           {!error && periodoVisual && periodo && (
             <>
             
                 <InventarioSapResumenCards lineas={lineasPeriodoCerradas}/>
                 <InventarioSapCards lineas={lineasPeriodoCerradas}/>
             
-<div className={styles.actionsButtonHolder}>               
+<div className={styles.actionsButtonHolder}>
+<RegistroEntrega key={warehouse} documentos={documentos} warehouse={warehouse} />               
 <button type="button" className={styles.coverageButton} onClick={() =>
         window.open("/RenaultInformes/inventarios/cobertura", "_blank") }>
-    <span className={styles.coverageButtonIcon}>📈</span>
+    <IconoAccion tipo="avance"/>
     <span className={styles.coverageButtonContent}>
         <strong>Ver avance de inventarios</strong>
         <small>Cobertura anual y por storage</small>
@@ -86,7 +93,7 @@ const vaciasCombinadas = useMemo(() => [...vacias, ...VaciasSapBuilder.build(lin
     <span className={styles.coverageButtonArrow}>↗</span>
 </button>
 <button type="button" className={styles.printButton} onClick={() => window.print()}>
-    🖨️ Imprimir Informe en PDF
+    <IconoAccion tipo="impresora"/><span className={styles.coverageButtonContent}><strong>Imprimir informe en PDF</strong><small>Resumen de inventarios</small></span>
 </button>
 </div> 
             <div className={styles.printSection}>

@@ -1,3 +1,4 @@
+import type { Lx22InventarioItem } from "../../../../../readers/Lx22Reader";
 import { useEffect, useRef, useState } from "react";
 import { Zsappr110Reader } from "../../../../../readers/Zsappr110Reader";
 import { Lx22Reader } from "../../../../../readers/Lx22Reader";
@@ -16,7 +17,7 @@ type MesCache = Record<string, InventarioSapLinea[]>;
 type VaciasCache = Partial<Record<WarehouseInventario, VaciasItem[]>>;
 type Lx03Cache = Partial<Record<WarehouseInventario, Lx03OcupacionItem[]>>;
 
-export const useInventarioSapData = (warehouse: WarehouseInventario) => {
+export const useInventarioSapData = (warehouse: WarehouseInventario, mesesElegidos?: readonly string[]) => {
     const [lineas, setLineas] = useState<InventarioSapLinea[]>([]);
     const [vacias, setVacias] = useState<VaciasItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -25,6 +26,8 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
     const [historicoDesdeCache, setHistoricoDesdeCache] = useState(false);
     const [reingenieria, setReingenieria] = useState<ReingenieriaData>({compactacion: [], mapaCalor: [],});
     /* CACHE POR MES  */
+    const documentosCache = useRef<Record<string, Lx22InventarioItem[]>>({});
+    const [documentos, setDocumentos] = useState<Lx22InventarioItem[]>([]);
     const cache = useRef<MesCache>({});
     const vaciasCache = useRef<VaciasCache>({});
     const [lx03, setLx03] = useState<Lx03OcupacionItem[]>([]);
@@ -58,6 +61,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
             const lineasLinvNuevas = lineasLinv.filter(item =>
                 !clavesZsap.has(`${item.documento}|${item.posicion.trim().toUpperCase()}`));
             const resultado: InventarioSapLinea[] = [...resultadoZsap, ...lineasLinvNuevas];
+            documentosCache.current[cacheKey] = lx22;
             cache.current[cacheKey] = resultado;
             return resultado;
         };
@@ -67,11 +71,12 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                 setLoading(true);
                 setError("");
                 setLineas([]);
+                setDocumentos([]);
                 setReingenieria({compactacion: [], mapaCalor: [],});
                 setMesIncorporado(null);  
                 setHistoricoDesdeCache(false);
                 const config = INVENTARIO_WAREHOUSES[warehouse];
-                const meses = Object.keys(config.meses).sort();
+                const meses = Object.keys(config.meses).filter(m => !mesesElegidos || mesesElegidos.includes(m)).sort();
                 if (meses.length === 0) {
                     throw new Error("No hay meses configurados para este warehouse.");
                 }
@@ -86,6 +91,8 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                     const vaciasCached = vaciasCache.current[warehouse];
                     const lx03Cached = lx03Cache.current[warehouse];
                     setLineas(lineasCached);
+                    setDocumentos(meses.flatMap(m => documentosCache.current[`${warehouse}-${m}`] ?? []));
+                    setReingenieria(reingenieriaCache.current[warehouse]!);
                     if (vaciasCached) {
                         setVacias(vaciasCached);
                     }
@@ -100,7 +107,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                 const lx03Cached = lx03Cache.current[warehouse];
                 const reingenieriaCached = reingenieriaCache.current[warehouse];
                 const [lineasActuales, vaciasResult, lx03Result, reingenieriaResult,] = await Promise.all([
-                cargarMes(mesActual), vaciasCached ? Promise.resolve(vaciasCached) : RenaultVaciasReader.read(config.vaciasFileId),
+                mesesElegidos ? Promise.all(meses.map(cargarMes)).then(resultados => resultados.flat()) : cargarMes(mesActual), vaciasCached ? Promise.resolve(vaciasCached) : RenaultVaciasReader.read(config.vaciasFileId),
                 lx03Cached ? Promise.resolve(lx03Cached) : Lx03OcupacionReader.read(config.lx03FileId),
                 reingenieriaCached ? Promise.resolve(reingenieriaCached) : RenaultReingenieriaReader.read(config.vaciasFileId),]);
                 if (cancelado) {
@@ -111,6 +118,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                 vaciasCache.current[warehouse] = vaciasResult;
                 lx03Cache.current[warehouse] = lx03Result;
                 setLineas(lineasActuales);
+                setDocumentos((mesesElegidos ? meses : [mesActual]).flatMap(m => documentosCache.current[`${warehouse}-${m}`] ?? []));
                 setVacias(vaciasResult);
                 setLx03(lx03Result);
                 setLoading(false);
@@ -127,7 +135,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                  * junio
                  * ...
                  */
-                const mesesHistoricos = meses.slice(0, -1).reverse();
+                const mesesHistoricos = mesesElegidos ? [] : meses.slice(0, -1).reverse();
                 for (const mes of mesesHistoricos) {
                     if (cancelado) {
                         return;
@@ -137,9 +145,11 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
                         if (cancelado) {
                             return;
                         }
+                        setDocumentos(actuales => [...(documentosCache.current[`${warehouse}-${mes}`] ?? []), ...actuales]);
                         setLineas(actuales => [...lineasMes, ...actuales, ]);
                         setMesIncorporado(mes);
                     } catch (err) {
+                        if (mesesElegidos) throw err;
                         console.error(`Error cargando ${warehouse} ${mes}:`, err);
                     }
                 }
@@ -155,7 +165,7 @@ export const useInventarioSapData = (warehouse: WarehouseInventario) => {
         };        
         void cargar();
         return () => {cancelado = true;};
-    }, [warehouse]);
+    }, [warehouse, mesesElegidos]);
     
-    return { lineas, vacias, lx03, loading, error, mesIncorporado, reingenieria, historicoDesdeCache };
+    return { documentos, lineas, vacias, lx03, loading, error, mesIncorporado, reingenieria, historicoDesdeCache };
 };

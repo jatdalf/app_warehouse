@@ -23,6 +23,10 @@ export class Lx22Reader {
         for (let i = 0; i < binary.length; i++) {
             bytes[i] = binary.charCodeAt(i);
         }
+        return this.parse(bytes);
+    }
+
+    static parse(bytes: Uint8Array): Lx22InventarioItem[] {
         /* Procesamos el Excel */
         const workbook = XLSX.read(bytes, {type: "array", cellDates: true});
         const sheet = workbook.Sheets["Sheet1"];
